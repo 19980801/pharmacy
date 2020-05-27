@@ -2,7 +2,7 @@
   <div class="index">
     <!-- 轮播图 -->
     <div class="bannerBox">
-      <Carousel autoplay class="banner">
+      <Carousel class="banner" autoplay :arrow="showArrow" :autoplay-speed="speed" v-model="valueCal">
         <Carousel-item>
           <div class="demo-carousel">
 			<img src="../../assets/imgs/banner1.png" alt="">
@@ -132,6 +132,23 @@ export default {
 /deep/ .ivu-carousel-arrow{
 	display:none;
 }
+// 指示器样式
+/deep/ .ivu-carousel-dots-inside{
+	bottom:15px;
+}
+/deep/ .ivu-carousel-dots li button{
+	width:8px;
+	height:8px;
+	border-radius:50%;
+	background:#fff;
+	opacity:0.5;
+}
+/deep/ .ivu-carousel-active button{
+	width:27px !important;
+	height:8px;
+	border-radius:4px !important;
+	opacity:1 !important;
+}
 .flex-btween {
   display: flex;
   align-items: center;
@@ -151,7 +168,7 @@ export default {
 	  }
 	  .demo-carousel img{
 		width:100%;
-		height:100%;
+		height:500px;
 	  }
     }
   }

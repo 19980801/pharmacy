@@ -10,7 +10,7 @@
           <nav>
             <router-link to="/" :class="routeName=='index'?'active':''">首页</router-link>
             <router-link to="/course" :class="routeName=='course'?'active':''">课程</router-link>
-            <router-link to="/notice" :class="routeName=='notice'?'active':''">题库</router-link>
+            <router-link to="/">题库</router-link>
           </nav>
         </div>
         <div>
@@ -469,7 +469,7 @@ ul {
   }
   // 内容
   section {
-    min-height: 500px;
+    min-height:800px;
   }
   // 底部
   footer {
