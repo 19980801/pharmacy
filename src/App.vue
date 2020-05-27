@@ -5,7 +5,7 @@
       <div class="header">
         <div>
           <router-link to="/">
-            <img src="./assets/imgs/logo.png" mode="widthFix" alt class="logo" />
+            <img src="./assets/imgs/index/logo.png" mode="widthFix" alt class="logo" />
           </router-link>
           <nav>
             <router-link to="/" :class="routeName=='index'?'active':''">首页</router-link>
@@ -19,13 +19,13 @@
               <div class="left">
                 <div class="select" @click="showSelect">
                   <span>课程</span>
-                  <img src="./assets/imgs/down.png" alt />
+                  <img src="./assets/imgs/index/down.png" alt />
                 </div>
                 <input type="text" placeholder="请输入要查找的内容" @focus="clickInput" v-model="searchKey" @blur="hideHistory" />
-                <img src="./assets/imgs/clear.png" alt class="clear" v-show="searchKey" @click="clearSearchKey" />
+                <img src="./assets/imgs/index/clear.png" alt class="clear" v-show="searchKey" @click="clearSearchKey" />
               </div>
               <div class="searchImg">
-                <img src="./assets/imgs/search.png" alt />
+                <img src="./assets/imgs/index/search.png" alt />
               </div>
             </div>
             <!-- 下拉内容 -->
@@ -58,12 +58,12 @@
           <div class="logined" v-else>
             <div class="msgBox">
               <router-link to="/notice">
-                <img src="./assets/imgs/msg.png" alt />
+                <img src="./assets/imgs/index/msg.png" alt />
               </router-link>
             </div>
             <div class="userBox">
               <div @click="showLogin">
-                <img src="./assets/imgs/userImg.png" alt class="userImg" />
+                <img src="./assets/imgs/index/userImg.png" alt class="userImg" />
                 <span>小酒窝</span>
               </div>
               <div class="loginList" v-show="showLoginList">
@@ -163,7 +163,99 @@
         </div>
       </div>
     </footer>
-  </div>
+		<!-- 登录注册弹框 -->
+		<div class="loginModel" v-if="showModel">
+		  <div class="login" v-if="login">
+				<Icon type="ios-close" class="close" @click="close" sice="20" />
+		    <div class="loginTitle flex">
+		      <div class="log" :class="{active:loginCur==0}" @click="loginType(0)">
+						<span>登录</span>
+						<p></p>
+					</div>
+		      <div class="reg" :class="{active:loginCur==1}" @click="loginType(1)">
+						<span>注册</span>
+						<p></p>
+					</div>
+		    </div>
+				<div class="inpList">
+					<div class="inpItem">
+						<input type="text" value="" placeholder="请输入手机号" />
+						<p>手机号格式不正确</p>
+					</div>
+					<div class="inpItem" v-if="loginCur==1">
+						<div class="verifyBox flex">
+							<input type="text" value="" placeholder="请输入图片验证码" />
+							<div class="">5678</div>
+						</div>
+						<p>手机号格式不正确</p>
+					</div>
+					<div class="inpItem verifyByPhone" v-if="loginCur==1">
+						<div class="verifyBox flex">
+							<input type="text" value="" placeholder="请输入验证码" />
+							<div class=""><p>获取验证码</p></div>
+						</div>
+						<p>手机号格式不正确</p>
+					</div>
+					<div class="inpItem">
+						<input type="text" value="" placeholder="请输入密码" />
+						<p>手机号格式不正确</p>
+					</div>
+					<div class="saveLogin">
+						<div class="flex" v-if="loginCur==1">
+							<img :src="checked?checkAUrl:checkUrl" alt="" @click="choseType">
+							<span>我已同意并阅读<span style="color:#29B28B;cursor: default;">【用户条款】</span></span>
+						</div>
+						<div class=" flex-btween" v-if="loginCur==0">
+							<div class="flex">
+								<img :src="checked?checkAUrl:checkUrl" alt="" @click="choseType">
+								<span>10天内自动登录</span>
+							</div>
+							<div @click="backPassword" style="cursor: default;">忘记密码</div></div>
+						</div>
+					<div class="btn" v-if="loginCur==0">登录</div>
+					<div class="btn" v-if="loginCur==1">注册</div>
+				</div>
+		  </div>
+			<!-- 找回密码 -->
+			<div class="login backPassword" v-if="!login"  sice="20">
+				<Icon type="ios-arrow-back" @click="back" class="close" />
+			  <div class="loginTitle flex-center">
+			    <div>找回密码</div>
+			  </div>
+				<div class="inpList">
+					<div class="inpItem">
+						<input type="text" value="" placeholder="请输入手机号" />
+						<p>手机号格式不正确</p>
+					</div>
+					<div class="inpItem">
+						<div class="verifyBox flex">
+							<input type="text" value="" placeholder="请输入图片验证码" />
+							<div class="">5678</div>
+						</div>
+						<p>手机号格式不正确</p>
+					</div>
+					<div class="inpItem verifyByPhone">
+						<div class="verifyBox flex">
+							<input type="text" value="" placeholder="请输入验证码" />
+							<div class=""><p>获取验证码</p></div>
+						</div>
+						<p>手机号格式不正确</p>
+					</div>
+					<div class="inpItem">
+						<input type="text" value="" placeholder="请输入密码" />
+						<p>手机号格式不正确</p>
+					</div>
+					<div class="saveLogin">
+						<div class="flex">
+							<img :src="checked?checkAUrl:checkUrl" alt="" @click="choseType">
+							<span>我已同意并阅读<span style="color:#29B28B;cursor: default;">【用户条款】</span></span>
+						</div>
+					</div>
+					<div class="btn">确定</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -183,12 +275,38 @@ export default {
       nologin: false,           //登录状态
       routeName:"/",            //当前路由
       searchKey:"",             //搜索关键字
+			showModel: false,
+			loginCur:0,
+			checked:true,
+			checkUrl:require("./assets/imgs/index/loginCheck.png"),
+			checkAUrl:require("./assets/imgs/index/loginCheckA.png"),
+			login:true
     };
   },
   created(){
     
   },
   methods: {
+		// 找回密码
+		backPassword(){
+			this.login=false;
+		},
+		// 关闭弹出层
+		close(){
+			this.showModel=false;
+		},
+		// 返回上层
+		back(){
+			this.login=true;
+		},
+		// 登录/注册选项卡
+		loginType(i){
+			this.loginCur=i;
+		},
+		// 选择登录保存
+		choseType(){
+			this.checked=!this.checked;
+		},
     // header动画效果
     reload() {
       this.isRouterAlive = false;
@@ -248,7 +366,33 @@ ul {
   margin: 0;
   padding: 0;
 }
-
+input{
+	border:0;
+}
+.flex-btween {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+.flex-center{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.flex-center{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.flex-end{
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+}
 #app {
   width: 100%;
   // 头部
@@ -523,5 +667,145 @@ ul {
       }
     }
   }
+	.loginModel {
+	  width: 100%;
+	  height: 100%;
+	  background: rgba(0, 0, 0, 0.6);
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  z-index: 99999;
+	  .login {
+	    width: 380px;
+	    padding:20px 30px;
+	    box-sizing: border-box;
+	    background: #fff;
+	    position: relative;
+			.close{
+				font-size: 40px;
+				position: absolute;
+				top:20px;
+				right:15px;
+			}
+	    .loginTitle {
+	      font-size: 16px;
+				div{
+					display: flex;
+					align-items: center;
+					flex-direction: column;
+					justify-content: center;
+					cursor:default;
+					p{
+						width:16px;
+						height:4px;
+						border-radius:2px;
+						margin-top:4px;
+					}
+				}
+				.reg{
+					margin-left:60px;
+				}
+				div.active{
+					font-size: 18px;
+					color:#29B28B;
+					font-weight: bold;
+					p{
+						background:#29B28B;
+					}
+				}
+	    }
+			.inpList{
+				width:100%;
+				margin-top:30px;
+				.inpItem,.verifyByPhone{
+					width:100%;
+					height:50px;
+					margin-top:25px;
+					input{
+						width:100%;
+						height:48px;
+						background:#F2F2F2;
+						padding:0 20px;
+						box-sizing: border-box;
+						font-size: 14px;
+						border-radius: 2px;
+					}
+					.verifyBox{
+						input{
+							width:70%;
+						}
+						div{
+							width:110px;
+							text-align: center;
+							margin-left:10px;
+							line-height: 48px;
+						}
+					}
+					p{
+						padding:0 10px;
+						box-sizing: border-box;
+						color:#f00;
+						margin-top:5px;
+					}
+				}
+				.verifyByPhone{
+					border-radius: 2px;
+					background:#F2F2F2;
+					.verifyBox{
+						div{
+							p{
+								width:100%;
+								height:30px;
+								border-left:1px solid #ddd;
+								font-size: 14px;
+								color:#29B28B;
+								text-align: center;
+								line-height: 30px;
+								cursor: default;
+							}
+						}
+					}
+				}
+				.saveLogin{
+					margin-top:25px;
+					div{
+						font-size: 14px;
+						img{
+							width:16px;
+							height:16px;
+						}
+						span{
+							height:16px;
+							line-height: 16px;
+							margin-left:6px;
+						}
+					}
+				}
+				.btn{
+					width:100%;
+					height:48px;
+					background:#ddd;
+					color:#fff;
+					text-align: center;
+					line-height: 48px;
+					font-size: 18px;
+					margin-top:40px;
+					border-radius: 6px;
+					cursor: default;
+				}
+			}
+	  }
+		.backPassword{
+			.close{
+				position: absolute;
+				left:30px;
+				font-size:24px;
+				font-weight: 300;
+			}
+		}
+	}
 }
 </style>
