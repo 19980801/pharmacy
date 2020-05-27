@@ -7,92 +7,96 @@
           <router-link to="/">
             <img src="./assets/imgs/logo.png" mode="widthFix" alt class="logo" />
           </router-link>
+          <nav>
+            <router-link to="/" :class="routeName=='index'?'active':''">首页</router-link>
+            <router-link to="/course" :class="routeName=='course'?'active':''">课程</router-link>
+            <router-link to="/notice" :class="routeName=='notice'?'active':''">题库</router-link>
+          </nav>
         </div>
-        <nav>
-          <router-link to="/" class="active">首页</router-link>
-          <router-link to="/course">课程</router-link>
-          <router-link to="/notice">题库</router-link>
-        </nav>
-        <div class="searchBox">
-          <div class="search">
-            <div class="left">
-              <div class="select">
-                <span>课程</span>
-                <img src="./assets/imgs/down.png" alt />
+        <div>
+          <div class="searchBox">
+            <div class="search">
+              <div class="left">
+                <div class="select" @click="showSelect">
+                  <span>课程</span>
+                  <img src="./assets/imgs/down.png" alt />
+                </div>
+                <input type="text" placeholder="请输入要查找的内容" @focus="clickInput" v-model="searchKey" @blur="hideHistory" />
+                <img src="./assets/imgs/clear.png" alt class="clear" v-show="searchKey" @click="clearSearchKey" />
               </div>
-              <input type="text" placeholder="请输入要查找的内容" />
-              <img src="./assets/imgs/clear.png" alt class="clear" />
+              <div class="searchImg">
+                <img src="./assets/imgs/search.png" alt />
+              </div>
             </div>
-            <div class="searchImg">
-              <img src="./assets/imgs/search.png" alt />
-            </div>
-          </div>
-          <!-- 下拉内容 -->
-          <div class="selectContent" v-show="selectShow">
-            <ul>
-              <li class="active">课程</li>
-              <li>题库</li>
-              <li>活动</li>
-            </ul>
-          </div>
-          <!-- 历史搜索内容 -->
-          <!-- <div class="historyContent" v-show="historyShow">
-            <div class="content">
-              <span>历史搜索</span>
+            <!-- 下拉内容 -->
+            <div class="selectContent" v-show="selectShow">
               <ul>
-                <li>中药</li>
-                <li>河豚健康科普三堂课</li>
-                <li>中药</li>
-                <li>河豚健康科普三堂课</li>
+                <li class="active">课程</li>
+                <li>题库</li>
+                <li>活动</li>
               </ul>
             </div>
-          </div> -->
-        </div>
-        <!-- 未登录 -->
-        <div class="login" v-if="nologin">
-          <span>登录</span>
-          <span>注册</span>
-        </div>
-        <!-- 已登录 -->
-        <div class="logined" v-else>
-          <div class="msgBox">
-            <router-link to="/notice">
-              <img src="./assets/imgs/msg.png" alt />
-            </router-link>
+            <!-- 历史搜索内容 -->
+            <div class="historyContent" v-show="historyShow">
+              <div class="content">
+                <span>历史搜索</span>
+                <ul>
+                  <li>中药</li>
+                  <li>河豚健康科普三堂课</li>
+                  <li>中药</li>
+                  <li>河豚健康科普三堂课</li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div class="userBox">
-            <img src="./assets/imgs/userImg.png" alt class="userImg" />
-            <span>小酒窝</span>
-           <div class="loginList">
-              <ul>
-                <li class="active">
-                  <router-link to="/">学习记录</router-link>
-                </li>
-                <li>
-                  <router-link to="/">我的收藏</router-link>
-                </li>
-                <li class="line">
-                  <router-link to="/">学习任务</router-link>
-                </li>
-                <li>
-                  <router-link to="/">我的订单</router-link>
-                </li>
-                <li>
-                  <router-link to="/">会员管理</router-link>
-                </li>
-                <li class="line">
-                  <router-link to="/">职业认证</router-link>
-                </li>
-                <li>
-                  <router-link to="/">个人设置</router-link>
-                </li>
-                <li class="line">
-                  <router-link to="/">我的反馈</router-link>
-                </li>
-                <li>
-                  <router-link to="/">退出登录</router-link>
-                </li>
-              </ul>
+          <!-- 未登录 -->
+          <div class="login" v-if="nologin">
+            <span>登录</span>
+            <span>注册</span>
+          </div>
+          <!-- 已登录 -->
+          <div class="logined" v-else>
+            <div class="msgBox">
+              <router-link to="/notice">
+                <img src="./assets/imgs/msg.png" alt />
+              </router-link>
+            </div>
+            <div class="userBox">
+              <div @click="showLogin">
+                <img src="./assets/imgs/userImg.png" alt class="userImg" />
+                <span>小酒窝</span>
+              </div>
+              <div class="loginList" v-show="showLoginList">
+                <ul>
+                  <li class="active">
+                    <router-link to="/">学习记录</router-link>
+                  </li>
+                  <li>
+                    <router-link to="/">我的收藏</router-link>
+                  </li>
+                  <li class="line">
+                    <router-link to="/">学习任务</router-link>
+                  </li>
+                  <li>
+                    <router-link to="/">我的订单</router-link>
+                  </li>
+                  <li>
+                    <router-link to="/">会员管理</router-link>
+                  </li>
+                  <li class="line">
+                    <router-link to="/">职业认证</router-link>
+                  </li>
+                  <li>
+                    <router-link to="/">个人设置</router-link>
+                  </li>
+                  <li class="line">
+                    <router-link to="/">我的反馈</router-link>
+                  </li>
+                  <li>
+                    <router-link to="/">退出登录</router-link>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -173,10 +177,16 @@ export default {
   data() {
     return {
       isRouterAlive: true,
-      selectShow: false,    //头部下拉框内容
-      historyShow: false,   //历史搜索内容
-      nologin: false        //登录状态
+      showLoginList:false,      //显示用户列表
+      selectShow: false,        //头部下拉框内容
+      historyShow: false,       //历史搜索内容
+      nologin: false,           //登录状态
+      routeName:"/",            //当前路由
+      searchKey:"",             //搜索关键字
     };
+  },
+  created(){
+    
   },
   methods: {
     // header动画效果
@@ -185,8 +195,35 @@ export default {
       this.$nextTick(function() {
         this.isRouterAlive = true;
       });
+    },
+    // 点击打开选择框
+    showSelect(){
+      this.selectShow=!this.selectShow;
+    },
+    // 输入框获取焦点事件
+    clickInput(){
+      this.historyShow=true;
+    },
+    // 隐藏历史搜索记录
+    hideHistory(){
+      this.historyShow=false;
+    },
+    // 清除搜索框
+    clearSearchKey(){
+      this.searchKey="";
+    },
+    // 点击显示用户列表
+    showLogin(){
+      this.showLoginList=!this.showLoginList;
     }
-  }
+  },
+  // 监听当前路由
+  watch:{
+    $route(to,from){
+      console.log(this.$route.name);
+      this.routeName=this.$route.name;
+    }
+  },
 };
 </script>
 
@@ -216,22 +253,24 @@ ul {
   width: 100%;
   // 头部
   header {
-    box-shadow:0px 6px 12px 0px rgba(24,31,29,0.08);
+    box-shadow: 0px 6px 12px 0px rgba(24, 31, 29, 0.08);
     background: rgba(255, 255, 255, 1);
     height: 78px;
     line-height: 78px;
     padding: 0 15%;
     .header {
       width: 1200px;
-      margin: 0 auto;
+      margin: auto;
+      display:flex;
+      justify-content:space-between;
     }
     div,
     nav {
       display: inline-block;
     }
     .logo {
-      width: 92px;
-      // height: 64px;
+      // width:92px;
+      height:64px;
       border-radius: 50%;
       margin-right: 94px;
       vertical-align: middle;
@@ -242,6 +281,7 @@ ul {
         width: 94px;
         height: 78px;
         text-align: center;
+        color:#333;
       }
       a.active {
         background: #29b28b;
@@ -254,7 +294,6 @@ ul {
       height: 50px;
       line-height: 50px;
       vertical-align: middle;
-      margin-left: 167px;
       box-shadow: 0px 6px 12px 0px rgba(24, 31, 29, 0.08);
       border-radius: 4px;
       position: relative;
@@ -283,7 +322,7 @@ ul {
             }
           }
           input {
-            height:46px;
+            height: 46px;
             padding: 0 0 0 10px;
             border: 0;
             outline: none;
@@ -311,8 +350,10 @@ ul {
         }
       }
       .selectContent {
+        z-index:999;
         position: absolute;
         top: 55px;
+        cursor: pointer;
         ul {
           height: 140px;
           li {
@@ -332,6 +373,7 @@ ul {
         border-radius: 2px;
       }
       .historyContent {
+        z-index:999;
         position: absolute;
         top: 55px;
         width: 350px;
@@ -393,7 +435,7 @@ ul {
         cursor: pointer;
       }
       .loginList {
-        z-index:999;
+        z-index: 999;
         position: absolute;
         top: 70px;
         left: 10px;
@@ -403,7 +445,7 @@ ul {
         box-shadow: 0px 4px 8px 8px rgba(24, 31, 29, 0.08);
         border-radius: 2px;
         ul {
-          padding: 16px;
+          padding:20px 16px;
         }
         li {
           height: 40px;
@@ -411,13 +453,16 @@ ul {
           font-size: 14px;
           font-weight: 400;
           color: rgba(51, 51, 51, 1);
+          a{
+            color:#333;
+          }
         }
         li.active a {
           color: #29b28b;
         }
         .line {
           border-bottom: 1px solid #ebeef2;
-          padding: 4px 0;
+          margin:4px 0;
         }
       }
     }
@@ -432,10 +477,10 @@ ul {
     height: 400px;
     color: #fff;
     padding: 0 360px;
-    padding:0 15%;
-    .footer{
-      width:1200px;
-      margin:0 auto;
+    padding: 0 15%;
+    .footer {
+      width: 1200px;
+      margin: 0 auto;
     }
     p {
       padding: 49px 0;

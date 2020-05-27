@@ -61,7 +61,7 @@ module.exports = {
         proxy: {
             '/uc': {
                 // target: "http://192.168.31.204:6002", //dpy
-                // target: "http://wx.ztuo.info:80", //服务器
+                target: "http://wx.ztuo.info:80", //服务器
             }
         }
     }
