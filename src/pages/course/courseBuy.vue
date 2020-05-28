@@ -6,7 +6,7 @@
         <p class="msg">课程信息</p>
         <div class="info">
           <div class="left">
-            <img src="../../assets/imgs/1.png" alt />
+            <img src="../../assets/imgs/index/loginPic.png" alt />
             <div class="text">
               <p>第二届药健康科普中国行药师科普宣讲赋能</p>
               <p>3课时</p>

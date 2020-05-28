@@ -17,7 +17,7 @@
               <i class="dot"></i>
             </div>
             <div>
-                <img src="../../assets/imgs/logo.png" alt="" class="infoImg">
+                <img src="../../assets/imgs/index/logo.png" alt="" class="infoImg">
             </div>
             <div class="con">
               <span class="title">8月29号系统更新通知</span>

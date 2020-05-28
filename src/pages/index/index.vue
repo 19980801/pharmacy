@@ -1,25 +1,54 @@
 <template>
   <div class="index">
     <!-- 轮播图 -->
-    <div class="bannerBox">
-      <Carousel class="banner" autoplay :arrow="showArrow" :autoplay-speed="speed" v-model="valueCal">
-        <Carousel-item>
-          <div class="demo-carousel">
-			<img src="../../assets/imgs/banner1.png" alt="">
-		  </div>
+		<div class="bannerBox">
+			<div class="userBox flex-center">
+				<div class="userCenter flex-end">
+					<!-- 未登录状态显示 -->
+					<div class="userStateBox loginBox">
+						<div class="loginTitle">记录你的学习进度</div>
+						<img src="../../assets/imgs/index/loginPic.png" alt="">
+						<div class="loginBtn" @click="login">登录</div>
+					</div>
+					<!-- 已登录状态显示 -->
+					<div class="userStateBox userInfoBox">
+						<div class="userTitle flex">
+							<img class="userImg" src="../../assets/imgs/index/userImg.png" alt="">
+							<div>小酒窝~</div>
+							<img class="vipImg" src="../../assets/imgs/index/vip1.png" alt="">
+						</div>
+						<div class="collectBox flex-btween">
+							<div>收藏课程<span>1</span></div>
+							<div>收藏题目<span>1</span></div>
+						</div>
+						<div class="recommendBox">
+							<div class="recommendTitle">特别推荐</div>
+							<div class='recommendContent'>
+								2019紫禁城国际药师论坛精彩回顾
+							</div>
+						</div>
+						<div class="classBtn">我的课表</div>
+					</div>
+				</div>
+			</div>
+			<Carousel autoplay class="banner">
+				<Carousel-item>
+					<div class="demo-carousel">
+						<img src="../../assets/imgs/index/banner1.png" alt="">
+					</div>
         </Carousel-item>
-        <Carousel-item>
-          <div class="demo-carousel">
-			<img src="../../assets/imgs/banner2.png" alt="">
-		  </div>
-        </Carousel-item>
-        <Carousel-item>
-          <div class="demo-carousel">
-			<img src="../../assets/imgs/banner3.png" alt="">
-		  </div>
-        </Carousel-item>
-      </Carousel>
-    </div>
+				<Carousel-item>
+					<div class="demo-carousel">
+						<img src="../../assets/imgs/index/banner2.png" alt="">
+					</div>
+				</Carousel-item>
+				<Carousel-item>
+					<div class="demo-carousel">
+						<img src="../../assets/imgs/index/banner3.png" alt="">
+					</div>
+				</Carousel-item>
+			</Carousel>
+		</div>
     <!-- 最新课程 -->
     <div class="newCourse courseBox">
       <div class="flexBox">
@@ -31,7 +60,7 @@
           </div>
         </div>
         <div class="courseList">
-          <div class="courseItem" v-for="(item,index) in 8" :key="index">
+          <div class="courseItem" v-for="(item,index) in 8" :key="index" @click="choice">
             <img src alt class="top" />
             <div class="bottom">
               <div class="subTitle">第二届药健康科普中国行药师科普宣讲赋能中国行药师科普宣讲赋能讲赋能</div>
@@ -58,7 +87,7 @@
           </div>
         </div>
         <div class="courseList">
-          <div class="courseItem" v-for="(item,index) in 8" :key="index">
+          <div class="courseItem" v-for="(item,index) in 8" :key="index" @click="choice">
             <img src alt class="top" />
             <div class="bottom">
               <div class="subTitle">第二届药健康科普中国行药师科普宣讲赋能中国行药师科普宣讲赋能讲赋能</div>
@@ -85,7 +114,7 @@
           </div>
         </div>
         <div class="courseList">
-          <div class="courseItem" v-for="(item,index) in 8" :key="index">
+          <div class="courseItem" v-for="(item,index) in 8" :key="index" @click="choice">
             <img src alt class="top" />
             <div class="bottom">
               <div class="subTitle">第二届药健康科普中国行药师科普宣讲赋能中国行药师科普宣讲赋能讲赋能</div>
@@ -101,15 +130,6 @@
         </div>
       </div>
     </div>
-    <!-- 登录注册弹框 -->
-    <div class="loginModel" v-if="showModel">
-      <div class="login">
-        <div class="loginTitle flex-btween">
-          <div class="log">登录</div>
-          <div class="reg">注册</div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -121,9 +141,13 @@ export default {
       showArrow: "never",
       speed: 5000,
       valueCal: 0,
-      showModel: false
     };
-  }
+  },
+	methods:{
+		choice(){
+		  this.$router.push("/courseBuy");
+		}
+	}
 };
 </script>
 
@@ -132,32 +156,124 @@ export default {
 /deep/ .ivu-carousel-arrow{
 	display:none;
 }
-// 指示器样式
-/deep/ .ivu-carousel-dots-inside{
-	bottom:15px;
-}
-/deep/ .ivu-carousel-dots li button{
-	width:8px;
-	height:8px;
-	border-radius:50%;
-	background:#fff;
-	opacity:0.5;
-}
-/deep/ .ivu-carousel-active button{
-	width:27px !important;
-	height:8px;
-	border-radius:4px !important;
-	opacity:1 !important;
-}
-.flex-btween {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 .index {
   .bannerBox {
     width: 100%;
     height:500px;
+		position: relative;
+		.userBox{
+			width:100%;
+			height:100%;
+			margin:0 auto;
+			position: absolute;
+			z-index:99;
+			left:0;
+			top:0;
+			.userCenter{
+				width:1200px;
+				height:100%;
+				.userStateBox{
+					width:230px;
+					height:270px;
+					background:rgba(255,255,255,1);
+					border-radius:2px;
+					margin:0 45px;
+					padding:20px;
+					box-sizing: border-box;
+				}
+				.loginBox{
+					.loginTitle{
+						text-align: center;
+					}
+					img{
+						width:162px;
+						height:116px;
+						display: block;
+						margin:0 auto;
+						margin-top:25px;
+					}
+					.loginBtn{
+						width:100%;
+						height:40px;
+						background:#29B28B;
+						text-align: center;
+						line-height: 40px;
+						color:#fff;
+						border-radius:2px;
+						font-size: 15px;
+						cursor: default;
+						margin-top:30px;
+					}
+				}
+				.userInfoBox{
+					.userTitle{
+						.userImg{
+							width:42px;
+							height:42px;
+							border-radius: 50%;
+						}
+						div{
+							max-width:100px;
+							overflow: hidden;
+							white-space: nowrap;
+							text-overflow: ellipsis;
+							font-size: 14px;
+							margin-left:10px;
+						}
+						.vipImg{
+							width:18px;
+							height:18px;
+							margin-left:10px;
+						}
+					}
+					.collectBox{
+						width:100%;
+						height:48px;
+						border-bottom:1px solid #ddd;
+						// margin-top:10px;
+					}
+					.recommendBox{
+						margin-top:15px;
+						.recommendTitle{
+							width:56px;
+							height:18px;
+							background:linear-gradient(135deg,rgba(255,168,143,1) 0%,rgba(251,84,106,1) 100%);
+							border-radius:2px;
+							color:#fff;
+							text-align: center;
+							line-height: 18px;
+							font-size:12px;
+						}
+						.recommendContent{
+							margin-top:8px;
+							width:100%;
+							height:40px;
+							font-size:14px;
+							font-family:PingFangSC-Regular,PingFang SC;
+							font-weight:400;
+							color:rgba(102,102,102,1);
+							line-height:20px;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							display: -webkit-box;
+							-webkit-line-clamp: 2; /* 设置行数 */
+							-webkit-box-orient: vertical;
+						}
+					}
+					.classBtn{
+						width:100%;
+						height:40px;
+						background:#29B28B;
+						border-radius:2px;
+						font-size:15px;
+						text-align: center;
+						line-height: 40px;
+						color:#fff;
+						margin-top:20px;
+					}
+				}
+			}
+		}
     .banner {
       width: 100%;
       height: 100%;
@@ -167,9 +283,9 @@ export default {
 		height:500px;
 	  }
 	  .demo-carousel img{
-		width:100%;
-		height:500px;
-	  }
+			width:100%;
+			height:100%;
+			}
     }
   }
   .courseBox {
@@ -248,28 +364,6 @@ export default {
   }
   .hotCourse {
     background: #eceff2;
-  }
-  .loginModel {
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
-    .login {
-      width: 380px;
-      padding: 30px;
-      box-sizing: border-box;
-      background: #fff;
-      position: relative;
-      div {
-        font-size: 32px;
-      }
-    }
   }
 }
 </style>
