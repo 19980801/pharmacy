@@ -62,8 +62,7 @@
               </router-link>
             </div>
             <div class="userBox">
-              <!-- <div @click="showLogin"> -->
-              <div>
+              <div @click="showLogin">
                 <img src="./assets/imgs/index/userImg.png" alt class="userImg" />
                 <span>小酒窝</span>
               </div>
@@ -281,7 +280,7 @@ export default {
   data() {
     return {
       isRouterAlive: true,
-      showLoginList: false, //显示用户列表s
+      showLoginList: false, //显示用户列表
       selectShow: false, //头部下拉框内容
       historyShow: false, //历史搜索内容
       nologin: false, //登录状态
@@ -337,6 +336,9 @@ export default {
     },
     hideHistory(){
       this.historyShow=false;
+    },
+    showLogin(){
+      this.showLoginList=!this.showLoginList;
     }
   },
   // 监听当前路由
