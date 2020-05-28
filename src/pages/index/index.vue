@@ -8,7 +8,7 @@
 					<div class="userStateBox loginBox">
 						<div class="loginTitle">记录你的学习进度</div>
 						<img src="../../assets/imgs/index/loginPic.png" alt="">
-						<div class="loginBtn" @click="login">登录</div>
+						<div class="loginBtn">登录</div>
 					</div>
 					<!-- 已登录状态显示 -->
 					<div class="userStateBox userInfoBox">
@@ -146,7 +146,10 @@ export default {
 	methods:{
 		choice(){
 		  this.$router.push("/courseBuy");
-		}
+    },
+    login(){
+      console.log(1111)
+    }
 	}
 };
 </script>

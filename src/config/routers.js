@@ -5,6 +5,8 @@ export default [
     { path: '/course', name:'course',component: resolve => require(['../pages/course/course.vue'], resolve)},
     // 购买课程
     { path: '/courseBuy', name:'course',component: resolve => require(['../pages/course/courseBuy.vue'], resolve)},
+    // 课程详情
+    { path: '/courseDetail', name:'course',component: resolve => require(['../pages/course/courseDetail.vue'], resolve)},
     // 题库
     { path: '/question', name:'question',component: resolve => require(['../pages/question/question.vue'], resolve)},
     // 通知
