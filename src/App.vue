@@ -375,6 +375,11 @@ ul {
 input {
   border: 0;
 }
+::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	color: transparent;
+}
 .flex-btween {
   display: flex;
   align-items: center;

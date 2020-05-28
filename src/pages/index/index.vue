@@ -27,7 +27,7 @@
 								2019紫禁城国际药师论坛精彩回顾
 							</div>
 						</div>
-						<div class="classBtn">我的课表</div>
+						<div class="classBtn"@click="goMine">我的课表</div>
 					</div>
 				</div>
 			</div>
@@ -144,8 +144,12 @@ export default {
     };
   },
 	methods:{
+		// 跳转我的
+		goMine(){
+			this.$router.push("/mine");
+		},
 		choice(){
-		  this.$router.push("/courseBuy");
+		  this.$router.push("/detail");
     },
     login(){
       console.log(1111)
@@ -273,6 +277,7 @@ export default {
 						line-height: 40px;
 						color:#fff;
 						margin-top:20px;
+						cursor: default;
 					}
 				}
 			}

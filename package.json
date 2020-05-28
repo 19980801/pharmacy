@@ -13,6 +13,7 @@
     "vue": "^2.6.10",
     "vue-aliplayer": "0.0.9",
     "vue-router": "^3.0.3",
+    "vue-video-player": "^5.0.2",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

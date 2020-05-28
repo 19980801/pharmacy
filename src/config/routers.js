@@ -13,4 +13,8 @@ export default [
     { path: '/notice', name:'notice',component: resolve => require(['../pages/notice/notice.vue'], resolve) },
     // 通知详情
     { path: '/noticeDetail', name:'noticeDetail',component: resolve => require(['../pages/notice/noticeDetail.vue'], resolve) },
+    // 课程详情
+		{ path: '/detail', name:'detail',component: resolve => require(['../pages/course/detail.vue'], resolve) },
+		// 用户信息列表
+		{ path: '/mine', name:'mine',component: resolve => require(['../pages/mine/mine.vue'], resolve) },
 ];
