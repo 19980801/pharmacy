@@ -193,7 +193,7 @@
 	}
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 	body{
 		background:#F5F6F6;
 	}
