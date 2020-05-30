@@ -69,9 +69,11 @@ export default {
     border: 0;
   }
   /deep/ .ivu-radio-inner:after {
+    content:"";
     width: 20px;
     height: 20px;
-    background-color: #29b28b;
+    background:url("../../assets/imgs/clicked1.png");
+    background-size:100%;
     border-radius: 50%;
     top: 0;
     left: 0;

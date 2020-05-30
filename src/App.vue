@@ -69,28 +69,28 @@
               <div class="loginList" v-show="showLoginList">
                 <ul>
                   <li class="active">
-                    <router-link to="/">学习记录</router-link>
+                    <router-link to="/learningRecords">学习记录</router-link>
                   </li>
                   <li>
-                    <router-link to="/">我的收藏</router-link>
+                    <router-link to="/myCollection">我的收藏</router-link>
                   </li>
                   <li class="line">
-                    <router-link to="/">学习任务</router-link>
+                    <router-link to="/tasks">学习任务</router-link>
                   </li>
                   <li>
-                    <router-link to="/">我的订单</router-link>
+                    <router-link to="/myOrder">我的订单</router-link>
                   </li>
                   <li>
-                    <router-link to="/">会员管理</router-link>
+                    <router-link to="/memberMgt">会员管理</router-link>
                   </li>
                   <li class="line">
-                    <router-link to="/">职业认证</router-link>
+                    <router-link to="/certification">职业认证</router-link>
                   </li>
                   <li>
-                    <router-link to="/">个人设置</router-link>
+                    <router-link to="/setting">个人设置</router-link>
                   </li>
                   <li class="line">
-                    <router-link to="/">我的反馈</router-link>
+                    <router-link to="/feedback">我的反馈</router-link>
                   </li>
                   <li>
                     <router-link to="/">退出登录</router-link>

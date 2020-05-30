@@ -344,7 +344,7 @@ export default {
             position: absolute;
             width: 770px;
             min-height: 400px;
-            margin-top: -343px;
+            margin-top: -200px;
             margin-left: -385px;
             .active {
                 background: rgba(41, 178, 139, 0.2);
