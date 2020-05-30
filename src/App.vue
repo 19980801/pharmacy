@@ -404,6 +404,19 @@ input {
   align-items: center;
   justify-content: flex-end;
 }
+// 弹框
+.model {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+	}
 #app {
   width: 100%;
   // 头部
