@@ -64,20 +64,21 @@ export default {
   },
   methods: {
     handle() {
+      console.log(11111)
         this.$router.push({ name: "home_index" });
-      signIn(this.form)
-        .then(res => {
-          if (!res.code) {
-            Cookies.set("user", res.data.admin.username, { expires: 7 });
-            Cookies.set("userInfo", res.data.admin, { expires: 7 });
-            setStore("leftSidebarList", res.data.permissions);
-            // console.log("左侧菜单",res.data.permissions);
-            this.$router.push({ name: "home_index" });
-          } else this.$Message.error(res.message);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      // signIn(this.form)
+      //   .then(res => {
+      //     if (!res.code) {
+      //       Cookies.set("user", res.data.admin.username, { expires: 7 });
+      //       Cookies.set("userInfo", res.data.admin, { expires: 7 });
+      //       setStore("leftSidebarList", res.data.permissions);
+      //       // console.log("左侧菜单",res.data.permissions);
+      //       this.$router.push({ name: "home_index" });
+      //     } else this.$Message.error(res.message);
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     }
   },
   beforeRouteLeave(to, from, next) {

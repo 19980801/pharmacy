@@ -10,14 +10,15 @@ const ip = require('ip').address()
 
 fs.open('./build/env.js', 'w', function (err, fd) {
   const buf = 'export default "development";';
-  fs.write(fd, buf, 0, buf.length, 0, function (err, written, buffer) { });
+  // fs.write(fd, buf, 0, buf.length, 0, function (err, written, buffer) { });
+  fs.write(fd, buf, 0, 'utf-8', function(err, written, buffer) {});
 });
 
 module.exports = merge(webpackBaseConfig, {
   devtool: '#source-map',
   devServer: {
     port: 8091,
-    host: "192.168.31.166"
+    host: "192.168.2.26"
   },
   output: {
     publicPath: '/dist/',
