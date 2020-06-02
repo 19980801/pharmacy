@@ -24,7 +24,7 @@ Vue.config.productionTip = false;
 
 Vue.use(iView);
 Vue.use(VueRouter);
-Vue.use(VideoPlayer)
+Vue.use(VideoPlayer);
 new Vue({
     router,
     render: h => h(App)
