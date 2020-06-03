@@ -66,7 +66,7 @@ import {
   addBatch,
   getList,
   delBatch
-} from "@/service/contractApi/api";
+} from "@/service/questionApi/api";
 export default {
   data() {
     return {

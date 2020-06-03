@@ -1,9 +1,9 @@
-// 学生管理
+// 通知管理
 export const newsRouter = [{
-  //学生信息管理页面
-  id: 231, 
+  //发送消息
+  id: 232, 
   path: '/info_mgt',
-  icon: 'search',
+  icon: 'chatbox',
   component: resolve => {
     require(['@/views/news/news-mgt.vue'], resolve)
   }

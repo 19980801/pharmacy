@@ -81,7 +81,7 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    // window.location.reload();
+    window.location.reload();
     next();
   },
   created() {

@@ -72,7 +72,7 @@ import {
   getContract,
   editContract,
   addContract
-} from "@/service/contractApi/api";
+} from "@/service/questionApi/api";
 export default {
   data() {
     const percent = (rule, value, callback) => {

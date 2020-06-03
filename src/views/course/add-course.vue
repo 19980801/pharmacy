@@ -61,7 +61,7 @@
 import Vue from "vue";
 import VueQriously from "vue-qriously";
 Vue.use(VueQriously);
-import { getprofit,updateProfit } from "@/service/profitApi/api";
+import { getprofit,updateProfit } from "@/service/courseApi/api";
 export default {
     data() {
         // 变动类型

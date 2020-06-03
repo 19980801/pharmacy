@@ -15,7 +15,7 @@
     </div>
 </template>
 <script>
-import {freezeAccount } from "@/service/profitApi/api";
+import {freezeAccount } from "@/service/courseApi/api";
 export default {
     data() {
         return {

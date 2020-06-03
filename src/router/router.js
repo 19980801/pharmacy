@@ -7,8 +7,8 @@ import {
 } from "@/config/storage.js"
 
 import { newsRouter } from "./news/router";
-import { profitRouter } from "./profit/router";
-import { contractRouter } from "./contract/router";
+import { courseRouter } from "./course/router";
+import { questionRouter } from "./question/router";
 import { userRouter } from "./user/router";
 import { systemRouter } from "./system/router";
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
@@ -21,33 +21,31 @@ let findSlideArr = [
     component: Main
   },
   ...userRouter,
-    //合约管理
+    //题库管理
   {
     id: 215,
-    path: '/contract',
-    icon: 'person-stalker',
+    path: '/question',
+    icon: 'document-text',
     component: Main
   },
-  ...contractRouter,
+  ...questionRouter,
 
-  //收益管理
+  //课程管理
   {
-    id:217,
-    path: '/profit',
+    id:228,
+    path: '/course',
     icon: 'ios-book',
     component: Main
   },
-  ...profitRouter,
-
-  // 公告管理
+  ...courseRouter,
+  // 通知管理
   {
-    id:230,
+    id:231,
     path:"/news",
-    icon:"person-stalker",
+    icon:"chatboxes",
     component:Main
   },
   ...newsRouter,
-
     //系统管理
   {
     id: 8,

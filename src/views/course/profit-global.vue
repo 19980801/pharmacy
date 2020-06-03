@@ -27,7 +27,7 @@
     </div>
 </template>
 <script>
-import { getprofitnum } from "@/service/profitApi/api";
+import { getprofitnum } from "@/service/courseApi/api";
 export default {
     data() {
         return {
