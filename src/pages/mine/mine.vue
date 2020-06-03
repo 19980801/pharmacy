@@ -33,9 +33,7 @@
 		methods:{
 			// 侧边选项卡
 			choseTabBar(name){
-                console.log(name);
                 this.routeName = name;
-                console.log(this.routeName);
                 this.$router.push(name);
 			}
         },

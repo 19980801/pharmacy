@@ -98,7 +98,7 @@
 			return {
 				video:'',         //具体视频
 				fileType: 'mp4', // 资源的类型
-				videoUrl: '../../assets/video/x.mp4',	// 资源的路径地址
+				videoUrl: require('../../assets/video/x.mp4'),	// 资源的路径地址
 				posterUrl:''  ,//封面地址
 				tabCur:0
 			}
@@ -169,7 +169,9 @@
 					loop: false, // 是否循环播放。
 					preload: 'auto', // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
 					language: 'zh-CN',
-					aspectRatio: '3:1', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+					width:"900px",
+					height:"490px",
+					// aspectRatio: '3:1', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
 					fluid: true, // 是否流体从而按比例缩放以适应其容器。
 					flash:{hls:{withCreadentials:false}},//可以播放rtmp视频
 					html5:{hls:{withCreadentials:false}},//可以播放m3u8视频
@@ -215,9 +217,14 @@
 					width:100%;
 					height:490px;
 					background:#000;
-					.video-player{
+					.video-player,.vjs_video_3,.vjs-tech{
 						width:900px;
 						height:490px;
+					}
+					.video-js .vjs-icon-placeholder {
+						width: 100%;
+						height: 100%;
+						display: block;
 					}
 					.classList{
 						width:320px;
