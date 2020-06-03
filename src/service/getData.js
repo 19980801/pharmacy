@@ -4,6 +4,67 @@ export const BASICURL = BASEURL;
 // export const uploadPic = data => post('', data);
 // export const getALL = () => post(地址);  post
 // export const getALL = () => fetch(地址);  get
+
+//POST获取 "首页"=>"获取验证码后登录"
+export const signIn = data => post('admin/system/employee/sign/in', data);
+
+//POST获取 "首页"=>"再次获取验证码后登录"
+export const getCodeAgain = data => post('admin/code/sms-provider/login', data);
+
+//post "用户管理" => "用户详情"
+export const employeeDetail = data => post('admin/system/employee/detail', data);
+
+//post "个人中心" => "修改密码"
+export const fixPersonalPW = data => post('admin/system/employee/update-password', data);
+
+// POST "系统管理" => "角色管理"
+export const roleManage = (data) => post('admin/system/role/all', data);
+
+// POST "系统管理" => "部门管理"=>"所有部门"
+export const departmentManage = (data) => post('admin/system/department/all', data);
+
+// POST "系统管理" => "部门管理"->"添加或修改部门信息"
+export const addAuditDepart = data => post('admin/system/department/merge', data);
+
+// POST "系统管理" => "部门管理"->"查看部门详细信息"
+export const departDetail = data => post('admin/system/department/detail', data);
+
+// POST "系统管理" => "部门管理"->"删除部门"
+export const delDepart = data => post('admin/system/department/deletes', data);
+
+//POST "系统管理" => "权限管理"
+export const permissionManage = data => post('admin/system/permission/page-query', data);
+
+//POST "系统管理" => "添加编辑权限"
+export const addAuditPermission = data => post('admin/system/permission/merge', data);
+
+//POST "系统管理" => "删除权限"
+export const delPermission = data => post('admin/system/permission/deletes', data);
+
+// POST "系统管理" => "角色管理"->"查询角色权限"
+export const queryRolePermission = data => post('admin/system/role/permission', data);
+
+//POST获取 "会员实名审核"
+export const MemberRealNameList = data => post('admin/member/member-application/page-query', data);
+
+//post "系统管理" => "系统日志"
+export const accessLog = (url, data) => fetch(`admin/system/access-log/page-query/${url}`, data);
+
+//post "用户管理" => "用户查询"
+export const queryEmployee = data => post('admin/system/employee/page-query', data);
+
+//post "用户管理" => "新增或者修改用户"
+export const addAuditEmployee = data => post('/admin/system/employee/merge', data);
+
+//post "用户管理" => "删除用户"
+export const delEmployee = data => post('admin/system/employee/deletes', data);
+
+//Post "系统管理" => "意见反馈查询"
+export const getFeedData = data => postConfig('/admin/suggest/sugg/page-query', data);
+
+
+
+
 // post  帮助管理
 export const helpDown = data => post('admin/cms/system-help/down', data);
 // post 公告管理
@@ -40,9 +101,6 @@ export const allTradeInfo = () => post('admin/finance/member-transaction/all');
 
 //GET获取 "财务管理"=>"个人记录"
 export const perTradeAll = data => post('admin/finance/member-transaction/page-query', data);
-
-//POST获取 "会员实名审核"
-export const MemberRealNameList = data => post('admin/member/member-application/page-query', data);
 
 //POST获取 "会员实名审核详情页"
 export const MemberRealNameDetail = data => post('admin/member/member-application/detail', data);
@@ -116,44 +174,16 @@ export const updateAnnounce = (urlID, data) => put(`admin/system/announcement/${
 //Post "内容管理" => "广告管理"=>"置顶"
 export const stickTopAdv = data => post('admin/cms/system-advertise/top', data);
 
-//Post "系统管理" => "意见反馈查询"
-export const getFeedData = data => postConfig('/admin/suggest/sugg/page-query', data);
-
-// POST "系统管理" => "角色管理"
-export const roleManage = (data) => post('admin/system/role/all', data);
-
-// POST "系统管理" => "角色管理"->"查询角色权限"
-export const queryRolePermission = data => post('admin/system/role/permission', data);
-
 // POST "系统管理" => "角色管理"->"添加或修改角色信息"
 export const addAuditRole = data => post('admin/system/role/merge', data);
 
 // POST "系统管理" => "角色管理"->"删除角色"
 export const deleteRole = data => post('admin/system/role/deletes', data);
 
-// POST "系统管理" => "部门管理"=>"所有部门"
-export const departmentManage = (data) => post('admin/system/department/all', data);
-
-// POST "系统管理" => "部门管理"->"添加或修改部门信息"
-export const addAuditDepart = data => post('admin/system/department/merge', data);
-
-// POST "系统管理" => "部门管理"->"查看部门详细信息"
-export const departDetail = data => post('admin/system/department/detail', data);
-
-// POST "系统管理" => "部门管理"->"删除部门"
-export const delDepart = data => post('admin/system/department/deletes', data);
-
 // POST "获取全部权限"
 export const getAllPermission = () => post('admin/system/role/permission/all');
 
-//POST "系统管理" => "权限管理"
-export const permissionManage = data => post('admin/system/permission/page-query', data);
 
-//POST "系统管理" => "添加编辑权限"
-export const addAuditPermission = data => post('admin/system/permission/merge', data);
-
-//POST "系统管理" => "删除权限"
-export const delPermission = data => post('admin/system/permission/deletes', data);
 
 // GET "法币管理" => "商家审核"
 export const businessAudit = (parma, data) => patch(`admin/member/${parma}/audit-business`, data);
@@ -309,18 +339,6 @@ export const passCoin = data => patch('admin/finance/withdraw-record/remittance'
 //patch "财务管理" => "单个放币"
 export const passCoinByOne = data => patch('admin/finance/withdraw-record/add-transaction-number', data);
 
-//post "用户管理" => "用户查询"
-export const queryEmployee = data => post('admin/system/employee/page-query', data);
-
-//post "用户管理" => "新增或者修改用户"
-export const addAuditEmployee = data => post('/admin/system/employee/merge', data);
-
-//post "用户管理" => "用户详情"
-export const employeeDetail = data => post('admin/system/employee/detail', data);
-
-//post "用户管理" => "删除用户"
-export const delEmployee = data => post('admin/system/employee/deletes', data);
-
 //post "首页" => "待处理事务（法币管理）"
 // export const queryOtc = data => post('admin/otc/order/page-query', data);
 
@@ -337,11 +355,6 @@ export const lockWallet = data => post('admin/member/member-wallet/lock-wallet',
 export const unlockWallet = data => post('admin/member/member-wallet/unlock-wallet', data);
 
 
-//post "个人中心" => "修改密码"
-export const fixPersonalPW = data => post('admin/system/employee/update-password', data);
-
-//post "系统管理" => "系统日志"
-export const accessLog = (url, data) => fetch(`admin/system/access-log/page-query/${url}`, data);
 
 //post "系统管理" => "新增投票"
 export const addVote = (data, config) => postConfig('admin/system/vote/merge', data, config);
@@ -384,12 +397,6 @@ export const delTansAdr = data => post('admin/system/transfer-address/deletes', 
 
 //POST获取 "首页"=>"获取验证码"
 export const getLoginCode = data => post('admin/system/employee/check', data);
-
-//POST获取 "首页"=>"获取验证码后登录"
-export const signIn = data => post('admin/system/employee/sign/in', data);
-
-//POST获取 "首页"=>"再次获取验证码后登录"
-export const getCodeAgain = data => post('admin/code/sms-provider/login', data);
 
 //POST获取 "系统管理"=>"币种管理"=>"修改币种时发送验证码"
 export const coinReviseSys = data => post('admin/code/sms-provider/system/coin-revise', data);
