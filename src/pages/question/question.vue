@@ -108,7 +108,7 @@
                         <li>50</li>
                     </ul>
                 </div>
-                <div class="begin">开始练习</div>
+                <div class="begin" @click="goExercise">开始练习</div>
             </div>
         </div>
     </div>
@@ -122,6 +122,10 @@ export default {
         };
     },
     methods: {
+			// 跳转练习
+			goExercise(){
+				this.$router.push("/exercise");
+			},
         // 显示弹框
         showAlert() {
             this.alert = true;

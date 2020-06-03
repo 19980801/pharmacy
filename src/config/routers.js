@@ -11,6 +11,8 @@ export default [
     { path: '/detail', name: 'course', component: resolve => require(['../pages/course/detail.vue'], resolve) },
     // 题库
     { path: '/question', name: 'question', component: resolve => require(['../pages/question/question.vue'], resolve) },
+		// 练习
+		{ path: '/exercise', name: 'exercise', component: resolve => require(['../pages/question/exercise.vue'], resolve) },
     // 通知
     { path: '/notice', name: 'notice', component: resolve => require(['../pages/notice/notice.vue'], resolve) },
     // 通知详情
