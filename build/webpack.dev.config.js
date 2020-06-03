@@ -17,7 +17,7 @@ module.exports = merge(webpackBaseConfig, {
   devtool: '#source-map',
   devServer: {
     port: 8091,
-    host: "192.168.31.166"
+    host: "192.168.0.101"
   },
   output: {
     publicPath: '/dist/',

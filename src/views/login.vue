@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     handle() {
-        this.$router.push({ name: "home_index" });
+        // 登录接口
       signIn(this.form)
         .then(res => {
           if (!res.code) {
@@ -81,7 +81,7 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    window.location.reload();
+    // window.location.reload();
     next();
   },
   created() {

@@ -1,9 +1,9 @@
 import axios from 'axios'
 import qs from 'qs'
 
-// export const BASEURL = axios.defaults.baseURL = 'http://192.168.0.117:6004';    //dpy
+export const BASEURL = axios.defaults.baseURL = 'http://62.234.59.112:6004';    //dpy
 // export const BASEURL = axios.defaults.baseURL = 'http://62.234.59.112:9003';        //测试
-export const BASEURL = axios.defaults.baseURL = 'http://ischy.org';        //服务器
+// export const BASEURL = axios.defaults.baseURL = 'http://ischy.org';        //服务器
 
 export const fetch = (url, params = {}) => {
   return new Promise((resolve, reject) => {

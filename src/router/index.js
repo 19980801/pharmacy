@@ -18,7 +18,6 @@ export const router = new VueRouter(RouterConfig);
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start();
   Util.title(to.meta.title);
-
   if (Cookies.get('locking') === '1' && to.name !== 'locking') { // 判断当前是否是锁定状态
     next({
       replace: true,
@@ -38,7 +37,7 @@ router.beforeEach((to, from, next) => {
       });
     } else {
       const curRouterObj = Util.getRouterObjByName([otherRouter, ...appRouter], to.name);
-      if (curRouterObj && curRouterObj.access !== undefined) { // 需要判断权限的路由
+      if (curRouterObj && curRouterObj.access !== undefined) {      // 需要判断权限的路由
         if (curRouterObj.access === 1) {
           Util.toDefaultPage([otherRouter, ...appRouter], to.name, router, next); // 如果在地址栏输入的是一级菜单则默认打开其第一个二级菜单的页面
         } else {
