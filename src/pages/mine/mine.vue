@@ -2,7 +2,7 @@
 	<div class="mine">
 		<div class="mineBox flex-btween">
 			<div class="left">
-				<div class="leftTitle" @click="choseTabBar(index)" :class="{leftActive:routeName==item.router}" v-for="(item,index) in leftList" :key="index">{{item.name}}</div>
+				<div class="leftTitle" @click="choseTabBar(item.router)" :class="{leftActive:routeName==item.router}" v-for="(item,index) in leftList" :key="index">{{item.name}}</div>
 			</div>
             <router-view></router-view>
 		</div>
@@ -27,15 +27,15 @@
 			}
         },
         created(){
+            console.log(this.$route.name)
             this.routeName=this.$route.name
         },
 		methods:{
 			// 侧边选项卡
-			choseTabBar(i){
-                this.leftCur=i;
-                console.log(this.$route.name);
-                this.routeName = this.$route.name;
-                let name=this.leftList[i].router;
+			choseTabBar(name){
+                console.log(name);
+                this.routeName = name;
+                console.log(this.routeName);
                 this.$router.push(name);
 			}
         },

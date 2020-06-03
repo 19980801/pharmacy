@@ -68,28 +68,28 @@
               </div>
               <div class="loginList" v-show="showLoginList">
                 <ul>
-                  <li class="active">
+                  <li :class="{active:routeName=='learningRecords'}" @click="closeLoginList">
                     <router-link to="/learningRecords">学习记录</router-link>
                   </li>
-                  <li>
+                  <li :class="{active:routeName=='myCollection'}" @click="closeLoginList">
                     <router-link to="/myCollection">我的收藏</router-link>
                   </li>
-                  <li class="line">
+                  <li class="line" :class="{active:routeName=='tasks'}" @click="closeLoginList">
                     <router-link to="/tasks">学习任务</router-link>
                   </li>
-                  <li>
+                  <li :class="{active:routeName=='myOrder'}" @click="closeLoginList">
                     <router-link to="/myOrder">我的订单</router-link>
                   </li>
-                  <li>
+                  <li :class="{active:routeName=='memberMgt'}" @click="closeLoginList">
                     <router-link to="/memberMgt">会员管理</router-link>
                   </li>
-                  <li class="line">
+                  <li class="line" :class="{active:routeName=='certification'}" @click="closeLoginList">
                     <router-link to="/certification">职业认证</router-link>
                   </li>
-                  <li>
+                  <li :class="{active:routeName=='setting'}" @click="closeLoginList">
                     <router-link to="/setting">个人设置</router-link>
                   </li>
-                  <li class="line">
+                  <li class="line" :class="{active:routeName=='feedback'}" @click="closeLoginList">
                     <router-link to="/feedback">我的反馈</router-link>
                   </li>
                   <li>
@@ -296,6 +296,9 @@ export default {
   },
   created() { },
   methods: {
+      closeLoginList(){
+        this.showLoginList=false;
+      },
     // 找回密码
     backPassword() {
       this.login = false;
