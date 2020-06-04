@@ -1,6 +1,6 @@
 <template>
   <span class="color-picker-options">
-    <span v-for='(color, index) in colors' data-light="light" class="ql-picker-item ql-primary" :data-value="color" v-bind:style="{backgroundColor: color}" v-on:click='handleColorClick(index)' v-on:mouseover='handleColorHover(index)' v-bind:title='names[index]'>
+    <span v-for='(color, index) in colors' :key="index" data-light="light" class="ql-picker-item ql-primary" :data-value="color" v-bind:style="{backgroundColor: color}" v-on:click='handleColorClick(index)' v-on:mouseover='handleColorHover(index)' v-bind:title='names[index]'>
     </span>
     <input type="text" class="color-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="6" v-model='selectColor'>
   </span>

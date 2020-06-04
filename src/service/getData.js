@@ -64,7 +64,7 @@ export const getFeedData = data => postConfig('/admin/suggest/sugg/page-query', 
 
 
 
-
+// 可能是没用的先保留怕万一有用，开发完直接删
 // post  帮助管理
 export const helpDown = data => post('admin/cms/system-help/down', data);
 // post 公告管理
@@ -182,8 +182,6 @@ export const deleteRole = data => post('admin/system/role/deletes', data);
 
 // POST "获取全部权限"
 export const getAllPermission = () => post('admin/system/role/permission/all');
-
-
 
 // GET "法币管理" => "商家审核"
 export const businessAudit = (parma, data) => patch(`admin/member/${parma}/audit-business`, data);
@@ -353,8 +351,6 @@ export const lockWallet = data => post('admin/member/member-wallet/lock-wallet',
 
 //post "会员管理" => "会员详情"=>"解锁钱包"
 export const unlockWallet = data => post('admin/member/member-wallet/unlock-wallet', data);
-
-
 
 //post "系统管理" => "新增投票"
 export const addVote = (data, config) => postConfig('admin/system/vote/merge', data, config);
@@ -600,9 +596,6 @@ export const dynamicN = url => fetch(`/admin/admin/dynamicForDay/${url}`);
 export const feemanageApi = data => postConfig("/admin/admin/poundage", data);
 //获取手续费明细
 export const feemanageDetailApi = data => postConfig("/admin/admin/poundage/detail", data);
-
-
-
 
 //postConfig获取 "系统管理"=>"币价配置修改"
 export const fixApi = data => postConfig("/admin/coin/price/update", data);

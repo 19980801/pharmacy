@@ -41,19 +41,6 @@ router.beforeEach((to, from, next) => {
         if (curRouterObj.access === 1) {
           Util.toDefaultPage([otherRouter, ...appRouter], to.name, router, next); // 如果在地址栏输入的是一级菜单则默认打开其第一个二级菜单的页面
         } else {
-          // removeStore("leftSidebarList");
-          // Cookies.remove('userInfo');
-          // Cookies.remove('userPhone');
-          // removeStore("pageOpenedList");
-          // this.$store.commit("logout", this);
-          // this.$store.commit("clearOpenedSubmenu");
-          // this.$store.commit('clearAllTags');
-          // clearAppRouter();
-          // this.$router.push({
-          //   name: "login"
-          // });
-          // this.$Message.warning('您无此权限 ！');
-          // next();
           next({
             replace: true,
             name: 'error-403'

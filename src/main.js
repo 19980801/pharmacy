@@ -36,14 +36,11 @@ Vue.filter('toFloor', (number, scale) => {
     return toFloor(number, scale);
 });
 Vue.prototype.toFloor = toFloor;
-Vue.prototype.host = "http://ischy.org";       //生产
-// Vue.prototype.host = "http://192.168.31.204:6004";       //测试dpy
-// Vue.prototype.host = "http://62.234.59.112:9003";       //测试
+Vue.prototype.host = "http://62.234.59.112:6004";       //测试服务器
 axios.interceptors.response.use((response) => {
         const data = response.data
         let baseURL = response.config.baseURL;
         let url = response.config.url;
-
         if (data.code === 4000) {
             Cookies.remove('user');
             Cookies.remove('userPhone');
@@ -66,7 +63,6 @@ axios.interceptors.response.use((response) => {
 Vue.prototype.numToFixed = util.numToFixed; //主要用于科学计数法转数字
 
 Vue.prototype.api = Api;
-// Vue.use(VueI18n);
 Vue.use(iView);
 Vue.use(Viser);
 

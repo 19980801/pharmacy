@@ -24,7 +24,7 @@
         <span> {{fontSize}} </span>
         <font-size-picker v-bind:FontSizePickerClick="fontSizePickerClick" v-show="isFontSizePickerShow"></font-size-picker>
       </button>
-      <button type="button" v-for='(name, index) in basicIcons'
+      <button type="button" v-for='(name, index) in basicIcons' :key="index"
               @click='basicStyleClick(name)'
               v-bind:class="{buttonsActive: styles.indexOf(name) > -1}"
               v-on:mouseover.stop='mouseover($event)'

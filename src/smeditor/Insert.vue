@@ -1,7 +1,7 @@
 <template>
   <div class="insert-options-items">
     <ul>
-      <li v-for='(key, index) in names' @click='insertClick(key, index)'>
+      <li v-for='(key, index) in names' :key="index" @click='insertClick(key, index)'>
         <input
           v-if='index === 0'
           id="images_upload"

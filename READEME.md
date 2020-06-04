@@ -4,3 +4,6 @@
 
 测试切换生产的时候改ip记得改main.js的this.host
 router下的index.js注释
+
+后台管理原型地址https://org.modao.cc/app/2fa0691b2929b1439fac05e23a3faf0ee05d8fc3?simulator_type=device&sticky
+密码bingyan521

@@ -1,7 +1,7 @@
 <template>
   <div class="font-size-picker-options">
     <ul>
-      <li v-for='(size, index) in sizes' v-on:click='handleFontSizeClick(size, index)' v-bind:class="{fontSizeActive: fontSize === size}">{{size}}</li>
+      <li v-for='(size, index) in sizes' :key="index" v-on:click='handleFontSizeClick(size, index)' v-bind:class="{fontSizeActive: fontSize === size}">{{size}}</li>
     </ul>
   </div>
 </template>
