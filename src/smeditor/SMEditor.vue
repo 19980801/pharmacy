@@ -2,16 +2,16 @@
   <div class="smeditor" id="smeditor">
     <div class="buttons" :class="buttonsBarFixed == true ? 'isFixed' :''">
       <button type="button" class='undo' @click='undo' v-on:mouseover.stop='mouseover($event)' title="撤销">
-        <img :src="icons.undo"></img>
+        <img src="../images/cancel.png"></img>
       </button>
       <button type="button" class='redo' @click='redo' v-on:mouseover.stop='mouseover($event)' title="重做">
-        <img :src='icons.redo'></img>
+        <img src="../images/again.png"></img>
       </button>
       <button type="button" class='remove-format'
               title="清除"
               @click='removeFormat'
               v-on:mouseover.stop='mouseover($event)'>
-        <img :src='icons.removeFormat'></img>
+        <img src='../images/clean.png'></img>
       </button>
       <button type="button" class='set-font' @click.stop="titleButtonClick">
         <span>H</span>
@@ -24,37 +24,37 @@
         <span> {{fontSize}} </span>
         <font-size-picker v-bind:FontSizePickerClick="fontSizePickerClick" v-show="isFontSizePickerShow"></font-size-picker>
       </button>
-      <button type="button" v-for='(name, index) in basicIcons' :key="index"
-              @click='basicStyleClick(name)'
-              v-bind:class="{buttonsActive: styles.indexOf(name) > -1}"
+      <button type="button" v-for='(name, index) in basicIcons'
+              @click='basicStyleClick(name.name)'
+              v-bind:class="{buttonsActive: styles.indexOf(name.name) > -1}"
               v-on:mouseover.stop='mouseover($event)'
-              v-bind:title='basicStyleNames[Object.keys(basicIcons).indexOf(name)]'>
-        <img :src='icons[name]'></img>
+              v-bind:title='basicStyleNames[Object.keys(basicIcons).indexOf(name.name)]' :key="index">
+        <img :src='name.img'></img>
       </button>
       <button type="button" v-on:mouseover.stop='mouseover($event)' title="文本颜色">
-        <img :src='icons.color' @click="isColorPickerShow = !isColorPickerShow"></img>
+        <img src='../images/textcolor.png' @click="isColorPickerShow = !isColorPickerShow"></img>
         <color-picker :ColorPickerClick="colorPickerClick" v-show="isColorPickerShow"></color-picker>
       </button>
       <button type="button" class='indent' @click.stop='indent' v-on:mouseover.stop='mouseover($event)' title="增加缩进">
-        <img :src='icons.indent'></img>
+        <img src='../images/rightindent.png'></img>
       </button>
       <button type="button" class='outdent' @click.stop='outdent' v-on:mouseover.stop='mouseover($event)' title="减少缩进">
-        <img :src='icons.outdent'></img>
+        <img src='../images/leftindent.png'></img>
       </button>
-      <button type="button" class='insert-ol' @click='insertList("OrderedList")' v-on:mouseover.stop='mouseover($event)' title="有序列表">
-        <img :src='icons.listOrdered'></img>
+      <!-- <button type="button" class='insert-ol' @click='insertList("OrderedList")' v-on:mouseover.stop='mouseover($event)' title="有序列表">
+        <img src='../images/order.png'></img>
       </button>
       <button type="button" class='insert-ul' @click='insertList("UnorderedList")' v-on:mouseover.stop='mouseover($event)' title="无序列表">
-        <img :src='icons.listUnordered'></img>
-      </button>
+        <img src='../images/unorder.png'></img>
+      </button> -->
       <button type="button" class='align-left' @click='align("Left")' v-on:mouseover.stop='mouseover($event)' title="左对齐">
-        <img :src='icons.alignLeft'></img>
+        <img src='../images/left.png'></img>
       </button>
       <button type="button" class='align-center' @click='align("Center")' v-on:mouseover.stop='mouseover($event)' title="居中对齐">
-        <img :src='icons.alignCenter'></img>
+        <img src='../images/center.png'></img>
       </button>
       <button type="button" class='align-right' @click='align("Right")'  v-on:mouseover.stop='mouseover($event)' title='右对齐'>
-        <img :src='icons.alignRight'></img>
+        <img src='../images/right.png'></img>
       </button>
       <!-- <button type="button" class="insert-quote" @click='insertQuote'>
         <img :src="icons.insertQuote">
@@ -65,7 +65,7 @@
       <button type="button" class='insert-options' @click="isInsertShow = !isInsertShow">
         <span class="insert-options-label"></span>
         <insert-options
-         v-show="isInsertShow"
+          v-show="isInsertShow"
          :insertImage="insertImageClick"
          :insertLine="insertLine"
          :uploadImages='uploadImages'
@@ -112,7 +112,7 @@ import Insert from './Insert.vue'
 import FontSizePicker from './FontSizePicker'
 import { getStore, removeStore, setStore } from '@/config/storage';
 import { helpManageDetail, announceDetail } from '@/service/getData';
-
+import { constants } from 'os';
 
 // import tippy from '../../node_modules/tippy.js/dist/tippy.min.js'
 const remove = function (arr, val) {
@@ -143,7 +143,13 @@ export default {
       // 样式
       styles: [],
       // 基本样式名称
-      basicIcons: ['bold', 'underline', 'italic', 'strikethrough'],
+      // basicIcons: ['bold', 'underline', 'italic', 'strikethrough'],
+      basicIcons: [
+        {name:"bold",img:require("../images/bold.png")},
+        {name:"underline",img:require("../images/underline.png")},
+        {name:"italic",img:require("../images/italic.png")},
+        {name:"strikethrough",img:require("../images/strikethrough.png")},
+      ],
       basicStyleNames: ['粗体', '斜体', '下划线', '中划线'],
       // 调色盘是否显示
       isColorPickerShow: false,
@@ -303,9 +309,8 @@ export default {
     },
     // 上传图片
     uploadImages (files) {
-
+      console.log(files);
       this.$emit('isUploading', true)
-
       Array.from(files).forEach(file => {
         this.upload(file, (url) => {
           this.insertImageHtml(url)
@@ -426,6 +431,7 @@ export default {
     },
     // 插入 有序/无序 列表
     insertList (name) {
+      console.log(name);
       this.closeAlert()
       document.execCommand(`insert${name}`, false, '')
     },
@@ -461,7 +467,7 @@ export default {
     },
     // 备份
     backupClick () {
-      // this.$Message.success('已保存!');
+      this.$Message.success('已保存!');
       window.localStorage.setItem('smeditor', editorElement().innerHTML)
     },
     // 恢复
@@ -499,13 +505,9 @@ export default {
     this.$nextTick(() => {
       removeStore('smeditor');
       let queryDetailId = getStore('manageID');
-
       if (!!queryDetailId) {
-
         let parentComp = this.config.parentName;
-
         if(parentComp==='helpManage') {
-
           helpManageDetail({ id: queryDetailId })
           .then(res => {
             setStore('smeditor', res.data.content);
@@ -513,13 +515,11 @@ export default {
           })
 
         }else if (parentComp==='announce') {
-
           announceDetail(queryDetailId )
           .then(res => {
               setStore('smeditor', res.data.content);
               document.getElementById('input-area').innerHTML = getStore('smeditor') || '';
           })
-          
         }
       }
     })
@@ -659,7 +659,7 @@ function restoreCursor (self) {
 <style>
 .smeditor {
   width: 70%;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   position: relative;
   z-index: 2;
 }

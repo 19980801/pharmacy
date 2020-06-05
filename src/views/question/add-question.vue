@@ -33,7 +33,7 @@
           </FormItem>
           <div class="search">
           <FormItem label="题目标题：" prop="contractPrice">
-            <Input v-model="formValidate.contractPrice" placeholder="请输入课程标题" :number="true"></Input>
+            <Input v-model="formValidate.contractPrice" placeholder="请输入课程标题"></Input>
           </FormItem>
           <Button type="primary" @click="search" class="button">
             <Icon type="ios-search" style="font-size:16px" />搜索

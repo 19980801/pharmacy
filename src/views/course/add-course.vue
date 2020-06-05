@@ -1,350 +1,215 @@
 <template>
-    <div>
-        <Card>
-            <p slot="title">收益管理</p>
-            <Form :model="searchForm" :label-width="100" inline>
-                <FormItem label="用户ID">
-                    <Input v-model="searchForm.userId" placeholder="请输入用户ID"></Input>
-                </FormItem>
-                <FormItem label="用户地址" style="width:450px;">
-                    <Input v-model="searchForm.address" placeholder="请输入用户地址"></Input>
-                </FormItem>
-                <FormItem label="开始时间">
-                    <DatePicker type="date" placeholder="请选择开始时间" v-model="searchForm.startTime"></DatePicker>
-                </FormItem>
-                <FormItem label="结束时间">
-                    <DatePicker type="date" placeholder="请选择结束时间" v-model="searchForm.endTime"></DatePicker>
-                </FormItem>
-                <FormItem label="变动类型" style="width:300px;">
-                    <Select v-model="searchForm.earningsType">
-                        <Option v-for="(item,i) of typeList" :key="i" :value="item.value">{{item.label}}</Option>
-                    </Select>
-                </FormItem>
-                <FormItem label="交易结果" style="width:200px;">
-                    <Select v-model="searchForm.dealStatus">
-                        <Option v-for="(item,i) of stateList" :key="i" :value="item.value">{{item.label}}</Option>
-                    </Select>
-                </FormItem>
-                <Button type="primary" @click="search">
-                    <Icon type="ios-search" style="font-size:16px" />查询</Button>
-                <Button type="default" style="margin-left:10px" @click="clear">
-                    <Icon type="ios-undo" style="font-size:16px" />重置</Button>
-            </Form>
-            <div class="tableHead">
-                <div>数据列表</div>
-            </div>
-            <Table :columns="tableColumns" :data="tableData" border width></Table>
-            <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
-
-            <Modal v-model="toExamine" title="审核" :footer-hide="true">
-				<Form ref="examineForm" :model="examineForm" :label-width="100" :rules="ruleInline">
-					<FormItem label="交易哈希：" prop="dealHash">
-                    	<Input v-model="examineForm.dealHash" type="textarea"></Input>
-                	</FormItem>
-				</Form>
-				<div style="text-align:center;">
-					<Button type="error" @click="toUpdate(0)">审核失败</Button>
-					<Button type="primary" @click="toUpdate(1)">审核成功</Button>
-				</div>
-            </Modal>
-			<Modal v-model="ImgCode" title="地址二维码" :footer-hide="true">
-				<p class="pay">收益金额：{{userPay}}</p>
-				<div class="codeImg">
-					<qriously :value="imgcode" :size="size" v-if="imgcode" id="qriously" />
-				</div>
-            </Modal>
-        </Card>
-    </div>
+  <div class="content">
+    <Card>
+      <p slot="title">新增课程</p>
+      <Form :model="addForm" :label-width="100" :rules="ruleInline">
+          <FormItem label="课程标题：" prop="courseTitle">
+            <Input v-model="addForm.courseTitle" placeholder="请输入课程标题"></Input>
+          </FormItem>
+          <FormItem label="课程分类：" prop="courseCategoryId">
+            <Select v-model="addForm.courseCategoryId">
+              <Option
+                v-for="(item,i) of typeList"
+                :key="i"
+                :value="toString(item.id)"
+              >{{item.categoryName}}</Option>
+            </Select>
+          </FormItem>
+          <FormItem label="全部内容：">
+            <CheckboxGroup v-model="addForm.content" prop="content">
+              <Checkbox :label="item.name" v-for="(item,index) in contentList" :key="index"></Checkbox>
+            </CheckboxGroup>
+          </FormItem>
+          <FormItem label="用户分类：" prop="userClassChecked">
+            <CheckboxGroup v-model="addForm.userClassChecked">
+              <Checkbox :label="item.name" v-for="(item,index) in userClass" :key="index"></Checkbox>
+            </CheckboxGroup>
+          </FormItem>
+          <FormItem label="课程视频:" prop="goodsPic">
+            <Upload
+              :action="uploadUrl"
+              multiple
+              :before-upload="beforeUpload"
+              :on-success="handleSuccess"
+            >
+              <Button type="ghost" icon="ios-cloud-upload-outline">上传视频</Button>
+            </Upload>
+          </FormItem>
+          <FormItem label="收费：">
+            <RadioGroup v-model="addForm.price">
+              <Radio label="是"></Radio>
+              <Radio label="否"></Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="价格：" v-if="addForm.price!=='否'">
+            <Input v-model="addForm.coursePrice" placeholder="请输入价格"></Input>
+          </FormItem>
+          <FormItem label="会员专属：" prop>
+            <RadioGroup v-model="addForm.vip">
+              <Radio label="是"></Radio>
+              <Radio label="否"></Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="课程状态：">
+            <RadioGroup v-model="addForm.courseStatus">
+              <Radio label="上架" value="0"></Radio>
+              <Radio label="下架" value="1"></Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="课程信息：">
+            <smeditor :config="config" ref="smeditor" @isUploading="ifUploading"></smeditor>
+          </FormItem>
+        </Form>
+        <Button type="primary">提交</Button>
+    </Card>
+  </div>
 </template>
 
 <script>
-import Vue from "vue";
-import VueQriously from "vue-qriously";
-Vue.use(VueQriously);
-import { getprofit,updateProfit } from "@/service/courseApi/api";
+import smeditor from "@/SMEditor/SMEditor.vue";
+import { BASICURL, getCoursetypeList } from "@/service/getData";
+import { getStore, removeStore, setStore } from "@/config/storage";
 export default {
-    data() {
-        // 变动类型
-        const type = new Map([
-            ["0", "预约支付"],
-            ["1", "签约支付"],
-            ["2", "合约收益"],
-            ["3", "推荐收益"],
-            ["4", "静态收益扣减"],
-            ["5", "全球分红"],
-            ["6", "个人分红"],
-            ["7", "节点钱包静态加速释放"],
-            ["8", "节点钱包动态释放"],
-            ["9", "节点钱包奖励"],
-        ]);
-        // 交易状态
-		const payType =new Map([
-			["0","失败"],
-			["1","成功"],
-			["2","人工审核"]
-		])
-        return {
-			userPay:"",
-			imgcode:"",    //二维码生成值
-			size:150,
-			ImgCode:false,
-			examineForm:{
-				id:"",
-				dealHash:"",
-				dealStatus:""
-			},
-			toExamine:false,
-            searchForm: {
-                userId: "",
-                address: "",
-                startTime: "",
-                endTime: ""
-            },
-            typeList: [
-                { value: 0, label: "预约支付" },
-                { value: 1, label: "签约支付" },
-                { value: 2, label: "合约收益" },
-                { value: 3, label: "推荐收益" },
-                { value: 4, label: "静态收益扣减" },
-                { value: 5, label: "全球分红" },
-                { value: 6, label: "个人分红" },
-                { value: 7, label: "节点钱包静态加速释放" },
-                { value: 8, label: "节点钱包动态释放" },
-                { value: 9, label: "节点钱包奖励" },
-            ],
-            stateList: [
-                { value: "0", label: "失败" },
-                { value: "1", label: "成功" },
-                { value: "2", label: "人工处理" }
-			],
-			ruleInline:{
-				dealHash: [{ required: true, message: '交易哈希不能为空', trigger: 'blur' }],
-			},
-            total: 0,
-            page: 1,
-            limit: 10,
-            tableColumns: [
-                {
-                    title: "用户ID",
-                    width: 100,
-                    key: "userId"
-				},
-				{
-					title:"用户地址",
-					key:"address",
-					render:(h,params)=>{
-						return h(
-                            "div",
-                            {
-								style: {
-                                    cursor:"pointer"
-                                },
-                                on: {
-                                    click: () => {
-										this.imgcode=params.row.address;
-										this.userPay=params.row.contractProfit
-										this.ImgCode=true;
-									}
-                                }
-                            },
-                        	params.row.address
-                        );
-					}
-				},
-                {
-                    title: "合约编号",
-                    width: 180,
-                    key: "contractNum"
-                },
-                {
-                    title: "合约标题",
-                    key: "contractTitle"
-                },
-                {
-                    title: "变动类型",
-                    width: 110,
-                    render: (h, params) => {
-                        return h("span", {}, type.get(params.row.earningsType));
-                    }
-                },
-                {
-                    title: "收益金额",
-                    width: 100,
-                    key: "contractProfit"
-                },
-                {
-                    title: "交易哈希",
-                    key: "dealHash"
-				},
-                {
-                    title: "交易状态",
-                    width: 100,
-                    render: (h, params) => {
-                        return h("span", {}, payType.get(params.row.dealStatus));
-                    }
-                },
-                {
-                    title: "创建时间",
-                    width: 150,
-                    key: "createTime"
-                },
-                {
-                    title: "操作",
-                    render: (h, params) => {
-                        if (params.row.dealStatus == 2) {
-                            return h(
-                                "Button",
-                                {
-                                    props: {
-                                        type: "primary"
-                                    },
-                                    on: {
-                                        click: () => {
-											const {dealHash,id}=params.row;
-											this.examineForm={dealHash,id};
-											this.toExamine=true;
-										}
-                                    }
-                                },
-                                "审核"
-                            );
-                        }
-                    }
-                }
-            ],
-            tableData: []
-        };
-	},
-	components: {
-    	VueQriously
-  	},
-    created() {
-        this.getTableData();
-    },
-    activated() {},
-    methods: {
-		downqriousl() {
-      		var can = document.getElementById("qriously");
-      		var canvas = can.querySelector("canvas");
-    	},
-		toUpdate(type){
-			this.$refs["examineForm"].validate(valid => {
-				if (valid) {
-					this.examineForm.dealStatus=type;
-					updateProfit({
-						...this.examineForm
-					}).then(res=>{
-						if(res.code==0){
-							this.toExamine=false;
-							this.$Message.success(res.message);
-							this.getTableData();
-						}else{
-							this.$Message.error(res.message);
-						}
-					})
-				}
-      		});
-		},
-        dateform(time) {
-            console.log(time);
-            var date = new Date(time);
-            console.log(date);
-            var y = date.getFullYear();
-            var m = date.getMonth() + 1;
-            m = m < 10 ? "0" + m : m;
-            var d = date.getDate();
-            d = d < 10 ? "0" + d : d;
-            var h = date.getHours();
-            h = h < 10 ? "0" + h : h;
-            var minute = date.getMinutes();
-            var second = date.getSeconds();
-            minute = minute < 10 ? "0" + minute : minute;
-            second = second < 10 ? "0" + second : second;
-            // return h + ":" + minute + ":" + second;
-            return (
-                y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second
-            );
+  data() {
+    return {
+      config: {
+        uploadUrl: `${BASICURL}/admin/common/upload/oss/image`,
+        uploadName: "file",
+        parentName: "helpManage",
+        uploadParams: {},
+        uploadCallback: data => {
+          this.uploading = false;
+          if (!data.code) {
+            this.$Message.success("上传成功!");
+            return data.data;
+          } else {
+            this.$Message.error("上传失败!");
+          }
         },
-        search() {
-            this.page = 1;
-            if (this.searchForm.startTime) {
-                this.searchForm.startTime = this.dateform(
-                    this.searchForm.startTime
-                );
-            }
-            if (this.searchForm.endTime) {
-                this.searchForm.endTime = this.dateform(
-                    this.searchForm.endTime
-                );
-            }
-            this.getTableData();
-        },
-        clear() {
-            for (let key in this.searchForm) {
-                this.searchForm[key] = "";
-            }
-            this.getTableData();
-        },
-
-        onPageChange(page) {
-            this.page = page;
-            this.getTableData();
-        },
-        getTableData() {
-            getprofit({
-                pageNum: this.page,
-                pageSize: this.limit,
-                ...this.searchForm
-            }).then(res => {
-                console.log(res);
-                this.tableData = res.data.content;
-                this.total = res.data.totalElements;
-            });
+        uploadFailed: err => {
+          console.log(err);
+          this.uploading = false;
+          this.$Message.error("上传失败!");
         }
+      },
+      contentList: [
+        { name: "高血压" },
+        { name: "糖尿病" },
+        { name: "特殊人群用药" },
+        { name: "中药" },
+        { name: "注射剂" },
+        { name: "处方审核" }
+      ], //内容list
+      contentChecked: [], //选中
+      // uploadUrl: `${BASICURL}/admin/common/upload/oss/image`,
+      uploadUrl: `http://oss-cn-beijing.aliyuncs.com`,
+      uploadData: {},
+      userClass: [{ name: "院内职工" }, { name: "实习生" }, { name: "进修生" }], //用户分类list
+      userClassChecked: [],
+      addForm: {
+        userId: "",
+        address: "",
+        startTime: "",
+        endTime: ""
+      },
+      typeList: [],
+      ruleInline: {
+        courseTitle: [
+          { required: true, message: "课程标题不能为空", trigger: "blur" }
+        ],
+        courseCategoryId: [
+          { required: true, message: "课程分类不能为空", trigger: "change" }
+        ],
+        courseCategoryId: [
+          { required: true, message: "课程分类不能为空", trigger: "change" }
+        ]
+      },
+      imgUploadLoading: false
+    };
+  },
+  created() {
+    removeStore("smeditor");
+    this.getType();
+  },
+  methods: {
+    beforeUpload(res) {
+      console.log(res);
+      this.imgUploadLoading = true;
+    },
+    handleSuccess(res) {
+      this.imgUploadLoading = false;
+      this.formValidate.cgLogo = res.object || "";
+    },
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "文件格式错误",
+        desc: "上传的文件格式是错误的，请选择jpg或者png格式的图片"
+      });
+    },
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "超出文件大小限制",
+        desc: "上传图片过大，最大不超过50kb."
+      });
+    },
+    //获取所有课程分类
+    getType() {
+      getCoursetypeList().then(res => {
+        if (res.code == 0) {
+          this.typeList = res.data;
+        }
+      });
+    },
+    upload() {
+      this.$refs.smeditor.$emit("saveInner");
+      let uploadObj = {
+        title: this.title,
+        sysHelpClassification: 1,
+        status: this.status,
+        isTop: this.isTop,
+        content: getStore("smeditor")
+      };
+      let fn = null;
+      if (this.ifAdd) fn = addHelpManage;
+      else {
+        uploadObj.id = this.queryDetailId;
+        uploadObj.createTime = this.createTime;
+        fn = updateHelpManage;
+      }
+      if (
+        this.title === "" ||
+        this.title === null ||
+        // this.klass === "" ||
+        // this.klass === null ||
+        getStore("smeditor") === "" ||
+        getStore("smeditor") === null
+      ) {
+        this.$Message.warning("请完善信息！");
+      } else {
+        fn(uploadObj).then(res => {
+          if (!res.code) {
+            this.$Message.success("操作成功!");
+            this.$router.push("/content/helpManage");
+            removeStore("smeditor");
+          } else this.$Message.error("异常错误!");
+        });
+      }
+    },
+    ifUploading(val) {
+      this.uploading = val;
     }
+  },
+  components: {
+    smeditor
+  }
 };
 </script>
 
 <style lang="less" scoped>
-.pay{
-	font-weight:700;
-	font-size:20px;
-	text-align:center;
-	margin:5px 0;
+/deep/ .ivu-input {
+  width: 300px;
 }
-.codeImg{
-	width:30%;
-	margin:auto;
-}
-.tableHead {
-    width: 100%;
-    height: 50px;
-    padding: 10px;
-    margin-top: 20px;
-    align-items: center;
-}
-.sear {
-    display: flex;
-    // justify-content: space-between;
-    .btn {
-        margin-left: 50px;
-        margin-right: 100px;
-        button:nth-child(2) {
-            margin-left: 10px;
-        }
-        button:nth-child(3) {
-            margin-left: 380px;
-        }
-    }
-}
-.ivu-page {
-    margin-top: 10px;
-    text-align: right;
-}
-.show {
-    width: 600px;
-    img {
-        width: 100%;
-    }
+/deep/ .ivu-select {
+  width: 300px;
 }
 </style>

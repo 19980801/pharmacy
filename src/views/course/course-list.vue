@@ -45,6 +45,7 @@ export default {
         title: "",
         type: ""
       },
+      typeList:[],
       tableData: [],
       tableColumns: [
         {

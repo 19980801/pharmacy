@@ -11,7 +11,7 @@
           multiple="multiple"
           @change="handleFileChange"
         />
-        <img :src='icons[key]' :class='key'></img>
+        <img :src='key.img' :class='key.name'></img>
         <span>{{labels[index]}}</span>
       </li>
     </ul>
@@ -23,13 +23,12 @@ export default {
   name: 'Insert',
   data () {
     return {
-      icons: icons,
+      // icons: icons,
       labels: ['图片', '分割线'],
-      // labels: ['图片', '分割线', '视频', '代码块'],
-      
-      // names: ['insertImage', 'insertLine', 'insertVideo', 'insertBlock']
-      names: ['insertImage', 'insertLine']
-      
+      names: [
+        {name:"insertImage",img:require("../images/image.png")},
+        {name:"insertLine",img:require("../images/line.png")}
+      ]
     }
   },
   props: ['insertImageClick', 'insertLink', 'insertLine', 'insertVideo', 'insertBlock', 'uploadImages'],
