@@ -2,7 +2,8 @@
   <div class="content">
     <Card>
       <p slot="title">新增课程</p>
-      <Form :model="addForm" :label-width="100" :rules="ruleInline">
+      <div class="form">
+        <Form :model="addForm" :label-width="100" :rules="ruleInline">
           <FormItem label="课程标题：" prop="courseTitle">
             <Input v-model="addForm.courseTitle" placeholder="请输入课程标题"></Input>
           </FormItem>
@@ -60,7 +61,8 @@
             <smeditor :config="config" ref="smeditor" @isUploading="ifUploading"></smeditor>
           </FormItem>
         </Form>
-        <Button type="primary">提交</Button>
+      </div>
+      <Button type="primary" class="submit">提交</Button>
     </Card>
   </div>
 </template>
@@ -211,5 +213,9 @@ export default {
 }
 /deep/ .ivu-select {
   width: 300px;
+}
+.submit {
+  width: 300px;
+  margin-left:100px;
 }
 </style>
