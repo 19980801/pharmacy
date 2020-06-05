@@ -1,58 +1,51 @@
 <template>
     <div>
         <Card>
-            <p slot="title">收益管理</p>
+            <p slot="title">新增课程</p>
             <Form :model="searchForm" :label-width="100" inline>
-                <FormItem label="用户ID">
-                    <Input v-model="searchForm.userId" placeholder="请输入用户ID"></Input>
+                <FormItem label="课程标题">
+                    <Input style='width:200px' v-model="searchForm.userId" placeholder="请输入课程标题"></Input>
                 </FormItem>
-                <FormItem label="用户地址" style="width:450px;">
-                    <Input v-model="searchForm.address" placeholder="请输入用户地址"></Input>
-                </FormItem>
-                <FormItem label="开始时间">
-                    <DatePicker type="date" placeholder="请选择开始时间" v-model="searchForm.startTime"></DatePicker>
-                </FormItem>
-                <FormItem label="结束时间">
-                    <DatePicker type="date" placeholder="请选择结束时间" v-model="searchForm.endTime"></DatePicker>
-                </FormItem>
-                <FormItem label="变动类型" style="width:300px;">
-                    <Select v-model="searchForm.earningsType">
+                <FormItem label="课程分类" style="width:450px;">
+                    <Select v-model="selected" style='width:200px'>
                         <Option v-for="(item,i) of typeList" :key="i" :value="item.value">{{item.label}}</Option>
                     </Select>
                 </FormItem>
-                <FormItem label="交易结果" style="width:200px;">
-                    <Select v-model="searchForm.dealStatus">
-                        <Option v-for="(item,i) of stateList" :key="i" :value="item.value">{{item.label}}</Option>
-                    </Select>
+                <FormItem label="全部内容" style="width:100%;">
+                    <CheckboxGroup v-model="fruit">
+												<Checkbox :label="item.name" v-for="(item,index) in contentList" :key="index"></Checkbox>
+										</CheckboxGroup>
                 </FormItem>
-                <Button type="primary" @click="search">
-                    <Icon type="ios-search" style="font-size:16px" />查询</Button>
-                <Button type="default" style="margin-left:10px" @click="clear">
-                    <Icon type="ios-undo" style="font-size:16px" />重置</Button>
+                <FormItem label="用户分类" style="width:100%;">
+                    <CheckboxGroup v-model="userClassChecked">
+                    		<Checkbox :label="item.name" v-for="(item,index) in userClass" :key="index"></Checkbox>
+                    </CheckboxGroup>
+                </FormItem>
+                <FormItem label="课程视频" style="width:100%;">
+                    <div class="videoList">
+											
+										</div>
+                </FormItem>
+                <FormItem label="课程介绍" style="width:100%;">
+                    <Input v-model="value17" maxlength="100" show-word-limit type="textarea" placeholder="Enter something..." style="width: 200px" />
+                </FormItem>
+								<FormItem label="收费" style="width:100%;">
+								    <RadioGroup v-model="price">
+												<Radio label="是"></Radio>
+												<Radio label="否"></Radio>
+										</RadioGroup>
+								</FormItem>
+								<FormItem label="价格" style="width:100%;" v-if="price!=='否'">
+								    <Input style='width:200px' v-model="searchForm.userId" placeholder="请输入价格"></Input>
+								</FormItem>
+								<FormItem label="会员专属" style="width:100%;">
+								    <RadioGroup v-model="VIP">
+								    		<Radio label="是"></Radio>
+								    		<Radio label="否"></Radio>
+								    </RadioGroup>
+								</FormItem>
             </Form>
-            <div class="tableHead">
-                <div>数据列表</div>
-            </div>
-            <Table :columns="tableColumns" :data="tableData" border width></Table>
-            <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
-
-            <Modal v-model="toExamine" title="审核" :footer-hide="true">
-				<Form ref="examineForm" :model="examineForm" :label-width="100" :rules="ruleInline">
-					<FormItem label="交易哈希：" prop="dealHash">
-                    	<Input v-model="examineForm.dealHash" type="textarea"></Input>
-                	</FormItem>
-				</Form>
-				<div style="text-align:center;">
-					<Button type="error" @click="toUpdate(0)">审核失败</Button>
-					<Button type="primary" @click="toUpdate(1)">审核成功</Button>
-				</div>
-            </Modal>
-			<Modal v-model="ImgCode" title="地址二维码" :footer-hide="true">
-				<p class="pay">收益金额：{{userPay}}</p>
-				<div class="codeImg">
-					<qriously :value="imgcode" :size="size" v-if="imgcode" id="qriously" />
-				</div>
-            </Modal>
+           <Button type="primary" style="margin-left:50px;width:200px">提交</Button>
         </Card>
     </div>
 </template>
@@ -84,6 +77,30 @@ export default {
 			["2","人工审核"]
 		])
         return {
+					contentList:[
+						{name:"高血压"},
+						{name:"糖尿病"},
+						{name:"特殊人群用药"},
+						{name:"中药"},
+						{name:"注射剂"},
+						{name:"处方审核"},
+					],//内容list
+					contentChecked:[],//选中
+					userClass:[
+						{name:"院内职工"},
+						{name:"实习生"},
+						{name:"进修生"},
+					],//用户分类list
+					userClassChecked:[],
+					price:'',
+					VIP:'',
+					selected:"",
+					
+					
+					
+					
+					
+					
 			userPay:"",
 			imgcode:"",    //二维码生成值
 			size:150,

@@ -1,13 +1,7 @@
 <template>
   <div>
     <Card>
-      <p slot="title">查询合约</p>
-      <div class="tableHead">
-        <div>数据列表</div>
-        <div>
-          <Button type="primary" @click="add">添加</Button>
-        </div>
-      </div>
+      <p slot="title">新增课程</p>
       <Table :columns="tableColumns" :data="tableData" border></Table>
       <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
       <Modal v-model="addModal" :title="changeTitle" :closable="false">
