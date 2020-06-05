@@ -3,25 +3,60 @@
     <Card>
       <p slot="title">用户管理</p>
       <div class="sear">
-        <Form :model="formItem" :label-width="80" inline>
-          <FormItem label="用户地址：">
-            <Input v-model="formItem.address" placeholder="请输入用户地址" style="width:300px"></Input>
+        <Form :model="formItem" :label-width="100" inline>
+          <FormItem label="用户名称：" class="searchInput">
+            <Input v-model="formItem.name" placeholder="请输入用户名称"></Input>
+          </FormItem>
+          <FormItem label="用户分类：" class="searchInput">
+            <Select v-model="formItem.type">
+              <Option v-for="(item,i) in typeList" :key="i" :value="String(item.id)">{{item.name}}</Option>
+            </Select>
           </FormItem>
         </Form>
         <div class="btn">
           <Button type="primary" @click="search">
-            <Icon type="ios-search" style="font-size:16px" />查询</Button>
+            <Icon type="ios-search" style="font-size:16px" />查询
+          </Button>
           <Button type="default" style="margin-left:10px" @click="clear">
-            <Icon type="ios-undo" style="font-size:16px" />重置</Button>
+            <Icon type="ios-undo" style="font-size:16px" />重置
+          </Button>
         </div>
       </div>
       <div class="tableHead">
         <div style="font-weight:700;">数据列表</div>
+        <Button type="primary" @click="add">
+          <Icon type="plus-round"></Icon>添加
+        </Button>
       </div>
       <Table :columns="tableColumns" :data="tableData" border></Table>
       <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
     </Card>
-
+    <!-- 增加编辑弹框 -->
+    <Modal v-model="addModal" :title="modalTitle" :closable="false">
+      <Form ref="formValidate" :model="formValidate" :label-width="90" :rules="ruleValidate">
+        <FormItem label="用户姓名：" prop="name">
+          <Input v-model="formValidate.name"></Input>
+        </FormItem>
+        <FormItem label="手机号：" prop="phone">
+          <Input v-model="formValidate.phone"></Input>
+        </FormItem>
+        <FormItem label="性别：" prop="sex">
+            <RadioGroup v-model="formItem.sex">
+                <Radio label="0">男</Radio>
+                <Radio label="1">女</Radio>
+            </RadioGroup>
+        </FormItem>
+        <FormItem label="用户分类：" prop="type">
+            <Select v-model="formItem.type">
+              <Option v-for="(item,i) in typeList" :key="i" :value="String(item.id)">{{item.name}}</Option>
+            </Select>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button type="default" @click="addModal=false">取消</Button>
+        <Button type="primary" @click="sure">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -30,59 +65,110 @@ import { getList, changeStatu } from "@/service/userMgtApi/api";
 export default {
   data() {
     return {
+      addModal:false,
       isDelModal: false,
+      modalTitle:"新增",
       showMsg: "",
       total: 0,
       page: 1,
       limit: 10,
       error: false,
-      repeatMsg: "",
       formItem: {
-        address: ""
+        name: "",
+        type: ""
       },
+      formValidate:{
+        name:"",
+        phone:"",
+        sex:"",
+        type:""
+      },
+      ruleValidate: {
+        name: [
+          { required: true, message: "用户姓名不能为空", trigger: "blur" }
+        ],
+        phone: [
+          { required: true, message: "手机号不能为空", trigger: "blur"}
+        ],
+        sex: [
+          { required: true, message: "性别不能为空", trigger: "change"}
+        ],
+        type: [
+          { required: true, message: "性别不能为空", trigger: "change"}
+        ],
+      },
+      typeList: [
+        { id: 1, name: "院内职工" },
+        { id: 2, name: "实习生" },
+        { id: 3, name: "进修生" }
+      ], //分类列表
       id: "",
       tableData: [],
       tableColumns: [
         {
-          title: "ID",
-          key: "id"
-        },
-        {
-          title: "用户昵称",
+          title: "用户名称",
           key: "nickName"
         },
         {
-          title: "用户地址",
+          title: "性别",
+          key: "nickName"
+        },
+        {
+          title: "分类",
+          key: "nickName"
+        },
+        {
+          title: "创建时间",
           key: "address"
         },
         {
-          title: "用户星级",
-          key: "userLevel",
-          render: (h, params) => {
-            let txt = params.row.userLevel + "星";
-            return h("span", {}, txt);
-          }
+          title: "创建人",
+          key: "address"
         },
         {
-          title: "用户状态",
+          title: "操作",
           render: (h, params) => {
-            let txt = params.row.userStatus == 0 ? "禁用" : "可用",
-              cor = params.row.userStatus == 0 ? "error" : "primary";
-            let userstatu = params.row.userStatus == 0 ? 1 : 0;
-            return h(
-              "Button",
-              {
-                props: {
-                  type: cor
-                },
-                on: {
-                  click: () => {
-                    this.changeStatus(params.row.id, userstatu);
+            return [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary"
+                  },
+                  style: {
+                    marginRight: "10px"
+                  },
+                  on: {
+                    click: () => {
+                      console.log(params.row);
+                      const { id, value, name } = params.row;
+                      this.formValidate = { id, value };
+                      this.modalTitle = name;
+                      this.addModal = true;
+                    }
                   }
-                }
-              },
-              txt
-            );
+                },
+                "禁用"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary"
+                  },
+                  on: {
+                    click: () => {
+                      console.log(params.row);
+                      const {name,phone,sex,type} = params.row;
+                      this.formValidate = {name,phone,sex,type};
+                      this.modalTitle ="编辑";
+                      this.addModal = true;
+                    }
+                  }
+                },
+                "编辑"
+              )
+            ];
           }
         }
       ]
@@ -93,6 +179,11 @@ export default {
   },
   activated() {},
   methods: {
+    add() {
+      this.addModal=true;
+      this.modalTitle="新增";
+    },
+    sure(){},
     changeStatus(id, status) {
       changeStatu(id, status).then(res => {
         if (res.code == 0) {
@@ -135,6 +226,9 @@ export default {
 <style lang="less" scoped>
 .sear {
   display: flex;
+  .searchInput {
+    width: 300px;
+  }
   .btn {
     margin-left: 100px;
     button:nth-child(2) {

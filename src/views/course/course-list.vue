@@ -1,70 +1,193 @@
 <template>
-    <div>
-        <Card>
-            <p slot="title">节点奖励钱包</p>
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="90" inline>
-                <FormItem label="用户地址：" prop="address" style="width:420px;">
-                    <Input v-model="formValidate.address" placeholder="请输入用户地址"></Input>
-                </FormItem>
-                <FormItem label="打币数量：" prop="amount" style="margin-left:40px">
-                    <Input v-model="formValidate.amount" placeholder="请输入打币数量"></Input>
-                </FormItem>
-                <Button type="primary" @click="handleSubmit" :loading="loading">确定</Button>
-            </Form>
-        </Card>
-    </div>
+  <div>
+    <Card>
+      <p slot="title">课程列表</p>
+      <div class="sear">
+        <Form :model="formItem" :label-width="100" inline>
+          <FormItem label="课程标题：" class="searchInput">
+            <Input v-model="formItem.title" placeholder="请输入课程标题"></Input>
+          </FormItem>
+          <FormItem label="是否收费：" class="searchInput">
+            <Select v-model="formItem.type">
+              <Option v-for="(item,i) in typeList" :key="i" :value="String(item.id)">{{item.name}}</Option>
+            </Select>
+          </FormItem>
+        </Form>
+        <div class="btn">
+          <Button type="primary" @click="search">
+            <Icon type="ios-search" style="font-size:16px" />查询
+          </Button>
+          <Button type="default" style="margin-left:10px" @click="clear">
+            <Icon type="ios-undo" style="font-size:16px" />重置
+          </Button>
+        </div>
+      </div>
+      <div class="tableHead">
+        <div style="font-weight:700;">数据列表</div>
+      </div>
+      <Table :columns="tableColumns" :data="tableData" border></Table>
+      <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
+    </Card>
+  </div>
 </template>
+
 <script>
-import {freezeAccount } from "@/service/courseApi/api";
+import { getList, changeStatu } from "@/service/userMgtApi/api";
 export default {
-    data() {
-        return {
-            loading: false,
-            formValidate: {
-                address: "",
-                amount: null
-            },
-            ruleValidate: {
-                address: {
-                    required: true,
-                    message: "请输入用户地址",
-                    trigger: "blur"
+  data() {
+    return {
+      editModal: false,
+      total: 0,
+      page: 1,
+      limit: 10,
+      error: false,
+      formItem: {
+        title: "",
+        type: ""
+      },
+      tableData: [],
+      tableColumns: [
+        {
+          title: "课程名称",
+          key: "nickName"
+        },
+        {
+          title: "视频数",
+          key: "nickName"
+        },
+        {
+          title: "状态",
+          key: "nickName"
+        },
+        {
+          title: "创建时间",
+          key: "address"
+        },
+        {
+          title: "创建人",
+          key: "address"
+        },
+        {
+          title: "是否收费",
+          key: "address"
+        },
+        {
+          title: "操作",
+          render: (h, params) => {
+            return [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary"
+                  },
+                  style: {
+                    marginRight: "10px"
+                  },
+                  on: {
+                    click: () => {
+                      console.log(params.row);
+                      const { id, value, name } = params.row;
+                      this.formValidate = { id, value };
+                      this.modalTitle = name;
+                      this.addModal = true;
+                    }
+                  }
                 },
-                amount: [
-                    {
-                        required: true,
-                        message: "请输入打币数量",
-                        trigger: "blur"
-                    },
-                    { pattern: /^\d+$/, message: "请输入大于0的数字" }
-                ]
-            }
-        };
-    },
-    methods: {
-        handleSubmit() {
-            this.$refs["formValidate"].validate(valid => {
-				if (valid) {
-                    this.loading = true;
-					freezeAccount({
-						...this.formValidate
-					}).then(res=>{
-						if(res.code==0){
-                            this.$Message.success(res.message);
-                            for(let key in this.formValidate){
-                                this.formValidate[key]="";
-                            }
-                            this.loading = false;
-						}else{
-							this.$Message.error(res.message);
-                            this.loading = false;
-						}
-					})
-				}
-      		});
+                "编辑"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary"
+                  },
+                  on: {
+                    click: () => {
+                      console.log(params.row);
+                      const { name, phone, sex, type } = params.row;
+                      this.formValidate = { name, phone, sex, type };
+                      this.modalTitle = "编辑";
+                      this.addModal = true;
+                    }
+                  }
+                },
+                "下架"
+              )
+            ];
+          }
         }
+      ],
+    };
+  },
+  created() {
+    this.getTableData();
+  },
+  activated() {},
+  methods: {
+    changeStatus(id, status) {
+      changeStatu(id, status).then(res => {
+        if (res.code == 0) {
+          this.$Message.success(res.message);
+          this.getTableData();
+        } else {
+          this.$Message.error(res.message);
+        }
+      });
+    },
+    onPageChange(page) {
+      this.page = page;
+      this.getTableData();
+    },
+    search() {
+      this.page = 1;
+      this.getTableData();
+    },
+    clear() {
+      for (let key in this.formItem) {
+        this.formItem[key] = "";
+      }
+      this.getTableData();
+    },
+    getTableData() {
+      getList({
+        pageNum: this.page,
+        pageSize: this.limit,
+        address: this.formItem.address
+      }).then(res => {
+        console.log(res);
+        this.tableData = res.data.content;
+        this.total = res.data.totalElements;
+      });
     }
+  }
 };
 </script>
-<style lang="less">
+
+<style lang="less" scoped>
+.sear {
+  display: flex;
+  .searchInput {
+    width: 300px;
+  }
+  .btn {
+    margin-left: 100px;
+    button:nth-child(2) {
+      margin-left: 10px;
+    }
+  }
+}
+.ivu-page {
+  margin-top: 10px;
+  text-align: right;
+}
+.tableHead {
+  width: 100%;
+  height: 50px;
+  padding: 10px;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>

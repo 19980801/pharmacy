@@ -1,68 +1,56 @@
 <template>
   <div>
     <Card>
-      <p slot="title">查询合约</p>
-      <div class="tableHead">
-        <div>数据列表</div>
-        <div>
-          <Button type="primary" @click="add">添加</Button>
-        </div>
-      </div>
-      <Table :columns="tableColumns" :data="tableData" border></Table>
-      <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
-      <Modal v-model="addModal" :title="changeTitle" :closable="false">
-        <Form ref="formValidate" :model="formValidate" :label-width="145" :rules="ruleValidate">
-          <FormItem label="合约标题:" prop="contractTitle">
-            <Input v-model="formValidate.contractTitle" placeholder="请输入合约标题"></Input>
+      <p slot="title">新增题库</p>
+      <div>
+        <Form ref="formValidate" :model="formValidate" :label-width="100" :rules="ruleValidate">
+          <FormItem label="题库标题:" prop="contractTitle">
+            <Input v-model="formValidate.contractTitle" placeholder="请输入题库标题"></Input>
           </FormItem>
-          <FormItem label="合约图片:" prop="contractImg">
-            <Input v-model="formValidate.contractImg" placeholder="只能上传一张jpg/png格式文件">
-            <span slot="append">
-              <Upload :action="uploadUrl" :format="['jpg','jpeg','png']" :data="uploadData" :show-upload-list="false" :before-upload="onBeforeImgUploading" :on-success="onImgUploadInforSuccess" :on-format-error="handleFormatError">
-                <Button icon="ios-cloud-upload-outline" :loading="imgUploadLoading">选择上传文件</Button>
-              </Upload>
-            </span>
-            </Input>
+          <FormItem label="用户分类：" prop="contractTitle">
+            <CheckboxGroup v-model="formValidate.checkbox">
+              <Checkbox label="Eat"></Checkbox>
+              <Checkbox label="Sleep"></Checkbox>
+              <Checkbox label="Run"></Checkbox>
+              <Checkbox label="Movie"></Checkbox>
+            </CheckboxGroup>
           </FormItem>
-          <FormItem label="合约价值：" prop="contractPrice">
-            <Input v-model="formValidate.contractPrice" placeholder="请输入合约价值（只能为数字）" :number="true">
-            <span slot="append">ETH</span>
-            </Input>
+          <FormItem label="全部分类：" prop="contractTitle">
+            <CheckboxGroup v-model="formValidate.checkbox">
+              <Checkbox label="Eat"></Checkbox>
+              <Checkbox label="Sleep"></Checkbox>
+              <Checkbox label="Run"></Checkbox>
+              <Checkbox label="Movie"></Checkbox>
+            </CheckboxGroup>
           </FormItem>
-          <FormItem label="预约金百分比：" prop="contractSubscriptionPercent">
-            <Input v-model="formValidate.contractSubscriptionPercent" :number="true" placeholder="请输入合约价值（0-100）" @on-blur="getContractGoldPercent">
-            <span slot="append">%</span>
-            </Input>
+          <FormItem label="全部内容：" prop="contractTitle">
+            <CheckboxGroup v-model="formValidate.checkbox">
+              <Checkbox label="Eat"></Checkbox>
+              <Checkbox label="Sleep"></Checkbox>
+              <Checkbox label="Run"></Checkbox>
+              <Checkbox label="Movie"></Checkbox>
+            </CheckboxGroup>
           </FormItem>
-          <FormItem label="合约金百分比：" prop="contractGoldPercent">
-            <Input v-model="formValidate.contractGoldPercent" disabled :number="true" disabled>
-            <span slot="append">%</span>
-            </Input>
+          <div class="search">
+          <FormItem label="题目标题：" prop="contractPrice">
+            <Input v-model="formValidate.contractPrice" placeholder="请输入课程标题" :number="true"></Input>
           </FormItem>
-          <FormItem label="合约有限期：" prop="contractDate">
-            <Input v-model="formValidate.contractDate" placeholder="请输入合约有限期（只能为数字）" :number="true">
-            <span slot="append">日</span>
-            </Input>
-          </FormItem>
-          <FormItem label="合约增值每日百分比：" prop="contractAdded">
-            <Input v-model="formValidate.contractAdded" :number="true" placeholder="请输入合约有限期（只能为数字）">
-            <span slot="append">%</span>
-            </Input>
-          </FormItem>
-          <FormItem label="合约状态：" prop="contractStatus">
-            <RadioGroup v-model="formValidate.contractStatus" placeholder="请选择">
-              <Radio label="0">上架</Radio>
-              <Radio label="1">下架</Radio>
-            </RadioGroup>
-          </FormItem>
+          <Button type="primary" @click="search" class="button">
+            <Icon type="ios-search" style="font-size:16px" />搜索
+          </Button>
+          <Button type="primary" @click="add">新增题目</Button>
+          </div>
+          <Table :columns="tableColumns" :data="tableData" border></Table>
+          <Page
+            :total="total"
+            :current="page"
+            :page-size="limit"
+            show-total
+            @on-change="onPageChange"
+          />
         </Form>
-        <div slot="footer">
-          <Button type="default" @click="cancel">取消</Button>
-          <Button type="primary" @click="sure">确定</Button>
-        </div>
-      </Modal>
+      </div>
     </Card>
-
   </div>
 </template>
 
@@ -85,7 +73,6 @@ export default {
       }
     };
     return {
-      // uploadUrl: `http://192.168.31.204:6004/admin/upload/file`, //dpy
       uploadUrl: `${this.host}/admin/upload/file`, //服务器
       uploadData: {
         type: ""
@@ -108,7 +95,6 @@ export default {
         contractAdded: null,
         contractStatus: ""
       },
-      isShowDelModal: false,
       ruleValidate: {
         contractTitle: [
           { required: true, message: "合约标题不能为空", trigger: "blur" }
@@ -125,7 +111,12 @@ export default {
           }
         ],
         contractSubscriptionPercent: [
-          { required: true, message: "预约金百分比不能为空", trigger: "blur", type: "number" },
+          {
+            required: true,
+            message: "预约金百分比不能为空",
+            trigger: "blur",
+            type: "number"
+          },
           { validator: percent, trigger: "blur" }
         ],
         contractGoldPercent: [
@@ -159,106 +150,32 @@ export default {
       tableData: [],
       tableColumns: [
         {
-          title: "合约编号",
-          width: 180,
+          type: 'selection',
+          width:80,
+        },
+        {
+          title: "题目标题",
           key: "contractNum"
         },
         {
-          title: "合约标题",
+          title: "类型",
           key: "contractTitle"
         },
         {
-          title: "合约价值",
+          title: "分值",
           key: "contractPrice"
         },
         {
-          title: "预约金百分比",
-          key: "contractSubscriptionPercent",
-          render: (h, params) => {
-            return h("span", {}, params.row.contractSubscriptionPercent + "%");
-          }
+          title: "分类",
+          key: "contractSubscriptionPercent"
         },
         {
-          title: "合约金百分比",
+          title: "创建时间",
           key: "contractGoldPercent",
-          render: (h, params) => {
-            return h("span", {}, params.row.contractGoldPercent + "%");
-          }
         },
         {
-          title: "合约有限期",
-          key: "contractDate",
-          render: (h, params) => {
-            return h("span", {}, params.row.contractDate + "日");
-          }
-        },
-        {
-          title: "增值百分比",
-          key: "contractAdded",
-          render: (h, params) => {
-            return h("span", {}, params.row.contractAdded + "%");
-          }
-        },
-        {
-          title: "状态",
-          key: "contractStatus",
-          render: (h, params) => {
-            return h(
-              "span",
-              {},
-              params.row.contractStatus == 0 ? "上架" : "下架"
-            );
-          }
-        },
-        {
-          title: "操作",
-          render: (h, params) => {
-            console.log(params.row);
-            return [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary"
-                  },
-                  style: {
-                    marginRight: "10px"
-                  },
-                  on: {
-                    click: () => {
-                      const {
-                        id,
-                        contractImg,
-                        contractTitle,
-                        contractPrice,
-                        contractSubscriptionPercent,
-                        contractGoldPercent,
-                        contractDate,
-                        contractAdded,
-                        contractStatus
-                      } = params.row;
-                      this.formValidate = {
-                        id,
-                        contractImg,
-                        contractTitle,
-                        contractPrice,
-                        contractSubscriptionPercent:Number(contractSubscriptionPercent),
-                        contractGoldPercent,
-                        contractDate,
-                        contractAdded: Number(contractAdded),
-                        contractStatus: contractStatus.toString()
-                      };
-                      console.log(this.formValidate);
-                      this.addModal = true;
-                      this.changeTitle = "编辑";
-                      this.changeType = "editor";
-                    }
-                  }
-                },
-                "编辑"
-              )
-            ];
-          }
+          title: "创建人",
+          key: "contractDate"
         }
       ]
     };
@@ -267,6 +184,7 @@ export default {
     this.getTableData();
   },
   methods: {
+    add(){},
     // 根据预约金百分百算合约金百分百
     getContractGoldPercent() {
       this.formValidate.contractGoldPercent =
@@ -368,13 +286,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.sear {
-  display: flex;
-  .btn {
-    margin-left: 100px;
-    button:nth-child(2) {
-      margin-left: 10px;
-    }
+.search {
+  display:flex;
+  height:32px;
+  margin:0 0 10px;
+  .button{
+    margin:0 20px;
   }
 }
 .ivu-page {
@@ -388,5 +305,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+/deep/ .ivu-input {
+  width: 300px;
 }
 </style>
