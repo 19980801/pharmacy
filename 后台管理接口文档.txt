@@ -1,0 +1,92 @@
+后台管理顶级路径：/admin
+端口号：6004
+
+1. 上传课程
+URL = /course/upload
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+	"courseTitle":"测试标题6",(课程标题)
+	"description":"这是一个H5",(课程描述，富文本)
+	"coursePrice":"100.21",(课程价格)
+	"courseCategoryId":"1",(关联分类id)
+	"createUser":"杜品言222",(当前登录用户名称)
+	"courseStatus":"0",(课程状态 0-上架 1-下架)
+	"classHours":[{
+		"classTitle":"课时标题7",
+		"classUrl":"www.baidu.com",
+		"createUser":"1111222"
+	},
+	{
+		"classTitle":"课时标题8",
+		"classUrl":"www.baidu.com",
+		"createUser":"2223332"
+	}
+		]
+}
+返回参数：
+{
+    "code": 0,
+    "message": "保存成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+2. 发送通知
+URL = inform/send
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+	"userId":[1],
+	"isAll":"0",
+	"informTitle":"今天天气不错1133331",
+	"informContent":"今天天气很111333好",
+	"informType":"0"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "发送成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+
+3. 获取所有课程分类(已对接)
+URL = course/findAllCategory
+请求方式：GET
+无参数
+
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": [
+        {
+            "id": 1,
+            "categoryName": "药学知识",
+            "createTime": 1590840843000
+        },
+        {
+            "id": 2,
+            "categoryName": "药学技能",
+            "createTime": 1590840853000
+        },
+        {
+            "id": 3,
+            "categoryName": "药学管理",
+            "createTime": 1590840863000
+        },
+        {
+            "id": 4,
+            "categoryName": "人文医学",
+            "createTime": 1590840873000
+        }
+    ]
+}
