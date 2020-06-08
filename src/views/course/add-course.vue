@@ -158,6 +158,7 @@ export default {
     getType() {
       getCoursetypeList().then(res => {
         if (res.code == 0) {
+            console.log(res);
           this.typeList = res.data;
         }
       });

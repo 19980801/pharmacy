@@ -1,12 +1,9 @@
 <template>
   <div>
     <Card>
-      <p slot="title">公告管理</p>
+      <p slot="title">发送通知</p>
       <div class="tableHead">
       <div>数据列表</div>
-      <div>
-        <Button type="primary" @click="add">添加</Button>
-      </div>
     </div>
     <Table :columns="tableColumns" :data="tableData" border></Table>
     <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />

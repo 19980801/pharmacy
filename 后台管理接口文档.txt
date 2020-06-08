@@ -56,7 +56,7 @@ URL = inform/send
 }
 
 
-3. 获取所有课程分类(已对接)
+3. 获取所有课程分类
 URL = course/findAllCategory
 请求方式：GET
 无参数
@@ -69,24 +69,132 @@ URL = course/findAllCategory
     "totalElement": null,
     "data": [
         {
-            "id": 1,
-            "categoryName": "药学知识",
-            "createTime": 1590840843000
+            "id": 1,(分类id)
+            "categoryName": "药学知识",(分类名称)
+            "createTime": 1590840843000,(创建时间)
+            "courseContentList": [(该分类下的内容)
+                {
+                    "id": 1,(内容id)
+                    "contentName": "高血压",(内容名称)
+                    "categoryId": 1,(所属分类id)
+                    "createTime": 1590840899000(创建时间)
+                },
+                {
+                    "id": 2,
+                    "contentName": "麻醉用药",
+                    "categoryId": 1,
+                    "createTime": 1590840912000
+                },
+                {
+                    "id": 3,
+                    "contentName": "糖尿病",
+                    "categoryId": 1,
+                    "createTime": 1590840926000
+                },
+                {
+                    "id": 4,
+                    "contentName": "特殊人群用药",
+                    "categoryId": 1,
+                    "createTime": 1590840935000
+                },
+                {
+                    "id": 5,
+                    "contentName": "心血管系统",
+                    "categoryId": 1,
+                    "createTime": 1590840946000
+                },
+                {
+                    "id": 6,
+                    "contentName": "中药",
+                    "categoryId": 1,
+                    "createTime": 1590840961000
+                },
+                {
+                    "id": 7,
+                    "contentName": "肿瘤",
+                    "categoryId": 1,
+                    "createTime": 1590840970000
+                },
+                {
+                    "id": 8,
+                    "contentName": "注射剂",
+                    "categoryId": 1,
+                    "createTime": 1590840987000
+                },
+                {
+                    "id": 9,
+                    "contentName": "处方审核",
+                    "categoryId": 1,
+                    "createTime": 1590840998000
+                },
+                {
+                    "id": 10,
+                    "contentName": "药学监护",
+                    "categoryId": 1,
+                    "createTime": 1590841009000
+                },
+                {
+                    "id": 11,
+                    "contentName": "药物经济学",
+                    "categoryId": 1,
+                    "createTime": 1590841022000
+                },
+                {
+                    "id": 12,
+                    "contentName": "药学教育",
+                    "categoryId": 1,
+                    "createTime": 1590841030000
+                }
+            ]
         },
         {
             "id": 2,
             "categoryName": "药学技能",
-            "createTime": 1590840853000
+            "createTime": 1590840853000,
+            "courseContentList": []
         },
         {
             "id": 3,
             "categoryName": "药学管理",
-            "createTime": 1590840863000
+            "createTime": 1590840863000,
+            "courseContentList": []
         },
         {
             "id": 4,
             "categoryName": "人文医学",
-            "createTime": 1590840873000
+            "createTime": 1590840873000,
+            "courseContentList": []
+        }
+    ]
+}
+
+
+4. 获取所有用户分类
+URL = user/findAllCategory
+请求方式：GET
+无参数
+
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": [
+        {
+            "id": 1,(分类id)
+            "categoryName": "院内职工",(分类名称)
+            "createTime": "2020-06-03 14:31:47"
+        },
+        {
+            "id": 2,
+            "categoryName": "实习生",
+            "createTime": "2020-06-03 14:31:52"
+        },
+        {
+            "id": 3,
+            "categoryName": "进修生",
+            "createTime": "2020-06-03 14:31:58"
         }
     ]
 }
