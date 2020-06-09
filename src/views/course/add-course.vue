@@ -7,8 +7,8 @@
           <FormItem label="课程标题：" prop="courseTitle">
             <Input v-model="addForm.courseTitle" placeholder="请输入课程标题"></Input>
           </FormItem>
-          <FormItem label="课程分类：" prop="courseCategoryId">
-            <Select v-model="addForm.courseCategoryId">
+          <FormItem label="课程分类：" prop="courseType">
+            <Select v-model="addForm.courseType">
               <Option
                 v-for="(item,i) of typeList"
                 :key="i"
@@ -16,17 +16,17 @@
               >{{item.categoryName}}</Option>
             </Select>
           </FormItem>
-          <FormItem label="全部内容：">
-            <CheckboxGroup v-model="addForm.content" prop="content">
-              <Checkbox :label="item.name" v-for="(item,index) in contentList" :key="index"></Checkbox>
+          <FormItem label="全部内容：" prop="content">
+            <CheckboxGroup v-model="addForm.content">
+              <Checkbox :label="item.id" v-for="(item,index) in contentList" :key="index">{{item.name}}</Checkbox>
             </CheckboxGroup>
           </FormItem>
-          <FormItem label="用户分类：" prop="userClassChecked">
-            <CheckboxGroup v-model="addForm.userClassChecked">
-              <Checkbox :label="item.name" v-for="(item,index) in userClass" :key="index"></Checkbox>
+          <FormItem label="用户分类：" prop="userType">
+            <CheckboxGroup v-model="addForm.userType">
+              <Checkbox :label="item.id" v-for="(item,index) in userTypeList" :key="index">{{item.categoryName}}</Checkbox>
             </CheckboxGroup>
           </FormItem>
-          <FormItem label="课程视频:" prop="goodsPic">
+          <FormItem label="课程视频:" prop="courseVideos">
             <Upload
               :action="uploadUrl"
               multiple
@@ -36,25 +36,28 @@
               <Button type="ghost" icon="ios-cloud-upload-outline">上传视频</Button>
             </Upload>
           </FormItem>
-          <FormItem label="收费：">
+          <div>
+
+          </div>
+          <FormItem label="收费：" prop="price">
             <RadioGroup v-model="addForm.price">
-              <Radio label="是"></Radio>
-              <Radio label="否"></Radio>
+              <Radio label="0">是</Radio>
+              <Radio label="1">否</Radio>
             </RadioGroup>
           </FormItem>
-          <FormItem label="价格：" v-if="addForm.price!=='否'">
-            <Input v-model="addForm.coursePrice" placeholder="请输入价格"></Input>
+          <FormItem label="价格：">
+            <Input v-model="addForm.coursePrice" placeholder="请输入价格" :disabled="addForm.price==1"></Input>
           </FormItem>
-          <FormItem label="会员专属：" prop>
+          <FormItem label="会员专属：" prop="vip">
             <RadioGroup v-model="addForm.vip">
-              <Radio label="是"></Radio>
-              <Radio label="否"></Radio>
+              <Radio label="0">是</Radio>
+              <Radio label="1">否</Radio>
             </RadioGroup>
           </FormItem>
-          <FormItem label="课程状态：">
+          <FormItem label="课程状态：" prop="courseStatus">
             <RadioGroup v-model="addForm.courseStatus">
-              <Radio label="上架" value="0"></Radio>
-              <Radio label="下架" value="1"></Radio>
+              <Radio label="0">上架</Radio>
+              <Radio label="1">下架</Radio>
             </RadioGroup>
           </FormItem>
           <FormItem label="课程信息：">
@@ -62,7 +65,7 @@
           </FormItem>
         </Form>
       </div>
-      <Button type="primary" class="submit">提交</Button>
+      <Button type="primary" class="submit" @click="addCourse">提交</Button>
     </Card>
   </div>
 </template>
@@ -75,10 +78,6 @@ export default {
   data() {
     return {
       config: {
-        uploadUrl: `${BASICURL}/admin/common/upload/oss/image`,
-        uploadName: "file",
-        parentName: "helpManage",
-        uploadParams: {},
         uploadCallback: data => {
           this.uploading = false;
           if (!data.code) {
@@ -94,6 +93,8 @@ export default {
           this.$Message.error("上传失败!");
         }
       },
+      uploadUrl: `http://oss-cn-beijing.aliyuncs.com`,
+      uploadData: {},
       contentList: [
         { name: "高血压" },
         { name: "糖尿病" },
@@ -101,29 +102,44 @@ export default {
         { name: "中药" },
         { name: "注射剂" },
         { name: "处方审核" }
-      ], //内容list
-      contentChecked: [], //选中
-      // uploadUrl: `${BASICURL}/admin/common/upload/oss/image`,
-      uploadUrl: `http://oss-cn-beijing.aliyuncs.com`,
-      uploadData: {},
-      userClass: [{ name: "院内职工" }, { name: "实习生" }, { name: "进修生" }], //用户分类list
-      userClassChecked: [],
+      ],
+      userTypeList: [],
       addForm: {
-        userId: "",
-        address: "",
-        startTime: "",
-        endTime: ""
+        courseTitle: "",
+        courseType: "",
+        content: [],
+        userType:[],
+        courseVideos:[],
+        price:"0",
+        coursePrice:"",
+        vip:"0",
+        courseStatus:"0"
       },
       typeList: [],
       ruleInline: {
         courseTitle: [
           { required: true, message: "课程标题不能为空", trigger: "blur" }
         ],
-        courseCategoryId: [
+        courseType: [
           { required: true, message: "课程分类不能为空", trigger: "change" }
         ],
-        courseCategoryId: [
-          { required: true, message: "课程分类不能为空", trigger: "change" }
+        content: [
+          { required: true, message: "全部内容不能为空", trigger: "change",type: 'array'}
+        ],
+        userType: [
+          { required: true, message: "用户分类不能为空", trigger: "change",type: 'array'}
+        ],
+        courseVideos:[
+          { required: true, message: "课程视频不能为空", trigger: "blur" }
+        ],
+        price:[
+          { required: true, message: "是否收费不能为空", trigger: "change" }
+        ],
+        vip:[
+          { required: true, message: "会员专属不能为空", trigger: "change" }
+        ],
+        courseStatus:[
+          { required: true, message: "课程状态不能为空", trigger: "change" }
         ]
       },
       imgUploadLoading: false
@@ -132,7 +148,7 @@ export default {
   created() {
     removeStore("smeditor");
     this.getType();
-		this.getUserList();
+    this.getUserList();
   },
   methods: {
     beforeUpload(res) {
@@ -159,17 +175,19 @@ export default {
     getType() {
       getCoursetypeList().then(res => {
         if (res.code == 0) {
-            console.log(res);
           this.typeList = res.data;
         }
       });
     },
-		// 获取用户分类
-		getUserList(){
-			getUserClass().then(res=>{
-				console.log(res);
-			})
-		},
+    // 获取用户分类
+    getUserList() {
+      getUserClass().then(res => {
+        if(res.code==0){
+          console.log(res);
+          this.userTypeList=res.data;
+        }
+      });
+    },
     upload() {
       this.$refs.smeditor.$emit("saveInner");
       let uploadObj = {
@@ -186,20 +204,13 @@ export default {
         uploadObj.createTime = this.createTime;
         fn = updateHelpManage;
       }
-      if (
-        this.title === "" ||
-        this.title === null ||
-        // this.klass === "" ||
-        // this.klass === null ||
-        getStore("smeditor") === "" ||
-        getStore("smeditor") === null
-      ) {
+      if (getStore("smeditor") === "" || getStore("smeditor") === null) {
         this.$Message.warning("请完善信息！");
       } else {
         fn(uploadObj).then(res => {
           if (!res.code) {
             this.$Message.success("操作成功!");
-            this.$router.push("/content/helpManage");
+            // this.$router.push("/content/helpManage");
             removeStore("smeditor");
           } else this.$Message.error("异常错误!");
         });
@@ -207,6 +218,10 @@ export default {
     },
     ifUploading(val) {
       this.uploading = val;
+    },
+    addCourse(){
+      console.log(this.addForm.price);
+      console.log(this.addForm.userType);
     }
   },
   components: {
@@ -224,6 +239,6 @@ export default {
 }
 .submit {
   width: 300px;
-  margin-left:100px;
+  margin-left: 100px;
 }
 </style>

@@ -4,27 +4,24 @@
       <p slot="title">新增题库</p>
       <div>
         <Form ref="formValidate" :model="formValidate" :label-width="100" :rules="ruleValidate">
-          <FormItem label="题库标题:" prop="contractTitle">
-            <Input v-model="formValidate.contractTitle" placeholder="请输入题库标题"></Input>
+          <FormItem label="题库标题：" prop="questionTitle">
+            <Input v-model="formValidate.questionTitle" placeholder="请输入题库标题"></Input>
           </FormItem>
-          <FormItem label="用户分类：" prop="contractTitle">
-            <CheckboxGroup v-model="formValidate.checkbox">
+          <FormItem label="用户分类：" prop="userType">
+            <CheckboxGroup v-model="formValidate.userType">
+              <Checkbox :label="item.id" v-for="(item,index) in userType" :key="index">{{item.categoryName}}</Checkbox>
+            </CheckboxGroup>
+          </FormItem>
+          <FormItem label="全部分类：" prop="allType">
+            <CheckboxGroup v-model="formValidate.allType">
               <Checkbox label="Eat"></Checkbox>
               <Checkbox label="Sleep"></Checkbox>
               <Checkbox label="Run"></Checkbox>
               <Checkbox label="Movie"></Checkbox>
             </CheckboxGroup>
           </FormItem>
-          <FormItem label="全部分类：" prop="contractTitle">
-            <CheckboxGroup v-model="formValidate.checkbox">
-              <Checkbox label="Eat"></Checkbox>
-              <Checkbox label="Sleep"></Checkbox>
-              <Checkbox label="Run"></Checkbox>
-              <Checkbox label="Movie"></Checkbox>
-            </CheckboxGroup>
-          </FormItem>
-          <FormItem label="全部内容：" prop="contractTitle">
-            <CheckboxGroup v-model="formValidate.checkbox">
+          <FormItem label="全部内容：" prop="allContent">
+            <CheckboxGroup v-model="formValidate.allContent">
               <Checkbox label="Eat"></Checkbox>
               <Checkbox label="Sleep"></Checkbox>
               <Checkbox label="Run"></Checkbox>
@@ -32,13 +29,13 @@
             </CheckboxGroup>
           </FormItem>
           <div class="search">
-          <FormItem label="题目标题：" prop="contractPrice">
-            <Input v-model="formValidate.contractPrice" placeholder="请输入课程标题"></Input>
-          </FormItem>
-          <Button type="primary" @click="search" class="button">
-            <Icon type="ios-search" style="font-size:16px" />搜索
-          </Button>
-          <Button type="primary" @click="add">新增题目</Button>
+            <FormItem label="题目标题：" prop="subjectTitle">
+              <Input v-model="formValidate.subjectTitle" placeholder="请输入课程标题"></Input>
+            </FormItem>
+            <Button type="primary" @click="search" class="button">
+              <Icon type="ios-search" style="font-size:16px" />搜索
+            </Button>
+            <Button type="primary" @click="add">新增题目</Button>
           </div>
           <Table :columns="tableColumns" :data="tableData" border></Table>
           <Page
@@ -51,27 +48,43 @@
         </Form>
       </div>
     </Card>
+    <!-- 弹框 -->
+    <Modal v-model="addModal" title="新增题目" :closable="false">
+      <Form ref="addValidate" :model="addValidate" :label-width="90" :rules="ruleddValidate">
+        <FormItem label="题目标题：" prop="title">
+          <Input v-model="addValidate.title"></Input>
+        </FormItem>
+        <FormItem label="题型分类：" prop="type">
+          <CheckboxGroup v-model="addValidate.typeList">
+            <Checkbox :label="item.name" v-for="(item,index) in typeList" :key="index"></Checkbox>
+          </CheckboxGroup>
+        </FormItem>
+        <FormItem label="答案选项：" v-for="(item,i) in options" :key="i">
+          <div class="optionsLine">
+            <Input v-model="item.value"></Input>
+            <Button type="error" @click="delOption(i)">删除</Button>
+          </div>
+          <div>
+            <RadioGroup v-model="item.isTrue">
+              <Radio label="0">错误</Radio>
+              <Radio label="1">正确</Radio>
+            </RadioGroup>
+          </div>
+        </FormItem>
+        <Button type="primary" @click="addOption" class="addoption">添加选项</Button>
+      </Form>
+      <div slot="footer">
+        <Button type="default" @click="addModal=false">取消</Button>
+        <Button type="primary" @click="sure">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
-import {
-  getList,
-  getContract,
-  editContract,
-  addContract
-} from "@/service/questionApi/api";
+import { BASICURL,getUserClass} from "@/service/getData";
 export default {
   data() {
-    const percent = (rule, value, callback) => {
-      if (value == "") {
-        callback(new Error("预约金百分比不能为空"));
-      } else if (!/^[1-9]\d?(\.\d+)?$|^0\.\d*[1-9]\d*$/.test(value)) {
-        callback(new Error("只能输入1-100之间的数字"));
-      } else {
-        callback();
-      }
-    };
     return {
       uploadUrl: `${this.host}/admin/upload/file`, //服务器
       uploadData: {
@@ -81,77 +94,52 @@ export default {
       total: 0,
       page: 1,
       limit: 10,
-      changeTitle: "",
-      changeType: "",
       addModal: false,
-      showMsg: "",
       formValidate: {
-        contractTitle: "",
-        contractImg: "",
-        contractPrice: null,
-        contractSubscriptionPercent: null,
-        contractGoldPercent: null,
-        contractDate: null,
-        contractAdded: null,
-        contractStatus: ""
+        questionTitle: "",
+        userType: [],
+        allType: [],
+        allContent: [],
+        subjectTitle: ""
       },
       ruleValidate: {
-        contractTitle: [
-          { required: true, message: "合约标题不能为空", trigger: "blur" }
+        questionTitle: [
+          { required: true, message: "题库标题不能为空", trigger: "blur" }
         ],
-        contractImg: [
-          { required: true, message: "合约图片不能为空", trigger: "blur" }
-        ],
-        contractPrice: [
+        userType: [
           {
             required: true,
-            message: "合约价值不能为空且只能为数字",
-            trigger: "blur",
-            type: "number"
+            message: "用户分类不能为空",
+            trigger: "change",
+            type: "array"
           }
         ],
-        contractSubscriptionPercent: [
+        allType: [
           {
             required: true,
-            message: "预约金百分比不能为空",
-            trigger: "blur",
-            type: "number"
-          },
-          { validator: percent, trigger: "blur" }
-        ],
-        contractGoldPercent: [
-          {
-            required: true,
-            message: "合约金百分比不能为空且只能为数字",
-            trigger: "blur",
-            type: "number"
+            message: "全部分类不能为空",
+            trigger: "change",
+            type: "array"
           }
         ],
-        contractDate: [
+        allContent: [
           {
             required: true,
-            message: "合约有限期不能为空且只能为数字",
-            trigger: "blur",
-            type: "number"
+            message: "全部内容不能为空",
+            trigger: "change",
+            type: "array"
           }
         ],
-        contractAdded: [
-          {
-            required: true,
-            message: "合约增值每日百分比不能为空且只能为数字",
-            trigger: "blur",
-            type: "number"
-          }
-        ],
-        contractStatus: [
-          { required: true, message: "合约状态不能为空", trigger: "change" }
+        subjectTitle: [
+          { required: true, message: "题目标题不能为空", trigger: "blur" }
         ]
       },
       tableData: [],
       tableColumns: [
         {
-          type: 'selection',
-          width:80,
+          type: "selection",
+          algin: "center",
+          width: 80
         },
         {
           title: "题目标题",
@@ -171,24 +159,71 @@ export default {
         },
         {
           title: "创建时间",
-          key: "contractGoldPercent",
+          key: "contractGoldPercent"
         },
         {
           title: "创建人",
           key: "contractDate"
         }
-      ]
+      ],
+      addValidate: {
+        title: "",
+        type: "",
+        optionList: []
+      },
+      options: [
+        { value: "", isTrue:"0"},
+        { value: "", isTrue:"0"},
+        { value: "", isTrue:"0"},
+        { value: "", isTrue:"0"},
+      ],
+      ruleddValidate: {
+        title: [
+          { required: true, message: "题目标题不能为空", trigger: "blur" }
+        ],
+        type: [
+          { required: true, message: "题目分类不能为空", trigger: "change" }
+        ]
+        // optionList:[
+        //   { required: true, message: "答案选项不能为空", trigger: "change",type:"array"}
+        // ]
+      },
+      typeList: [
+        { name: "心血管" },
+        { name: "糖尿病" },
+        { name: "特殊人群用药" }
+      ],
+      optionList: [],
+      userType:[]
     };
   },
   created() {
-    this.getTableData();
+    this.getUserType();
   },
   methods: {
-    add(){},
-    // 根据预约金百分百算合约金百分百
-    getContractGoldPercent() {
-      this.formValidate.contractGoldPercent =
-        100 - this.formValidate.contractSubscriptionPercent;
+    getUserType(){
+      getUserClass().then(res=>{
+        console.log(res);
+        if(res.code==0){
+          this.userType=res.data;
+        }
+      })
+    },
+    addOption() {
+      this.options.push({
+        value: "",
+        isTrue:"0"
+      });
+    },
+    delOption(i){
+      if(this.options.length>4){
+        this.options.splice(i,1);
+      }else{
+        this.$Message.error("不能少于4个选项!");
+      }
+    },
+    add() {
+      this.addModal = true;
     },
     onBeforeImgUploading() {
       this.imgUploadLoading = true;
@@ -212,38 +247,12 @@ export default {
       this.getTableData();
       this.formIte = {};
     },
-    courseTeacher(e) {
-      console.log(e);
-      if (e) {
-        this.formValidate.clCourseTeacherName = e.label;
-      }
-    },
-    classTeacher(e) {
-      console.log(e);
-      if (e) {
-        this.formValidate.clClassTeacherName = e.label;
-      }
-    },
-    add() {
-      this.addModal = true;
-      this.changeTitle = "添加";
-      this.changeType = "add";
-    },
     cancel() {
       this.addModal = false;
       this.resetForm();
     },
     sure() {
-      console.log(this.formValidate);
-      this.$refs["formValidate"].validate(valid => {
-        if (valid) {
-          if (this.changeType == "add") {
-            this.roleadd();
-          } else {
-            this.roleeditor();
-          }
-        }
-      });
+      console.log(this.options);
     },
     roleadd() {
       addContract({
@@ -287,11 +296,11 @@ export default {
 
 <style lang="less" scoped>
 .search {
-  display:flex;
-  height:32px;
-  margin:0 0 10px;
-  .button{
-    margin:0 20px;
+  display: flex;
+  height: 32px;
+  margin: 0 0 10px;
+  .button {
+    margin: 0 20px;
   }
 }
 .ivu-page {
@@ -308,5 +317,11 @@ export default {
 }
 /deep/ .ivu-input {
   width: 300px;
+}
+.addoption {
+  margin: 0 180px;
+}
+.optionsLine {
+  display: flex;
 }
 </style>

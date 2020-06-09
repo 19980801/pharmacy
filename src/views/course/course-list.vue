@@ -9,21 +9,23 @@
           </FormItem>
           <FormItem label="是否收费：" class="searchInput">
             <Select v-model="formItem.type">
-              <Option v-for="(item,i) in typeList" :key="i" :value="String(item.id)">{{item.name}}</Option>
+              <Option value="0">免费课程</Option>
+              <Option value="1">收费课程</Option>
+              <!-- <Option v-for="(item,i) in typeList" :key="i" :value="String(item.id)">{{item.name}}</Option> -->
             </Select>
           </FormItem>
         </Form>
         <div class="btn">
           <Button type="primary" @click="search">
-            <Icon type="ios-search" style="font-size:16px" />查询
+            <Icon type="ios-search"/>查询
           </Button>
           <Button type="default" style="margin-left:10px" @click="clear">
-            <Icon type="ios-undo" style="font-size:16px" />重置
+            <Icon type="ios-undo"/>重置
           </Button>
         </div>
       </div>
       <div class="tableHead">
-        <div style="font-weight:700;">数据列表</div>
+        <div>数据列表</div>
       </div>
       <Table :columns="tableColumns" :data="tableData" border></Table>
       <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
@@ -45,7 +47,6 @@ export default {
         title: "",
         type: ""
       },
-      typeList:[],
       tableData: [],
       tableColumns: [
         {

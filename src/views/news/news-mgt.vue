@@ -3,35 +3,26 @@
     <Card>
       <p slot="title">发送通知</p>
       <div class="tableHead">
-      <div>数据列表</div>
-    </div>
-    <Table :columns="tableColumns" :data="tableData" border></Table>
-    <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
-    <Modal v-model="addModal" :title="changeTitle" :closable="false">
-      <Form ref="formValidate" :model="formValidate" :label-width="120" :rules="ruleValidate">
-        <FormItem label="公告标题:" prop="title">
-          <Input v-model="formValidate.title"></Input>
-        </FormItem>
-        <FormItem label="公告内容:" prop="content">
-          <Input v-model="formValidate.content" type="textarea"></Input>
-        </FormItem>
-      </Form>
-      <div slot="footer">
-        <Button type="default" @click="cancel">取消</Button>
-        <Button type="primary" @click="sure">确定</Button>
+        <div>数据列表</div>
+        <Button type="primary">发消息</Button>
       </div>
-    </Modal>
-
-    <!-- 删除 -->
-    <Modal v-model="isShowDelModal" title="删除">
-      <p>确定是否删除数据？</p>
-      <div slot="footer" style="text-align: center">
-        <Button type="error" @click="isShowDelModal = false" style="border-radius: none">取消</Button>
-        <Button type="primary" @click="del(id)" style="border-radius: none">确定</Button>
-      </div>
-    </Modal>
+      <Table ref="selection" :columns="tableColumns" :data="tableData" border></Table>
+      <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
+      <Modal v-model="addModal" :title="changeTitle" :closable="false">
+        <Form ref="formValidate" :model="formValidate" :label-width="120" :rules="ruleValidate">
+          <FormItem label="公告标题:" prop="title">
+            <Input v-model="formValidate.title"></Input>
+          </FormItem>
+          <FormItem label="公告内容:" prop="content">
+            <Input v-model="formValidate.content" type="textarea"></Input>
+          </FormItem>
+        </Form>
+        <div slot="footer">
+          <Button type="default" @click="cancel">取消</Button>
+          <Button type="primary" @click="sure">确定</Button>
+        </div>
+      </Modal>
     </Card>
-    
   </div>
 </template>
 
@@ -70,19 +61,27 @@ export default {
       tableData: [],
       tableColumns: [
         {
+          type: 'selection',
+          align: 'center'
+        },
+        {
           title: "公告标题",
           key: "title"
         },
         {
           title: "公告内容",
           key: "content",
-          render: (h,params)=>{
-            let txt =  String(params.row.content).substring(0, 4) + "...";
-            return h('span',{
-               domProps:{
-                title:params.row.content
-              }
-            },txt)
+          render: (h, params) => {
+            let txt = String(params.row.content).substring(0, 4) + "...";
+            return h(
+              "span",
+              {
+                domProps: {
+                  title: params.row.content
+                }
+              },
+              txt
+            );
           }
         },
         {
@@ -98,32 +97,6 @@ export default {
                 "Button",
                 {
                   props: {
-                    type: "primary"
-                  },
-                  style: {
-                    marginRight: "10px"
-                  },
-                  on: {
-                    click: () => {
-                      const { id, title, content } = params.row;
-                      this.formValidate = {
-                        id,
-                        title,
-                        content
-                      };
-                      console.log(this.formValidate);
-                      this.addModal = true;
-                      this.changeTitle = "编辑";
-                      this.changeType = "editor";
-                    }
-                  }
-                },
-                "编辑"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
                     type: "error"
                   },
                   on: {
@@ -133,7 +106,7 @@ export default {
                     }
                   }
                 },
-                "删除"
+                "发消息"
               )
             ];
           }
