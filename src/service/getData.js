@@ -75,6 +75,9 @@ export const deleteRole = data => post('admin/system/role/deletes', data);
 // 获取所有课程分类
 export const getCoursetypeList = data => fetch('admin/course/findAllCategory', data);
 
+// 获取用户分类
+export const getUserClass = data => fetch('admin/user/findAllCategory', data);
+
 
 
 

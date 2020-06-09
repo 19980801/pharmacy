@@ -1,60 +1,19 @@
 <template>
   <div>
     <Card>
-      <p slot="title">抢购合约批次管理</p>
+      <p slot="title">新增题目</p>
       <div class="sear">
-        <Form :model="formItem" :label-width="80" inline>
-          <FormItem label="抢购时间：">
-            <DatePicker type="date" placeholder="请选择抢购时间" style="width: 200px"  v-model="formItem.lootTime"></DatePicker>
-            <!-- <Time-picker type="time" placeholder="请选择抢购时间" style="width:200px" v-model="formItem.lootTime"></Time-picker> -->
+        <Form :model="formItem" :rules="ruleInline" :label-width="100" inline>
+          <FormItem label="题目标题：" width='100%'>
+            <Input v-model="subTitle" placeholder="请输入课程标题"></Input>
           </FormItem>
+					<FormItem label="题型分类：" >
+					  <CheckboxGroup v-model="subClass" prop="content">
+					    <Checkbox :label="item.name" v-for="(item,index) in contentList" :key="index"></Checkbox>
+					  </CheckboxGroup>
+					</FormItem>
         </Form>
-        <div class="btn">
-          <Button type="primary" @click="search">
-            <Icon type="ios-search" style="font-size:16px" />查询</Button>
-          <Button type="default" style="margin-left:10px" @click="clear">
-            <Icon type="ios-undo" style="font-size:16px" />重置</Button>
-        </div>
       </div>
-      <div class="tableHead">
-        <div>数据列表</div>
-        <div>
-          <Button type="primary" @click="addModal=true">添加</Button>
-        </div>
-      </div>
-      <Table :columns="tableColumns" :data="tableData" border width></Table>
-      <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
-      <!-- 添加 -->
-      <Modal v-model="addModal" title="添加" :closable="false">
-        <Form ref="formValidate" :model="formValidate" :label-width="100" :rules="ruleValidate">
-          <FormItem label="合约标题：" prop="contractTitle">
-            <Select v-model="contractId" @on-change='contractchange($event)' :label-in-value="true">
-              <Option v-for="(item,i) of list" :key="i" :value="item.id">{{item.contractTitle}}</Option>
-            </Select>
-          </FormItem>
-          <FormItem label="合约编号：" prop="contractNum">
-            <Input v-model="formValidate.contractNum" disabled></Input>
-          </FormItem>
-          <FormItem label="抢购时间：" prop="lootTime">
-            <Time-picker type="time" placeholder="请选择抢购时间" style="width: 100%" v-model="formValidate.lootTime"></Time-picker>
-          </FormItem>
-          <FormItem label="抢购人数：" prop="lootNum">
-            <Input v-model="formValidate.lootNum" placeholder="请输入抢购数量"></Input>
-          </FormItem>
-        </Form>
-        <div slot="footer">
-          <Button type="default" @click="cancel">取消</Button>
-          <Button type="primary" @click="sure">确定</Button>
-        </div>
-      </Modal>
-      <!-- 删除 -->
-      <Modal v-model="isShowDelModal" title="删除">
-        <p>确定是否删除数据？</p>
-        <div slot="footer" style="text-align: center">
-          <Button type="error" @click="isShowDelModal = false" style="border-radius: none">取消</Button>
-          <Button type="primary" @click="del(id)" style="border-radius: none">确定</Button>
-        </div>
-      </Modal>
     </Card>
 
   </div>
@@ -70,85 +29,13 @@ import {
 export default {
   data() {
     return {
-      isShowDelModal: false,
-      addModal: false,
-      picModal: false,
-      pic: "",
-      total: 0,
-      page: 1,
-      limit: 10,
-      formItem: {
-        lootTime: ""
-      },
-      contractId:"",
-      formValidate: {
-        contractNum: "",
-        contractTitle: "",
-        lootTime: "",
-        lootNum: ""
-      },
-      ruleValidate: {
-        contractNum: [
-          { required: true, message: "合约编号不能为空", trigger: "change" }
-        ],
-        contractTitle: [
-          { required: true, message: "合约标题不能为空", trigger: "change" }
-        ],
-        lootTime: [
-          { required: true,message:"抢购时间不能为空", trigger: 'change' }
-        ],
-        lootNum: [
-          { required: true, message: "抢购数量不能为空", trigger: "change" },
-          {
-            type: "string",
-            pattern: /^\d+$/,
-            message: "请输入大于0的数字",
-            trigger: "blur"
-          }
-        ]
-      },
-      tableColumns: [
-        {
-          title: "合约编号",
-          key: "contractNum"
-        },
-        {
-          title: "合约标题",
-          key: "contractTitle"
-        },
-        {
-          title: "抢购时间",
-          key: "lootTime"
-        },
-        {
-          title: "抢购人数",
-          key: "lootNum"
-        },
-        {
-          title: "操作",
-          render: (h, params) => {
-            return [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "error"
-                  },
-                  on: {
-                    click: () => {
-                      this.isShowDelModal = true;
-                      this.id = params.row.id;
-                    }
-                  }
-                },
-                "删除"
-              )
-            ];
-          }
-        }
-      ],
-      tableData: [],
-      list: []
+      subTitle:"",
+			subClass:"",
+			contentList: [
+			  { name: "心血管" },
+			  { name: "糖尿病" },
+			  { name: "特殊人群用药" },
+			], //内容list
     };
   },
   created() {
@@ -222,7 +109,6 @@ export default {
         return y + "-" + m + "-" + d;
     },
     sure() {
-      console.log(this.formValidate.lootTime);
       this.$refs["formValidate"].validate(valid => {
         if (valid) {
           addBatch({

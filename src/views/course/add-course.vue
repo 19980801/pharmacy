@@ -69,7 +69,7 @@
 
 <script>
 import smeditor from "@/SMEditor/SMEditor.vue";
-import { BASICURL, getCoursetypeList } from "@/service/getData";
+import { BASICURL, getCoursetypeList, getUserClass } from "@/service/getData";
 import { getStore, removeStore, setStore } from "@/config/storage";
 export default {
   data() {
@@ -132,6 +132,7 @@ export default {
   created() {
     removeStore("smeditor");
     this.getType();
+		this.getUserList();
   },
   methods: {
     beforeUpload(res) {
@@ -163,6 +164,12 @@ export default {
         }
       });
     },
+		// 获取用户分类
+		getUserList(){
+			getUserClass().then(res=>{
+				console.log(res);
+			})
+		},
     upload() {
       this.$refs.smeditor.$emit("saveInner");
       let uploadObj = {
