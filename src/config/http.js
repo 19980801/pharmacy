@@ -2,7 +2,6 @@ import axios from 'axios'
 import { Message } from 'iview'
 axios.defaults.baseURL = '/uc'
 let http = {}
-
 http.ajax = axios.create();
 http.get = (url, data) => {
   return new Promise((resolve, reject) => {

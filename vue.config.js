@@ -9,8 +9,8 @@ const cdn = {
         // 'https://cdn.bootcss.com/vue/2.6.10/vue.min.js',     //上线后压缩的vue
         'https://cdn.bootcss.com/vue/2.6.10/vue.js',            //开发期间未压缩的vue
         'https://cdn.bootcss.com/vue-router/3.0.3/vue-router.min.js',
-        "https://unpkg.com/axios@0.19.0/dist/axios.min.js",
-        "https://cdn.bootcss.com/iview/3.4.2/iview.min.js"
+        // "https://unpkg.com/axios@0.19.0/dist/axios.min.js",
+        // "https://cdn.bootcss.com/iview/3.4.2/iview.min.js"
     ]
 }
 const BASE_URL = process.env.NODE_ENV === 'production' ?
@@ -41,8 +41,8 @@ module.exports = {
         config.externals = {
             'vue': 'Vue',
             'vue-router': 'VueRouter',
-            "axios": "axios",
-            'iview': 'iview'
+            // "axios": "axios",
+            // 'iview': 'iview'
         }
         return {
             plugins: [

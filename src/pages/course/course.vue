@@ -39,17 +39,17 @@
             <li>最热</li>
           </ul>
           <div class="radioBox">
-            <div class="radioItem">
+            <div class="radioItem" @click="choiceType(1)">
               <img src="../../assets/imgs/radioed.png" alt class="radioImg" v-if="vipType==1" />
               <img src="../../assets/imgs/radio.png" alt class="radioImg" v-else />
               <span>免费</span>
             </div>
-            <div class="radioItem">
+            <div class="radioItem" @click="choiceType(2)">
               <img src="../../assets/imgs/radioed.png" alt class="radioImg" v-if="vipType==2" />
               <img src="../../assets/imgs/radio.png" alt class="radioImg" v-else />
               <span>vip</span>
             </div>
-            <div class="radioItem">
+            <div class="radioItem" @click="choiceType(3)">
               <img src="../../assets/imgs/radioed.png" alt class="radioImg" v-if="vipType==3" />
               <img src="../../assets/imgs/radio.png" alt class="radioImg" v-else />
               <span>付费</span>
@@ -95,6 +95,9 @@ export default {
   methods:{
     choice(){
       this.$router.push("/courseBuy");
+    },
+    choiceType(i){
+      this.vipType=i;
     }
   }
 };
