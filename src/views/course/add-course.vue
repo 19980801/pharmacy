@@ -26,18 +26,20 @@
               <Checkbox :label="item.id" v-for="(item,index) in userTypeList" :key="index">{{item.categoryName}}</Checkbox>
             </CheckboxGroup>
           </FormItem>
-          <FormItem label="课程视频:" prop="courseVideos">
-            <Upload
+          <FormItem label="课程视频:">
+            <!-- <Upload
               :action="uploadUrl"
-              multiple
               :before-upload="beforeUpload"
               :on-success="handleSuccess"
             >
               <Button type="ghost" icon="ios-cloud-upload-outline">上传视频</Button>
-            </Upload>
+            </Upload> -->
+            <Button type="primary" @click="addVideo=true">添加</Button>
           </FormItem>
           <div>
+            <div>
 
+            </div>
           </div>
           <FormItem label="收费：" prop="price">
             <RadioGroup v-model="addForm.price">
@@ -67,6 +69,26 @@
       </div>
       <Button type="primary" class="submit" @click="addCourse">提交</Button>
     </Card>
+    <Modal v-model="addVideo" title="上传视频" >
+      <Form ref="addValidate" :model="addValidate" :label-width="90" :rules="ruleddValidate">
+        <FormItem label="视频标题：" prop="videoTitle">
+          <Input v-model="addValidate.videoTitle"></Input>
+        </FormItem>
+        <FormItem label="课程视频:" prop="video">
+            <Upload
+              :action="uploadUrl"
+              :before-upload="beforeUpload"
+              :on-success="handleSuccess"
+            >
+              <Button type="ghost" icon="ios-cloud-upload-outline">上传视频</Button>
+            </Upload>
+          </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button type="default" @click="addVideo=false">取消</Button>
+        <Button type="primary" @click="sure">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -93,7 +115,8 @@ export default {
           this.$Message.error("上传失败!");
         }
       },
-      uploadUrl: `http://oss-cn-beijing.aliyuncs.com`,
+      addVideo:false,
+      uploadUrl: `http://127.0.0.1`,
       uploadData: {},
       contentList: [
         { name: "高血压" },
@@ -129,9 +152,9 @@ export default {
         userType: [
           { required: true, message: "用户分类不能为空", trigger: "change",type: 'array'}
         ],
-        courseVideos:[
-          { required: true, message: "课程视频不能为空", trigger: "blur" }
-        ],
+        // courseVideos:[
+        //   { required: true, message: "课程视频不能为空", trigger: "blur" }
+        // ],
         price:[
           { required: true, message: "是否收费不能为空", trigger: "change" }
         ],
@@ -140,6 +163,18 @@ export default {
         ],
         courseStatus:[
           { required: true, message: "课程状态不能为空", trigger: "change" }
+        ]
+      },
+      addValidate:{
+        videoTitle:"",
+        video:""
+      },
+      ruleddValidate:{
+        videoTitle:[
+          { required: true, message: "视频标题不能为空", trigger: "blur" }
+        ],
+        video:[
+          { required: true, message: "视频不能为空", trigger: "blur" }
         ]
       },
       imgUploadLoading: false
@@ -151,6 +186,8 @@ export default {
     this.getUserList();
   },
   methods: {
+    sure(){},
+
     beforeUpload(res) {
       console.log(res);
       this.imgUploadLoading = true;
