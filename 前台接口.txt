@@ -1,0 +1,799 @@
+前台端口顶级路径：/uc
+端口号：6002
+需要一个全局请求头:
+	User_Id：当前登陆人id
+
+1. 用户注册发送短信
+URL = sms/register/code
+请求方式：POST
+参数类型：x-www-form-urlencoded
+请求参数：
+	mobile(手机号)
+返回参数：
+	{
+		"code": 0,
+		"message": "发送成功",
+		"totalPage": null,
+		"totalElement": null,
+		"data": null
+	}
+	
+2. 用户注册
+URL = register/user/phone
+请求方式：POST
+参数类型：JSON
+请求参数：
+	{
+		"mobilePhone":"15194607793",(手机号)
+		"msgCode":"129975",(验证码)
+		"password":"dpy19980707"(密码)
+	}
+返回参数：
+	{
+		"code": 0,
+		"message": "注册成功",
+		"totalPage": null,
+		"totalElement": null,
+		"data": null
+	}
+
+3. 查询首页数据
+URL = course/homePage
+请求方式：GET
+请求参数：无
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "latestCurriculum": [(最新课程)
+            {
+                "id": 2,(课程id)
+                "courseTitle": "测试标题6",(课程标题)
+                "description": "这是一个H5",(课程描述)
+                "memberOnly": 0,(会员专属 0-否 1-是)
+                "whetherPay": 0,(是否付费 0-否 1-是)
+                "coursePrice": 100.21,(课程价格/元)
+                "classNum": 2,(课程视频数量)
+                "courseCategoryId": 1,(关联分类id)
+                "createUser": "杜品言222",(上传人)
+                "courseStatus": 0,(课程状态 0-上架 1-下架)
+                "hotSort": null,(热度排序)
+                "createTime": "2020-06-05 02:29:52",(创建时间)
+                "updateTime": null,(更新时间)
+                "classHours": [(关联课时)
+                    {
+                        "id": 4,(课时id)
+                        "classTitle": "课时标题7",(课时标题)
+                        "classUrl": "www.baidu.com",(课时视频链接)
+                        "createUser": "1111222",(创建人)
+                        "createTime": "2020-06-05 02:29:52",(创建时间)
+                        "updateTime": null
+                    },
+                    {
+                        "id": 3,
+                        "classTitle": "课时标题8",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "2223332",
+                        "createTime": "2020-06-05 02:29:52",
+                        "updateTime": null
+                    }
+                ],
+                "courseContentSet": [(关联课程内容)
+                    {
+                        "id": 12,(内容id)
+                        "contentName": "药学教育",(内容名字)
+                        "categoryId": 1,(所属分类id)
+                        "createTime": "2020-05-30 12:17:10"
+                    },
+                    {
+                        "id": 5,
+                        "contentName": "心血管系统",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:46"
+                    },
+                    {
+                        "id": 10,
+                        "contentName": "药学监护",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:49"
+                    }
+                ]
+            },
+            {
+                "id": 1,
+                "courseTitle": "测试标题6",
+                "description": "这是一个H5",
+                "memberOnly": 0,
+                "whetherPay": 0,
+                "coursePrice": 100.21,
+                "classNum": 0,
+                "courseCategoryId": 1,
+                "createUser": "杜品言222",
+                "courseStatus": 0,
+                "hotSort": null,
+                "createTime": "2020-06-03 09:34:03",
+                "updateTime": null,
+                "classHours": [
+                    {
+                        "id": 1,
+                        "classTitle": "课时标题8",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "2223332",
+                        "createTime": "2020-06-03 09:34:03",
+                        "updateTime": null
+                    },
+                    {
+                        "id": 2,
+                        "classTitle": "课时标题7",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "1111222",
+                        "createTime": "2020-06-03 09:34:03",
+                        "updateTime": null
+                    }
+                ],
+                "courseContentSet": [
+                    {
+                        "id": 7,
+                        "contentName": "肿瘤",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:10"
+                    },
+                    {
+                        "id": 1,
+                        "contentName": "高血压",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:14:59"
+                    },
+                    {
+                        "id": 4,
+                        "contentName": "特殊人群用药",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:35"
+                    },
+                    {
+                        "id": 11,
+                        "contentName": "药物经济学",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:02"
+                    }
+                ]
+            }
+        ],
+        "hotCourses": [(最热课程)
+            {
+                "id": 1,
+                "courseTitle": "测试标题6",
+                "description": "这是一个H5",
+                "memberOnly": 0,
+                "whetherPay": 0,
+                "coursePrice": 100.21,
+                "classNum": 0,
+                "courseCategoryId": 1,
+                "createUser": "杜品言222",
+                "courseStatus": 0,
+                "hotSort": null,
+                "createTime": "2020-06-03 09:34:03",
+                "updateTime": null,
+                "classHours": [
+                    {
+                        "id": 1,
+                        "classTitle": "课时标题8",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "2223332",
+                        "createTime": "2020-06-03 09:34:03",
+                        "updateTime": null
+                    },
+                    {
+                        "id": 2,
+                        "classTitle": "课时标题7",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "1111222",
+                        "createTime": "2020-06-03 09:34:03",
+                        "updateTime": null
+                    }
+                ],
+                "courseContentSet": [
+                    {
+                        "id": 7,
+                        "contentName": "肿瘤",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:10"
+                    },
+                    {
+                        "id": 1,
+                        "contentName": "高血压",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:14:59"
+                    },
+                    {
+                        "id": 4,
+                        "contentName": "特殊人群用药",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:35"
+                    },
+                    {
+                        "id": 11,
+                        "contentName": "药物经济学",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:02"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "courseTitle": "测试标题6",
+                "description": "这是一个H5",
+                "memberOnly": 0,
+                "whetherPay": 0,
+                "coursePrice": 100.21,
+                "classNum": 2,
+                "courseCategoryId": 1,
+                "createUser": "杜品言222",
+                "courseStatus": 0,
+                "hotSort": null,
+                "createTime": "2020-06-05 02:29:52",
+                "updateTime": null,
+                "classHours": [
+                    {
+                        "id": 4,
+                        "classTitle": "课时标题7",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "1111222",
+                        "createTime": "2020-06-05 02:29:52",
+                        "updateTime": null
+                    },
+                    {
+                        "id": 3,
+                        "classTitle": "课时标题8",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "2223332",
+                        "createTime": "2020-06-05 02:29:52",
+                        "updateTime": null
+                    }
+                ],
+                "courseContentSet": [
+                    {
+                        "id": 12,
+                        "contentName": "药学教育",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:10"
+                    },
+                    {
+                        "id": 5,
+                        "contentName": "心血管系统",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:46"
+                    },
+                    {
+                        "id": 10,
+                        "contentName": "药学监护",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:49"
+                    }
+                ]
+            }
+        ],
+        "freeCourse": [(免费课程)
+            {
+                "id": 2,
+                "courseTitle": "测试标题6",
+                "description": "这是一个H5",
+                "memberOnly": 0,
+                "whetherPay": 0,
+                "coursePrice": 100.21,
+                "classNum": 2,
+                "courseCategoryId": 1,
+                "createUser": "杜品言222",
+                "courseStatus": 0,
+                "hotSort": null,
+                "createTime": "2020-06-05 02:29:52",
+                "updateTime": null,
+                "classHours": [
+                    {
+                        "id": 4,
+                        "classTitle": "课时标题7",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "1111222",
+                        "createTime": "2020-06-05 02:29:52",
+                        "updateTime": null
+                    },
+                    {
+                        "id": 3,
+                        "classTitle": "课时标题8",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "2223332",
+                        "createTime": "2020-06-05 02:29:52",
+                        "updateTime": null
+                    }
+                ],
+                "courseContentSet": [
+                    {
+                        "id": 12,
+                        "contentName": "药学教育",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:10"
+                    },
+                    {
+                        "id": 5,
+                        "contentName": "心血管系统",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:46"
+                    },
+                    {
+                        "id": 10,
+                        "contentName": "药学监护",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:49"
+                    }
+                ]
+            },
+            {
+                "id": 1,
+                "courseTitle": "测试标题6",
+                "description": "这是一个H5",
+                "memberOnly": 0,
+                "whetherPay": 0,
+                "coursePrice": 100.21,
+                "classNum": 0,
+                "courseCategoryId": 1,
+                "createUser": "杜品言222",
+                "courseStatus": 0,
+                "hotSort": null,
+                "createTime": "2020-06-03 09:34:03",
+                "updateTime": null,
+                "classHours": [
+                    {
+                        "id": 1,
+                        "classTitle": "课时标题8",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "2223332",
+                        "createTime": "2020-06-03 09:34:03",
+                        "updateTime": null
+                    },
+                    {
+                        "id": 2,
+                        "classTitle": "课时标题7",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "1111222",
+                        "createTime": "2020-06-03 09:34:03",
+                        "updateTime": null
+                    }
+                ],
+                "courseContentSet": [
+                    {
+                        "id": 7,
+                        "contentName": "肿瘤",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:10"
+                    },
+                    {
+                        "id": 1,
+                        "contentName": "高血压",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:14:59"
+                    },
+                    {
+                        "id": 4,
+                        "contentName": "特殊人群用药",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:35"
+                    },
+                    {
+                        "id": 11,
+                        "contentName": "药物经济学",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:02"
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+4. 分页条件查询课程
+URL = course/pageQuery
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "charge":"0",(0:免费，1:收费，2:VIP)
+    "courseCategoryId":"1",(课程分类id)
+    "courseContentId":"",(课程内容id)
+    "sortType":"1"(0:最新 1:最热)
+}
+
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 1,
+                "courseTitle": "测试标题6",
+                "description": "这是一个H5",
+                "memberOnly": 0,
+                "whetherPay": 0,
+                "coursePrice": 100.21,
+                "classNum": 0,
+                "courseCategoryId": 1,
+                "createUser": "杜品言222",
+                "courseStatus": 0,
+                "hotSort": null,
+                "createTime": "2020-06-03 09:34:03",
+                "updateTime": null,
+                "classHours": [
+                    {
+                        "id": 1,
+                        "classTitle": "课时标题8",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "2223332",
+                        "createTime": "2020-06-03 09:34:03",
+                        "updateTime": null
+                    },
+                    {
+                        "id": 2,
+                        "classTitle": "课时标题7",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "1111222",
+                        "createTime": "2020-06-03 09:34:03",
+                        "updateTime": null
+                    }
+                ],
+                "courseContentSet": [
+                    {
+                        "id": 7,
+                        "contentName": "肿瘤",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:10"
+                    },
+                    {
+                        "id": 1,
+                        "contentName": "高血压",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:14:59"
+                    },
+                    {
+                        "id": 4,
+                        "contentName": "特殊人群用药",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:35"
+                    },
+                    {
+                        "id": 11,
+                        "contentName": "药物经济学",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:02"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "courseTitle": "测试标题6",
+                "description": "这是一个H5",
+                "memberOnly": 0,
+                "whetherPay": 0,
+                "coursePrice": 100.21,
+                "classNum": 2,
+                "courseCategoryId": 1,
+                "createUser": "杜品言222",
+                "courseStatus": 0,
+                "hotSort": null,
+                "createTime": "2020-06-05 02:29:52",
+                "updateTime": null,
+                "classHours": [
+                    {
+                        "id": 4,
+                        "classTitle": "课时标题7",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "1111222",
+                        "createTime": "2020-06-05 02:29:52",
+                        "updateTime": null
+                    },
+                    {
+                        "id": 3,
+                        "classTitle": "课时标题8",
+                        "classUrl": "www.baidu.com",
+                        "createUser": "2223332",
+                        "createTime": "2020-06-05 02:29:52",
+                        "updateTime": null
+                    }
+                ],
+                "courseContentSet": [
+                    {
+                        "id": 12,
+                        "contentName": "药学教育",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:10"
+                    },
+                    {
+                        "id": 5,
+                        "contentName": "心血管系统",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:46"
+                    },
+                    {
+                        "id": 10,
+                        "contentName": "药学监护",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:49"
+                    }
+                ]
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalPages": 1,
+        "totalElements": 2,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "first": true,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 2,
+        "empty": false
+    }
+}
+
+5. 查询通知
+URL = inform/pageQuery
+请求方式：POST
+参数类型：JSON
+请求参数：
+
+{
+    "pageNum":"1",(页码)
+    "paegSize":"10",(每页记录数)
+    "informType":""(通知类型 0-系统通知 1-考核通知 2-批阅通知 3-成绩通知)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 19,(主键id)
+                "informTitle": "今天天气不错1133331",(通知标题)
+                "informContent": "今天天气很111333好",(通知内容)
+                "informType": 0,(通知类型 0-系统通知 1-考核通知 2-批阅通知 3-成绩通知)
+                "userId": 1,(所属用户id)
+                "messageStatus": 0,(消息状态 0-未读 1-已读)
+                "createTime": "2020-06-05 10:30:09",(创建时间)
+                "updateTime": null(更新时间)
+            },
+            {
+                "id": 18,
+                "informTitle": "今天天气不错1133331",
+                "informContent": "今天天气很111333好",
+                "informType": 0,
+                "userId": 1,
+                "messageStatus": 0,
+                "createTime": "2020-06-03 19:26:16",
+                "updateTime": null
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalPages": 2,
+        "totalElements": 19,
+        "last": false,
+        "number": 0,
+        "size": 10,
+        "first": true,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 10,
+        "empty": false
+    }
+}
+
+6. 点击通知修改记录阅读状态 未读-已读
+URL = inform/updateStatus/{id}
+请求方式：GET
+参数类型：路径参数
+	id:当前记录id
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+7. 查询学习记录
+URL = user/findStudyRecordIn
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",(页码)
+    "pageSize":"10",(每页记录数)
+    "type":"1"(0-在学课程 1-错题本)
+}
+返回参数：
+在学课程返回：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 1,(主键)
+                "userId": 1,(用户id)
+                "classId": 1,(课程id)
+                "classTitle": "课程标题",(课程标题)
+                "classImg": "http://www.baidu.com",(课程缩略图)
+                "classTime": 123456,(课程有效期/天)
+                "lastWatch": 1,(最后观看课时id)
+                "lastTimestamp": "2020-06-16 19:23:37",(最后观看时间戳)
+                "createTime": "2020-06-16 11:23:33",(创建时间)
+                "updateTime": null,
+                "collectStatus": 0
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "unpaged": false,
+            "paged": true
+        },
+        "totalElements": 1,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 1,
+        "first": true,
+        "empty": false
+    }
+}
+
+错题本返回：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 1,(主键id)
+                "userId": 1,(用户id)
+                "bankId": 1,(题库id)
+                "subjectId": 1,(所选题目id)
+                "answer": "B",(用户选择答案)
+                "caseResult": 0,(选择结果 0-错误 1-正确)
+                "collectStatus": 0,(是否收藏 0-否 1-是)
+                "createTime": "2020-06-15 03:06:10",
+                "questionSubject": {(关联题目)
+                    "id": 1,(题目id)
+                    "questionTitle": "测试题目",(题目标题)
+                    "questionType": 0,(题目类型 0-单选题 1-多选题)
+                    "questionValue": 3.00,(分值)
+                    "answerExplain": "这个题目这么简单你不会吗",(答案解析)
+                    "createUser": "杜品言",(创建人)
+                    "createTime": "2020-06-12 08:30:39",(创建时间)
+                    "questionOptionList": [(题目关联选项)
+                        {
+                            "id": 1,(选项id)
+                            "optionContent": "选项1",(选项内容)
+                            "isTrue": 0,(正确答案标识 0-否 1-是)
+                            "questionId": 1,(所属问题id)
+                            "createTime": "2020-06-12 08:40:41"(创建时间)
+                        },
+                        {
+                            "id": 2,
+                            "optionContent": "选项2",
+                            "isTrue": 0,
+                            "questionId": 1,
+                            "createTime": "2020-06-12 08:40:54"
+                        },
+                        {
+                            "id": 3,
+                            "optionContent": "选项3",
+                            "isTrue": 0,
+                            "questionId": 1,
+                            "createTime": "2020-06-12 08:41:01"
+                        },
+                        {
+                            "id": 4,
+                            "optionContent": "选项4",
+                            "isTrue": 0,
+                            "questionId": 1,
+                            "createTime": "2020-06-12 08:41:10"
+                        }
+                    ]
+                }
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "unpaged": false,
+            "paged": true
+        },
+        "totalElements": 1,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 1,
+        "first": true,
+        "empty": false
+    }
+}
+
+8. 收藏/取消收藏 学习记录-课程
+URL = user/updateCollect/class
+请求方式：x-www-form-urlencoded
+请求参数：
+	recordId：当前记录id
+	status：true(添加收藏) false(取消收藏)
+返回参数：
+{
+    "code": 0,
+    "message": "操作成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
