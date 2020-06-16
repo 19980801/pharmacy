@@ -8,15 +8,15 @@
                         v-for="(item,index) in learningList" :key="index">{{item.name}}</div>
                 </div>
                 <div class="classList" v-if="learningCur==0">
-                    <div class="classItem flex" v-for="(item,index) in 3" :key="index">
+                    <div class="classItem flex" v-for="(item,index) in list" :key="index">
                         <img class="leftImg" src="../../assets/imgs/index/loginPic.png" alt="">
                         <div class="rightClassTitle">
                             <div class="studyBtn">继续学习</div>
-                            <div class="topTitle">第六届技能大赛-药师药学服务人学服务人文胜服务人文胜任力宣讲会-技能大赛比赛题型解析</div>
+                            <div class="topTitle">{{item.classTitle}}</div>
                             <div class="validityTime flex">
                                 <div class="validityTimeBox">
                                     <p>学习有效期（倒计时）</p>
-                                    <p>有效期至：2020.11.07</p>
+                                    <p>有效期至：{{item.classTime}}</p>
                                 </div>
                                 <div class="collectBox" :class="{active:index==0}">
                                     <Icon type="md-heart" />
@@ -27,12 +27,20 @@
                     </div>
                 </div>
                 <div class="errorsList" v-if="learningCur==1">
-                    <div class="errorsItem flex-btween" v-for="(item,index) in 6" :key="index">
+                    <div class="errorsItem flex-btween" v-for="(item,index) in list" :key="index">
                         <div class="errorsTitleBox flex">
-                            <span>（单选题）</span>
-                            <p>具有中枢抑制作用的抗胆碱药是 </p>
+                            <span v-if="item.questionSubject && item.questionSubject.questionType==0">（单选题）</span>
+                            <span v-if="item.questionSubject && item.questionSubject.questionType==1">（多选题）</span>
+                            <p>{{item.questionSubject && item.questionSubject.questionTitle}} </p>
                         </div>
-                        <div class="errorsBtn">查看</div>
+                        <div class="errorsBtn" @click="showDetail(item.id)">查看</div>
+                    </div>
+                </div>
+                <div class="pageBox">
+                    <div class="page">
+                        <p>首页</p>
+                        <Page :total="total" prev-text="上一页" next-text="下一页" />
+                        <p>尾页</p>
                     </div>
                 </div>
             </div>
@@ -46,7 +54,11 @@
                 </div>
                 <div class="alertCon">
                     <div>
-                        <p class="title">（单选题）具有中枢抑制作用的抗胆碱药是</p>
+                        <p class="title">
+                            <span>（单选题）</span>
+                            <span>（双选题）</span>
+                            <span>具有中枢抑制作用的抗胆碱药是</span>
+                        </p>
                         <div class="optionBox">
                             <RadioGroup v-model="vertical" vertical>
                                 <Radio label="资产保值，我不愿意承担任何投资风险">
@@ -89,7 +101,7 @@
                                 </div>
                                 <div>
                                     <img src="../../assets/imgs/feedback.png" alt="">
-                                    <span>收藏</span>
+                                    <span>反馈</span>
                                 </div>
                             </div>
                         </div>
@@ -117,13 +129,43 @@ export default {
                 { name: "错题本", id: 2 }
             ],
             learningCur: 0, //学习记录选项卡
-            alert: false
+            alert: false,
+            list: [],
+            total: 0,
+            pageNum: 1,
+            pageSize: 10,
+            type: 0 //0-在学课程 1-错题本
         };
     },
+    created() {
+        this.getList(0);
+    },
     methods: {
+        // 查询学习记录
+        getList(type) {
+            this.$http
+                .post("/user/findStudyRecordIn", {
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
+                    type:type
+                })
+                .then(res => {
+                    if (res.code == 0) {
+                        console.log(res);
+                        this.list = res.data.content;
+                        this.total = res.data.totalElements;
+                    }
+                });
+        },
+        // 查看错题详情
+        showDetail(){
+            this.alert=true;
+        },
         // 学习记录选项卡
         choseLearningTab(i) {
+            console.log(i);
             this.learningCur = i;
+            this.getList(i);
         },
         // 显示弹框
         showAlert() {
@@ -143,7 +185,7 @@ export default {
         width: 960px;
         background: #fff;
         border-radius: 2px;
-        min-height:600px;
+        min-height: 600px;
         .rightBox {
             .tabCar {
                 width: 100%;
@@ -265,6 +307,39 @@ export default {
                     }
                 }
             }
+            // 分页样式
+            /deep/ .ivu-page-item {
+                border-radius: 50%;
+                margin: 0 20px;
+                border: 0;
+                color: #4d555d;
+                font-size: 14px;
+                width: 35px;
+                height: 35px;
+                line-height: 35px;
+            }
+            /deep/ .ivu-page-item-active {
+                background: rgba(77, 85, 93, 1);
+                color: #fff;
+            }
+            /deep/ .ivu-page-item-active a,
+            .ivu-page-item-active:hover a {
+                color: #fff;
+            }
+            .pageBox {
+                text-align: center;
+                .page {
+                    display: inline-flex;
+                    height: 35px;
+                    line-height: 35px;
+                    color: #4d555d;
+                    font-size: 14px;
+                }
+                p {
+                    margin: 0 20px;
+                }
+                margin: 50px auto;
+            }
         }
     }
     .alertMask {
@@ -319,7 +394,7 @@ export default {
                 /deep/ .ivu-radio-group-vertical .ivu-radio-wrapper {
                     height: 45px;
                 }
-                padding:10px 20px 40px;
+                padding: 10px 20px 40px;
                 .title {
                     height: 26px;
                     font-size: 16px;
@@ -342,7 +417,7 @@ export default {
                     .middle {
                         border: 0 !important;
                     }
-                    .borderBottom{
+                    .borderBottom {
                         border-bottom: 1px solid #ebeef2;
                     }
                     .line {
@@ -398,7 +473,7 @@ export default {
                         font-family: PingFangSC-Regular, PingFang SC;
                         font-weight: 400;
                         color: rgba(28, 31, 33, 1);
-                        margin:20px;
+                        margin: 20px;
                         img {
                             width: 15px;
                             height: 15px;

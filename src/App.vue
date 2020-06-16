@@ -286,10 +286,10 @@ export default {
             showLoginList: false, //显示用户列表
             selectShow: false, //头部下拉框内容
             historyShow: false, //历史搜索内容
-            nologin: true, //登录状态
+            nologin: false, //登录状态
             routeName: "/", //当前路由
             searchKey: "", //搜索关键字
-            showModel: true,
+            showModel: false,
             loginCur: 0,
             checked: true,
             checkUrl: require("./assets/imgs/index/loginCheck.png"),
@@ -298,13 +298,13 @@ export default {
         };
     },
     created() {
-        this.sendCode();
+
     },
     methods: {
         // 用户注册发送短信
         sendCode(){
             this.$http.form("sms/register/code",{
-                mobile:"18224565842"
+                mobilePhone:"18224565842"
             }).then(res=>{
                 console.log(res);
             })
