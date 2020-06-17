@@ -60,7 +60,7 @@
                     </div>
                 </div>
                 <div class="courseList">
-                    <div class="courseItem" v-for="(item,index) in latestCurriculum" :key="index" @click="choice">
+                    <div class="courseItem" v-for="(item,index) in 8" :key="index" @click="choice">
                         <img src alt class="top" />
                         <div class="bottom">
                             <div class="subTitle">第二届药健康科普中国行药师科普宣讲赋能中国行药师科普宣讲赋能讲赋能</div>
@@ -141,27 +141,11 @@ export default {
             showArrow: "never",
             speed: 5000,
             valueCal: 0,
-            latestCurriculum:[],        //最新课程
-            hotCourses:[],              //最热课程
-            freeCourse:[],              //免费课程
         };
     },
     created() {
-        this.getList();
     },
     methods: {
-        // 查询首页数据
-        getList(){
-            this.$http.get("/course/homePage").then(res=>{
-                console.log(res);
-                console.log(res.data.latestCurriculum);
-                if(res.code==0){
-                    this.latestCurriculum=res.data.latestCurriculum;            //最新课程
-                    this.hotCourses=res.data.hotCourses;                        //最热课程
-                    this.freeCourse=res.data.freeCourse;                        //免费课程
-                }
-            })
-        },
         // 跳转我的
         goMine() {
             this.$router.push("/mine");

@@ -783,7 +783,7 @@ URL = user/findStudyRecordIn
     }
 }
 
-8. 收藏/取消收藏 学习记录-课程
+8. 收藏/取消收藏 学习记录-课程(有问题未对接)
 URL = user/updateCollect/class
 请求方式：x-www-form-urlencoded
 请求参数：

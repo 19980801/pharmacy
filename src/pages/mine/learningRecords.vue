@@ -33,20 +33,21 @@
                             <span v-if="item.questionSubject && item.questionSubject.questionType==1">（多选题）</span>
                             <p>{{item.questionSubject && item.questionSubject.questionTitle}} </p>
                         </div>
-                        <div class="errorsBtn" @click="showDetail(item.id)">查看</div>
+                        <div class="errorsBtn" @click="showDetail(index)">查看</div>
                     </div>
                 </div>
                 <div class="pageBox">
                     <div class="page">
                         <p>首页</p>
-                        <Page :total="total" prev-text="上一页" next-text="下一页" />
+                        <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
+                            @on-change="onPageChange" />
                         <p>尾页</p>
                     </div>
                 </div>
             </div>
         </div>
         <!-- 错题详情弹框 -->
-        <div class="alertMask" v-show="alert">
+        <div class="alertMask" v-if="alert">
             <div class="alert">
                 <div class="alertTitle">
                     <p>错题详情</p>
@@ -55,48 +56,40 @@
                 <div class="alertCon">
                     <div>
                         <p class="title">
-                            <span>（单选题）</span>
-                            <span>（双选题）</span>
-                            <span>具有中枢抑制作用的抗胆碱药是</span>
+                            <span v-if="detail&& detail.questionSubject.questionType==0">（单选题）</span>
+                            <span v-else>（双选题）</span>
+                            <span>{{detail.questionSubject.questionTitle}}</span>
                         </p>
                         <div class="optionBox">
-                            <RadioGroup v-model="vertical" vertical>
-                                <Radio label="资产保值，我不愿意承担任何投资风险">
-                                    <span>资产保值，我不愿意承担任何投资风险</span>
-                                </Radio>
-                                <Radio label="尽可能保证本金安全，不在乎收益率比较低">
-                                    <span>尽可能保证本金安全，不在乎收益率比较低</span>
-                                </Radio>
-                                <Radio label="产生较多的收益，可以承担一定的投资风险">
-                                    <span>产生较多的收益，可以承担一定的投资风险</span>
-                                </Radio>
-                                <Radio label="实现资产大幅增长，愿意承担很大的投资风险">
-                                    <span>实现资产大幅增长，愿意承担很大的投资风险</span>
-                                </Radio>
-                            </RadioGroup>
+                            <div class="optionItem" v-for="(item,i) in detail.questionSubject.questionOptionList" :key="i">
+                                <span class="option" v-if="item.isTrue==0"></span>
+                                <img src="../../assets/imgs/clicked.png" alt="" class="clicked" v-else>
+                                <span>{{item.optionContent}}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="answerBox">
                         <div class="line">
                             <p class="marginRight">
                                 <span class="answerTit">正确答案：</span>
-                                <span class="correct">B</span>
+                                <span class="correct">{{detail.answer}}</span>
                             </p>
                             <p>
                                 <span>您的答案：</span>
-                                <span class="error">A</span>
+                                <span class="error" v-for="(item,i) in rightOption" :key="i">{{item}}</span>
                             </p>
                         </div>
                         <div class="borderBottom">
                             <div class="line middle">
                                 <p>
                                     <span class="answerTit">答案解析：</span>
-                                    <p>阿片类药物常见的不良反应有：便秘，恶心、呕吐，嗜睡及过度镇静，尿储留，瘙痒，眩晕，精神错乱及中枢神经毒性反应，呼吸抑制等。(麻醉药品临床应用指导原则》）</p>
+                                    <p>{{detail.questionSubject.answerExplain}}</p>
                                 </p>
                             </div>
                             <div class="collectionBox">
                                 <div>
-                                    <img src="../../assets/imgs/collection.png" alt="">
+                                    <img src="../../assets/imgs/collection.png" alt="" v-if="detail.collectStatus==0">
+                                    <Icon type="md-heart" v-else class="hearted"/>
                                     <span>收藏</span>
                                 </div>
                                 <div>
@@ -105,12 +98,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="line middle">
+                        <!-- <div class="line middle">
                             <p>
                                 <span class="answerTit">相关课程：</span>
                                 <p>暂无相关课程</p>
                             </p>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -133,8 +126,10 @@ export default {
             list: [],
             total: 0,
             pageNum: 1,
-            pageSize: 10,
-            type: 0 //0-在学课程 1-错题本
+            limit: 10,
+            type: 0, //0-在学课程 1-错题本
+            detail: {},
+            rightOption:[],     //用户选项
         };
     },
     created() {
@@ -146,20 +141,35 @@ export default {
             this.$http
                 .post("/user/findStudyRecordIn", {
                     pageNum: this.pageNum,
-                    pageSize: this.pageSize,
-                    type:type
-                })
-                .then(res => {
+                    pageSize: this.limit,
+                    type: type
+                }).then(res => {
                     if (res.code == 0) {
                         console.log(res);
+                        console.log(String.fromCharCode(64 + parseInt(1)));
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
                     }
                 });
         },
+        onPageChange(page) {
+            this.page = page;
+            this.getList();
+        },
         // 查看错题详情
-        showDetail(){
-            this.alert=true;
+        showDetail(index) {
+            this.alert = true;
+            this.detail=this.list[index];
+            // 判断是否是正确答案
+            for(let i=0;i<this.detail.questionSubject.questionOptionList.length;i++){
+                if(this.detail.questionSubject.questionOptionList[i].isTrue==1){
+                    this.rightOption.push(Number(i+1));
+                }
+            }
+            // 下标转为选项
+            this.rightOption=this.rightOption.map(ele=>{
+                return String.fromCharCode(64 + parseInt(ele));
+            });
         },
         // 学习记录选项卡
         choseLearningTab(i) {
@@ -409,6 +419,25 @@ export default {
                     font-family: PingFangSC-Regular, PingFang SC;
                     font-weight: 400;
                     color: rgba(150, 150, 150, 1);
+                    .optionItem {
+                        display: flex;
+                        align-items: center;
+                        font-size: 14px;
+                        margin:10px 0;
+                        .option {
+                            display: block;
+                            width: 20px;
+                            height: 20px;
+                            border-radius: 50%;
+                            border: 1px solid #ddd;
+                            margin-right: 4px;
+                        }
+                        .clicked {
+                            width: 20px;
+                            height: 20px;
+                            margin-right: 4px;
+                        }
+                    }
                 }
                 .answerBox {
                     background: rgba(246, 248, 250, 1);
@@ -474,6 +503,10 @@ export default {
                         font-weight: 400;
                         color: rgba(28, 31, 33, 1);
                         margin: 20px;
+                        cursor:pointer;
+                        .hearted{
+                            color:#ff077a;
+                        }
                         img {
                             width: 15px;
                             height: 15px;
