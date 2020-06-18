@@ -145,8 +145,6 @@ export default {
                     type: type
                 }).then(res => {
                     if (res.code == 0) {
-                        console.log(res);
-                        console.log(String.fromCharCode(64 + parseInt(1)));
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
                     }

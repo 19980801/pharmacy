@@ -11,8 +11,21 @@
 export default {
     data(){
         return{
-
+            query:''
         }
+    },
+    created(){
+        console.log(this.$route.query)
+        this.query=this.$route.query
+        this.updateMes(this.query.id)
+    },
+    methods:{
+        // 修改已读消息状态
+        updateMes(id){
+            let data={id:id}
+            this.$http.get('inform/updateStatus/'+id).then(res=>{
+            })
+        },
     }
 }
 </script>
