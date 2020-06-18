@@ -8,7 +8,7 @@
 					<div class="userStateBox loginBox">
 						<div class="loginTitle">记录你的学习进度</div>
 						<img src="../../assets/imgs/index/loginPic.png" alt="">
-						<div class="loginBtn">登录</div>
+						<div class="loginBtn" @click="login">登录</div>
 					</div>
 					<!-- 已登录状态显示 -->
 					<div class="userStateBox userInfoBox">
@@ -129,11 +129,16 @@
         </div>
       </div>
     </div>
+    <loginModel :loginInfo="type" @showLogin="showLogins"></loginModel>
   </div>
 </template>
 
 <script>
+import loginModel from '@/components/loginModel.vue'
 export default {
+  components:{
+    loginModel
+  },
   data() {
     return {
       value1: 0,
@@ -141,12 +146,20 @@ export default {
       speed: 5000,
       valueCal: 0,
       list:{},//首页列表对象
+      type:{}
     };
   },
   mounted(){
     this.findList();
   },
 	methods:{
+    showLogins(data){
+      console.log(data)
+      this.type={
+        loginCur:data,
+        showModel:true
+      }
+    },
     // 查询首页列表
     findList(){
       this.$http.get('course/homePage').then(res=>{
@@ -165,7 +178,7 @@ export default {
 		  this.$router.push("/detail");
     },
     login(){
-      console.log(1111)
+     this.showLogins(0)
     }
 	}
 };

@@ -1,0 +1,465 @@
+<template>
+    <div id="login">
+        <!-- 登录注册弹框 -->
+        <div class="loginModel" v-if="loginP.showModel">
+            <div class="login" v-if="login">
+                <Icon type="ios-close" class="close" @click="close" sice="20" />
+                <div class="loginTitle flex">
+                    <div class="log" :class="{active:loginP.loginCur==0}" @click="loginType(0)">
+                        <span>登录</span>
+                        <p></p>
+                    </div>
+                    <div class="reg" :class="{active:loginP.loginCur==1}" @click="loginType(1)">
+                        <span>注册</span>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="inpList">
+                    <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
+                        <FormItem prop="phone" class="inpItem">
+                            <Input type="text" v-model="formInline.phone" placeholder="请输入手机号"></Input>
+                        </FormItem>
+                        <FormItem prop="verImgCode" class="inpItem verifyByPhone" v-if="loginP.loginCur==1">
+                            <div class="verifyBox flex">
+                                <Input type="text" style="width:70%;" class="verCodeInp" v-model="formInline.verImgCode" placeholder="请输入图片验证码"></Input>
+                                <div class>5678</div>
+                            </div>
+                        </FormItem>
+                         <FormItem prop="verCode" class="inpItem verifyByPhone" v-if="loginP.loginCur==1">
+                            <div class="verifyBox flex">
+                                <Input type="text" style="width:70%;border:none" class="verCodeInp" v-model="formInline.verCode" placeholder="请输入验证码"></Input>
+                                <div @click="getVerCode">
+                                    <p>{{getMobileCodeText()}}</p>
+                                </div>
+                            </div>
+                        </FormItem>
+                        <FormItem prop="password" class="inpItem">
+                            <Input type="password" v-model="formInline.password" placeholder="请输入密码"></Input>
+                        </FormItem>
+                    </Form>
+                    <div class="saveLogin">
+                        <div class="flex" v-if="loginP.loginCur==1">
+                            <img :src="checked?checkAUrl:checkUrl" alt @click="choseType" />
+                            <span>
+                                我已同意并阅读
+                                <span style="color:#29B28B;cursor: default;">【用户条款】</span>
+                            </span>
+                        </div>
+                        <div class="flex-btween" v-if="loginP.loginCur==0">
+                            <div class="flex">
+                                <img :src="checked?checkAUrl:checkUrl" alt @click="choseType" />
+                                <span>10天内自动登录</span>
+                            </div>
+                            <div @click="backPassword" style="cursor: default;">忘记密码</div>
+                        </div>
+                    </div>
+                    <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==0">登录</div>
+                    <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==1" @click="register">注册</div>
+                </div>
+            </div>
+            <!-- 找回密码 -->
+            <div class="login backPassword" v-if="!login" sice="20">
+                <Icon type="ios-arrow-back" @click="back" class="close" />
+                <div class="loginTitle flex-center">
+                    <div>找回密码</div>
+                </div>
+                <div class="inpList">
+                    <div class="inpItem">
+                        <input type="text" value placeholder="请输入手机号" />
+                        <p>手机号格式不正确</p>
+                    </div>
+                    <div class="inpItem">
+                        <div class="verifyBox flex">
+                            <input type="text" value placeholder="请输入图片验证码" />
+                            <div class>5678</div>
+                        </div>
+                        <p>手机号格式不正确</p>
+                    </div>
+                    <div class="inpItem verifyByPhone">
+                        <div class="verifyBox flex">
+                            <input type="text" value placeholder="请输入验证码" />
+                            <div class>
+                                <p>请输入验证码</p>
+                            </div>
+                        </div>
+                        <p>手机号格式不正确</p>
+                    </div>
+                    <div class="inpItem">
+                        <input type="text" value placeholder="请输入密码" />
+                        <p>手机号格式不正确</p>
+                    </div>
+                    <div class="saveLogin">
+                        <div class="flex">
+                            <img :src="checked?checkAUrl:checkUrl" alt @click="choseType" />
+                            <span>
+                                我已同意并阅读
+                                <span style="color:#29B28B;cursor: default;">【用户条款】</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="btn">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    name: "loginModel",
+    props:{
+        loginInfo:{
+            type:Object
+        }
+    },
+    data() {
+        return {
+            loginP:{
+                loginCur:0,
+                showModel:false
+            },
+            formInline: {
+                phone: '',
+                password: '',
+                verCode:'',
+                // verImgCode:''
+            },
+            ruleInline: {
+                phone: [
+                    { required: true, message: '请输入手机号', trigger: 'blur' },
+                    { pattern: /^1[3456789]\d{9}$/, message: "手机号码格式不正确", trigger: "blur"}
+                ],
+                password: [
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { type: 'string', min: 6, message: '密码格式为6位以上', trigger: 'blur' }
+                ],
+                verCode:[
+                    {required:true,message:"请输入验证码",trigger:"blur"}
+                ],
+                verImgCode:[
+                    {required:true,message:"请输入图片验证码",trigger:'blur'}
+                ]
+            },
+            isRouterAlive: true,
+            showLoginList: false, //显示用户列表
+            selectShow: false, //头部下拉框内容
+            historyShow: false, //历史搜索内容
+            nologin: false, //登录状态
+            routeName: "/", //当前路由
+            searchKey: "", //搜索关键字
+            showModel: true,
+            loginCur: 0,
+            checked: true,
+            checkUrl: require("@/assets/imgs/index/loginCheck.png"),
+            checkAUrl: require("@/assets/imgs/index/loginCheckA.png"),
+            login: true,
+            wait_timer:false,
+            verContent:''
+        };
+    },
+    created() {
+    },
+    methods: {
+        isShow(){
+            this.showModel=true;
+            this.$emit("showLogin")
+        },
+        // 注册
+        register(){
+            console.log("注册");
+            let data={
+                mobilePhone:this.formInline.phone,
+                password:this.formInline.password,
+                msgCode:this.formInline.verCode
+            }
+            this.$http.post('register/user/phone',data).then(res=>{
+                console.log(res);
+            })
+        },
+        // 短信验证码
+        getMobileCodeText(){
+            if(this.wait_timer > 0){
+                return this.wait_timer+'s后获取';
+            }
+
+            if(this.wait_timer === 0){
+                return '重新获取';
+            }
+
+            if(this.wait_timer === false){
+                return '获取验证码';
+            }
+
+        },
+        // 获取短信验证码
+        getVerCode(){
+            if(this.formInline.phone){
+                if (this.wait_timer > 0) {
+                    return false;
+                }
+                this.wait_timer = 59;
+                var that = this;
+                var timer_interval = setInterval(function(){
+                    if(that.wait_timer > 0){
+                        that.wait_timer -- ;
+                    }else{
+                        clearInterval(timer_interval);
+                    }
+                },1000);
+                this.verContent=this.getMobileCodeText();
+                this.$http.form("sms/register/code",{
+                    mobilePhone:this.formInline.phone
+                }).then(res=>{
+                    console.log(res);
+                })
+            }
+        },
+        closeLoginList() {
+            this.showLoginList = false;
+        },
+        // 找回密码
+        backPassword() {
+            this.login = false;
+        },
+        // 关闭弹出层
+        close() {
+            this.loginP.showModel = false;
+        },
+        // 返回上层
+        back() {
+            this.login = true;
+        },
+        // 登录/注册选项卡
+        loginType(i) {
+            this.loginP.loginCur = i;
+        },
+        // 选择登录保存
+        choseType() {
+            this.checked = !this.checked;
+        },
+        showLogin() {
+            this.showLoginList = !this.showLoginList;
+        }
+    },
+    // 监听当前路由
+    watch: {
+        "loginInfo"(e){
+            this.loginP=e;
+        },
+    }
+};
+</script>
+
+<style lang="less">
+a {
+    text-decoration: none;
+    color: #333333;
+}
+ul > li {
+    list-style: none;
+}
+ul {
+    margin: 0;
+    padding: 0;
+}
+input {
+    border: 0;
+}
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    color: transparent;
+}
+.flex-btween {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.flex {
+    display: flex;
+    align-items: center;
+}
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.flex-end {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+// 弹框
+.model {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+#login {
+    width: 100%;
+    .loginModel {
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        .login {
+            width: 380px;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            background: #fff;
+            position: relative;
+            .close {
+                font-size: 40px;
+                position: absolute;
+                top: 20px;
+                right: 15px;
+            }
+            .loginTitle {
+                font-size: 16px;
+                div {
+                    display: flex;
+                    align-items: center;
+                    flex-direction: column;
+                    justify-content: center;
+                    cursor: default;
+                    p {
+                        width: 16px;
+                        height: 4px;
+                        border-radius: 2px;
+                        margin-top: 4px;
+                    }
+                }
+                .reg {
+                    margin-left: 60px;
+                }
+                div.active {
+                    font-size: 18px;
+                    color: #29b28b;
+                    font-weight: bold;
+                    p {
+                        background: #29b28b;
+                    }
+                }
+            }
+            .inpList {
+                width: 100%;
+                margin-top: 30px;
+                .inpItem,
+                .verifyByPhone {
+                    width: 100%;
+                    height: 50px;
+                    // margin-top: 25px;
+                    input,.verCodeInp {
+                        width: 100%;
+                        height: 48px;
+                        background: #f2f2f2;
+                        // padding: 0 20px;
+                        box-sizing: border-box;
+                        font-size: 14px;
+                        border-radius: 2px;
+                        outline: none;
+                    }
+                    input,input:active{
+                        border: none !important;
+                        // border-bottom: 1px solid #d2d2d2 !important;
+                        outline: none;
+                        box-shadow: none;
+                        width: 100%;
+                    }
+                    .verifyBox {
+                        input {
+                            width: 100%;
+                        }
+                        div {
+                            width: 110px;
+                            text-align: center;
+                            // margin-left: 10px;
+                            line-height: 48px;
+                        }
+                    }
+                    p {
+                        padding: 0 10px;
+                        box-sizing: border-box;
+                        color: #f00;
+                        margin-top: 5px;
+                    }
+                }
+                .verifyByPhone {
+                    border-radius: 2px;
+                    background: #f2f2f2;
+                    .verifyBox {
+                        div {
+                            p {
+                                width: 100%;
+                                height: 30px;
+                                border-left: 1px solid #ddd;
+                                font-size: 14px;
+                                color: #29b28b;
+                                text-align: center;
+                                line-height: 30px;
+                                cursor: default;
+                            }
+                        }
+                    }
+                }
+                .saveLogin {
+                    // margin-top: 25px;
+                    div {
+                        font-size: 14px;
+                        img {
+                            width: 16px;
+                            height: 16px;
+                        }
+                        span {
+                            height: 16px;
+                            line-height: 16px;
+                            margin-left: 6px;
+                        }
+                    }
+                }
+                .btn {
+                    width: 100%;
+                    height: 48px;
+                    background: #ddd;
+                    color: #fff;
+                    text-align: center;
+                    line-height: 48px;
+                    font-size: 18px;
+                    margin-top: 40px;
+                    border-radius: 6px;
+                    cursor: default;
+                }
+                .btn.active{
+                    background:#29B28B;
+                }
+            }
+        }
+        .backPassword {
+            .close {
+                position: absolute;
+                left: 30px;
+                font-size: 24px;
+                font-weight: 300;
+            }
+        }
+    }
+}
+</style>
