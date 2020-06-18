@@ -18,7 +18,7 @@
                                     <p>学习有效期（倒计时）</p>
                                     <p>有效期至：{{item.classTime}}</p>
                                 </div>
-                                <div class="collectBox" :class="{active:index==0}">
+                                <div class="collectBox" :class="{active:item.collectStatus==1}" @click="collect(item.id,item.collectStatus)">
                                     <Icon type="md-heart" />
                                     <span>收藏</span>
                                 </div>
@@ -144,11 +144,25 @@ export default {
                     pageSize: this.limit,
                     type: type
                 }).then(res => {
+                    console.log(res);
                     if (res.code == 0) {
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
                     }
                 });
+        },
+        // 收藏
+        collect(id,status){
+            console.log(id);
+            // 0未收藏；1已收藏
+            let type=status==0?true:false;
+            console.log(status);
+            this.$http.form("/user/updateCollect/class",{
+                recordId:id,
+                status:type
+            }).then(res=>{
+                console.log(res);
+            })
         },
         onPageChange(page) {
             this.page = page;
@@ -171,7 +185,6 @@ export default {
         },
         // 学习记录选项卡
         choseLearningTab(i) {
-            console.log(i);
             this.learningCur = i;
             this.getList(i);
         },
@@ -274,6 +287,7 @@ export default {
                                 margin-left: 30px;
                                 font-size: 14px;
                                 color: #07111b;
+                                cursor:pointer;
                                 span {
                                     margin-left: 10px;
                                 }

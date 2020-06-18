@@ -53,7 +53,7 @@
                     </div>
                     <!-- 未登录 -->
                     <div class="login" v-if="nologin">
-                        <span>登录</span>
+                        <span @click="showModel=true">登录</span>
                         <span>注册</span>
                     </div>
                     <!-- 已登录 -->
@@ -306,7 +306,7 @@ export default {
             showLoginList: false, //显示用户列表
             selectShow: false, //头部下拉框内容
             historyShow: false, //历史搜索内容
-            nologin: false, //登录状态
+            nologin: true, //登录状态
             routeName: "/", //当前路由
             searchKey: "", //搜索关键字
             showModel: false,
