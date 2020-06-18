@@ -104,8 +104,13 @@
 			}
 		},
 		mounted() {
+			this.detail();
 		},
 		methods: {
+			// 详情渲染
+			detail(){
+				console.log(JSON.parse(localStorage.getItem("videoDetail")));
+			},
 			// 选项卡
 			choseTab(i){
 				this.tabCur=i

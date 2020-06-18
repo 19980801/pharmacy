@@ -4,29 +4,14 @@
       <div class="typeLine">
         <p class="typeTitle">分类：</p>
         <ul>
-          <li class="active">全部</li>
-          <li>药学知识</li>
-          <li>药学技能</li>
-          <li>药学管理</li>
-          <li>人文医学</li>
+          <li @click="choseTab(1,index)" :class="{active:classCur==index}" v-for="(item,index) in classList" :key="index">{{item.name}}</li>
         </ul>
       </div>
       <div class="typeLine">
         <p class="typeTitle">授课内容：</p>
         <ul>
-          <li>全部</li>
-          <li>高血压</li>
-          <li>麻醉用药</li>
-          <li>糖尿病</li>
-          <li>特殊人群用药</li>
-          <li>心血管系统</li>
-          <li>中药</li>
-          <li>肿瘤</li>
-          <li>注射剂</li>
-          <li>处方审核</li>
-          <li>药学监护</li>
-          <li>药物经济学</li>
-          <li>药学教育</li>
+          <li @click="choseTab(2,index)" :class="{active:contentCur==index}" v-for="(item,index) in conList" :key="index">{{item.name}}</li>
+          
         </ul>
       </div>
     </div>
@@ -34,40 +19,28 @@
       <div class="flexBox">
         <div class="line">
           <ul class="type">
-            <li class="active">全部</li>
-            <li>最新</li>
-            <li>最热</li>
+            <li @click="choseTab(3,index)" :class="{active:typeCur==index}" v-for="(item,index) in typeList" :key="index">{{item.name}}</li>
           </ul>
           <div class="radioBox">
-            <div class="radioItem" @click="choiceType(1)">
-              <img src="../../assets/imgs/radioed.png" alt class="radioImg" v-if="vipType==1" />
+            <div class="radioItem" v-for="(item,index) in moneyTypeList" :key="index"  @click="choseTab(4,index)">
+              <img src="../../assets/imgs/radioed.png" alt class="radioImg" v-if="moneyTypeCur==index" />
               <img src="../../assets/imgs/radio.png" alt class="radioImg" v-else />
-              <span>免费</span>
-            </div>
-            <div class="radioItem" @click="choiceType(2)">
-              <img src="../../assets/imgs/radioed.png" alt class="radioImg" v-if="vipType==2" />
-              <img src="../../assets/imgs/radio.png" alt class="radioImg" v-else />
-              <span>vip</span>
-            </div>
-            <div class="radioItem" @click="choiceType(3)">
-              <img src="../../assets/imgs/radioed.png" alt class="radioImg" v-if="vipType==3" />
-              <img src="../../assets/imgs/radio.png" alt class="radioImg" v-else />
-              <span>付费</span>
+              <span>{{item.name}}</span>
             </div>
           </div>
         </div>
         <div class="listBox">
           <div class="courseList">
-            <div class="courseItem" v-for="(item,index) in 16" :key="index" @click="choice">
+            <div class="courseItem" v-for="(item,index) in list" :key="index" @click="choice">
               <img src alt class="top" />
               <div class="bottom">
-                <div class="subTitle">第二届药健康科普中国行药师科普宣讲赋能中国行药师科普宣讲赋能讲赋能</div>
+                <div class="subTitle">{{item.courseTitle}}</div>
                 <div class="price">
                   <div class="leftPrice">
-                    <span class="free" v-if="index%2!=0">免费</span>
-                    <span class="money" v-if="index%2==0">¥239</span>
+                    <span class="free" v-if="item.whetherPay==0">免费</span>
+                    <span class="money" v-if="item.whetherPay==1">¥{{item.coursePrice}}</span>
                   </div>
-                  <div class="rightClass">3课时</div>
+                  <div class="rightClass">{{item.classNum}}课时</div>
                 </div>
               </div>
             </div>
@@ -75,7 +48,7 @@
           <div class="pageBox">
             <div class="page">
               <p>首页</p>
-              <Page :total="100" prev-text="上一页" next-text="下一页"/>
+              <Page @on-change="changePage" :total="100" prev-text="上一页" next-text="下一页"/>
               <p>尾页</p>
             </div>
           </div>
@@ -89,10 +62,84 @@
 export default {
   data() {
     return {
-      vipType: "1"
+      classCur:0,
+      contentCur:0,
+      typeCur:0,
+      moneyTypeCur:0,
+      vipType: 1,
+      list:[],
+      classList:[
+        {id:1,name:'全部'},
+        {id:2,name:'药学知识'},
+        {id:3,name:'药学技能'},
+        {id:4,name:'药学管理'},
+        {id:5,name:'人文医学'},
+      ],
+      conList:[
+        {id:1,name:'全部'},
+        {id:2,name:'高血压'},
+        {id:3,name:'糖尿病'},
+        {id:4,name:'特殊人群用药'},
+        {id:5,name:'心血管系统'},
+        {id:6,name:'中药'},
+        {id:7,name:'肿瘤'},
+        {id:8,name:'注射剂'},
+        {id:9,name:'处方审核'},
+        {id:10,name:'药学监护'},
+        {id:11,name:'药物经济学'},
+        {id:12,name:'药学教育'},
+      ],
+      typeList:[
+        {id:1,name:'全部'},
+        {id:2,name:'最新'},
+        {id:3,name:'最热'},
+      ],
+      moneyTypeList:[
+        {id:1,name:'免费'},
+        {id:2,name:'付费'},
+        {id:3,name:'VIP'},
+      ]
     };
   },
+  mounted(){
+    this.findListByClass();
+  },
   methods:{
+    // 更改页码
+    changePage(e){
+
+    },
+    // 选择tab
+    choseTab(i,index){
+      if(i==1){ //
+        this.classCur=index
+      }
+      if(i==2){
+        this.contentCur=index
+      }
+      if(i==3){
+        this.typeCur=index
+      }
+      if(i==4){
+        this.moneyTypeCur=index
+      }
+      this.findListByClass();
+    },
+    // 分类查询
+    findListByClass(){
+      let data={
+        charge:this.moneyTypeCur,
+        courseCategoryId:this.classCur==0?'':this.classList[this.classCur].id,
+        courseContentId:this.contentCur==0?'':this.conList[this.contentCur].id,
+        sortType:this.typeCur==0?'':this.typeCur-1
+      }
+      this.$http.post('course/pageQuery',data).then(res=>{
+        console.log(res);
+        if(res.code==0){
+          this.list=res.data.content
+        }
+      })
+    },
     choice(){
       this.$router.push("/courseBuy");
     },
@@ -228,11 +275,12 @@ export default {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        justify-content: space-between;
+        // justify-content: space-between;
         .courseItem {
           width: 270px;
           height: 230px;
           margin-top: 40px;
+          margin-right:20px;
           img {
             display: block;
             width: 270px;

@@ -181,30 +181,28 @@
                     </div>
                 </div>
                 <div class="inpList">
-                    <div class="inpItem">
-                        <input type="text" value placeholder="请输入手机号" />
-                        <p>手机号格式不正确</p>
-                    </div>
-                    <div class="inpItem" v-if="loginCur==1">
-                        <div class="verifyBox flex">
-                            <input type="text" value placeholder="请输入图片验证码" />
-                            <div class>5678</div>
-                        </div>
-                        <p>手机号格式不正确</p>
-                    </div>
-                    <div class="inpItem verifyByPhone" v-if="loginCur==1">
-                        <div class="verifyBox flex">
-                            <input type="text" value placeholder="请输入验证码" />
-                            <div class>
-                                <p>获取验证码</p>
+                    <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
+                        <FormItem prop="phone" class="inpItem">
+                            <Input type="text" v-model="formInline.phone" placeholder="请输入手机号"></Input>
+                        </FormItem>
+                        <FormItem prop="verImgCode" class="inpItem verifyByPhone" v-if="loginCur==1">
+                            <div class="verifyBox flex">
+                                <Input type="text" style="width:70%;" class="verCodeInp" v-model="formInline.verImgCode" placeholder="请输入图片验证码"></Input>
+                                <div class>5678</div>
                             </div>
-                        </div>
-                        <p>手机号格式不正确</p>
-                    </div>
-                    <div class="inpItem">
-                        <input type="text" value placeholder="请输入密码" />
-                        <p>手机号格式不正确</p>
-                    </div>
+                        </FormItem>
+                         <FormItem prop="verCode" class="inpItem verifyByPhone" v-if="loginCur==1">
+                            <div class="verifyBox flex">
+                                <Input type="text" style="width:70%;border:none" class="verCodeInp" v-model="formInline.verCode" placeholder="请输入验证码"></Input>
+                                <div @click="getVerCode">
+                                    <p>{{getMobileCodeText()}}</p>
+                                </div>
+                            </div>
+                        </FormItem>
+                        <FormItem prop="password" class="inpItem">
+                            <Input type="password" v-model="formInline.password" placeholder="请输入密码"></Input>
+                        </FormItem>
+                    </Form>
                     <div class="saveLogin">
                         <div class="flex" v-if="loginCur==1">
                             <img :src="checked?checkAUrl:checkUrl" alt @click="choseType" />
@@ -221,8 +219,8 @@
                             <div @click="backPassword" style="cursor: default;">忘记密码</div>
                         </div>
                     </div>
-                    <div class="btn" v-if="loginCur==0">登录</div>
-                    <div class="btn" v-if="loginCur==1">注册</div>
+                    <div class="btn" :class="{active:checked}" v-if="loginCur==0">登录</div>
+                    <div class="btn" :class="{active:checked}" v-if="loginCur==1" @click="register">注册</div>
                 </div>
             </div>
             <!-- 找回密码 -->
@@ -247,7 +245,7 @@
                         <div class="verifyBox flex">
                             <input type="text" value placeholder="请输入验证码" />
                             <div class>
-                                <p>获取验证码</p>
+                                <p>请输入验证码</p>
                             </div>
                         </div>
                         <p>手机号格式不正确</p>
@@ -282,6 +280,28 @@ export default {
     // },
     data() {
         return {
+            formInline: {
+                phone: '',
+                password: '',
+                verCode:'',
+                // verImgCode:''
+            },
+            ruleInline: {
+                phone: [
+                    { required: true, message: '请输入手机号', trigger: 'blur' },
+                    { pattern: /^1[3456789]\d{9}$/, message: "手机号码格式不正确", trigger: "blur"}
+                ],
+                password: [
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { type: 'string', min: 6, message: '密码格式为6位以上', trigger: 'blur' }
+                ],
+                verCode:[
+                    {required:true,message:"请输入验证码",trigger:"blur"}
+                ],
+                verImgCode:[
+                    {required:true,message:"请输入图片验证码",trigger:'blur'}
+                ]
+            },
             isRouterAlive: true,
             showLoginList: false, //显示用户列表
             selectShow: false, //头部下拉框内容
@@ -294,20 +314,64 @@ export default {
             checked: true,
             checkUrl: require("./assets/imgs/index/loginCheck.png"),
             checkAUrl: require("./assets/imgs/index/loginCheckA.png"),
-            login: true
+            login: true,
+            wait_timer:false,
+            verContent:''
         };
     },
     created() {
-
+        // this.sendCode();
     },
     methods: {
-        // 用户注册发送短信
-        sendCode(){
-            this.$http.form("sms/register/code",{
-                mobilePhone:"18224565842"
-            }).then(res=>{
+        // 注册
+        register(){
+            console.log("注册");
+            let data={
+                mobilePhone:this.formInline.phone,
+                password:this.formInline.password,
+                msgCode:this.formInline.verCode
+            }
+            this.$http.post('register/user/phone',data).then(res=>{
                 console.log(res);
             })
+        },
+        // 短信验证码
+        getMobileCodeText(){
+            if(this.wait_timer > 0){
+                return this.wait_timer+'s后获取';
+            }
+
+            if(this.wait_timer === 0){
+                return '重新获取';
+            }
+
+            if(this.wait_timer === false){
+                return '获取验证码';
+            }
+
+        },
+        // 获取短信验证码
+        getVerCode(){
+            if(this.formInline.phone){
+                if (this.wait_timer > 0) {
+                    return false;
+                }
+                this.wait_timer = 59;
+                var that = this;
+                var timer_interval = setInterval(function(){
+                    if(that.wait_timer > 0){
+                        that.wait_timer -- ;
+                    }else{
+                        clearInterval(timer_interval);
+                    }
+                },1000);
+                this.verContent=this.getMobileCodeText();
+                this.$http.form("sms/register/code",{
+                    mobilePhone:this.formInline.phone
+                }).then(res=>{
+                    console.log(res);
+                })
+            }
         },
         closeLoginList() {
             this.showLoginList = false;
@@ -764,25 +828,32 @@ input {
                 .verifyByPhone {
                     width: 100%;
                     height: 50px;
-                    margin-top: 25px;
-                    input {
+                    // margin-top: 25px;
+                    input,.verCodeInp {
                         width: 100%;
                         height: 48px;
                         background: #f2f2f2;
-                        padding: 0 20px;
+                        // padding: 0 20px;
                         box-sizing: border-box;
                         font-size: 14px;
                         border-radius: 2px;
                         outline: none;
                     }
+                    input,input:active{
+                        border: none !important;
+                        // border-bottom: 1px solid #d2d2d2 !important;
+                        outline: none;
+                        box-shadow: none;
+                        width: 100%;
+                    }
                     .verifyBox {
                         input {
-                            width: 70%;
+                            width: 100%;
                         }
                         div {
                             width: 110px;
                             text-align: center;
-                            margin-left: 10px;
+                            // margin-left: 10px;
                             line-height: 48px;
                         }
                     }
@@ -812,7 +883,7 @@ input {
                     }
                 }
                 .saveLogin {
-                    margin-top: 25px;
+                    // margin-top: 25px;
                     div {
                         font-size: 14px;
                         img {
@@ -837,6 +908,9 @@ input {
                     margin-top: 40px;
                     border-radius: 6px;
                     cursor: default;
+                }
+                .btn.active{
+                    background:#29B28B;
                 }
             }
         }
