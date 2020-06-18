@@ -3,29 +3,28 @@
     <div class="notice">
       <div class="left">
         <ul>
-          <li class="active">全部通知</li>
-          <li>系统通知</li>
-          <li>考核通知</li>
-          <li>审批通知</li>
-          <li>成绩通知</li>
+          <li @click="choseTab(index)" :class="{active:index==cur}" v-for="(item,index) in leftList" :key="index">{{item.name}}</li>
         </ul>
       </div>
       <div class="right">
         <ul>
-          <li v-for="(item,index) in list" :key="index" @click="goDetail">
+          <li v-for="(item,index) in mesList.content" :key="index" @click="goDetail(item.id)">
             <div>
-              <i class="dot"></i>
+              <i class="dot" :class="{doted:item.messageStatus==0}"></i>
             </div>
             <div>
-                <img src="../../assets/imgs/index/logo.png" alt="" class="infoImg">
+                <!-- <img src="../../assets/imgs/index/logo.png" alt="" class="infoImg"> -->
             </div>
             <div class="con">
-              <span class="title">8月29号系统更新通知</span>
-              <div class="info">“东方启明星”青年表演工作坊和“东方海星”海归青年俱乐部共同主办了公司第六届职工文化艺术节青年协会主题活动“欢乐音雄”配音大赛，听到这个消息后立刻产生了浓厚的感兴趣一拍即合自发组成了一支队伍参加比赛 ……</div>
-              <p class="time">2020-09-01</p>
+              <span class="title">{{item.informTitle}}</span>
+              <div class="info">{{item.informContent}}</div>
+              <p class="time">{{item.createTime}}</p>
             </div>
           </li>
         </ul>
+        <div style="display:flex;justify-content:center">
+          <Page v-if="showPage" @on-change="changeSize" :total='mesList.totalElements' />
+        </div>
       </div>
     </div>
   </div>
@@ -35,18 +34,53 @@
 export default {
   data() {
     return {
-        list:[
-            {id:1},
-            {id:1},
-            {id:1},
-            {id:1},
-            {id:1},
-        ]
+      leftList:[
+        {id:1,name:'全部通知'},
+        {id:2,name:'系统通知'},
+        {id:3,name:'考核通知'},
+        {id:4,name:'审批通知'},
+        {id:5,name:'成绩通知'},
+      ],
+      cur:0,
+      page:1,
+      size:10,
+      mesList:{},
+      showPage:false
     };
   },
+  mounted(){
+    this.findMes();
+  },
   methods:{
-    goDetail(){
-      this.$router.push("/noticeDetail");
+    changeSize(e){
+      this.page=e;
+      this.findMes();
+    },
+    // 查询消息通知
+    findMes(){
+      let data={
+        pageNum:this.page,
+        paegSize:this.size,
+        informType:this.cur==0?'':this.cur-1
+      }
+      this.$http.post('inform/pageQuery',data).then(res=>{
+        if(res.code==0){
+          this.mesList=res.data;
+          if(this.mesList.content.length==0){
+            this.showPage=false
+          }else{
+            this.showPage=true
+          }
+        }
+      })
+    },
+    choseTab(i){
+      this.cur=i;
+      this.findMes();
+    },
+    goDetail(id){
+      this.$router.push({path:"/noticeDetail",query:{id:id}});
+      // this.$router.push("/noticeDetail");
     }
   }
 };
@@ -57,7 +91,7 @@ export default {
   width: 100%;
   background: #f5f6f6;
   padding: 1% 15%;
-  height: 100vh;
+  // height: 100vh;
   .notice {
     // 选中颜色
     .active {
@@ -85,8 +119,9 @@ export default {
       height: auto;
       padding: 2%;
       li {
+        width:100%;
         display: flex;
-        justify-content: space-between;
+        // justify-content: space-between;
         margin-bottom:10px;
       }
       .dot {
@@ -101,6 +136,7 @@ export default {
         background:#1cb38a;
       }
       .con {
+        width:900px;
         margin-left: 15px;
         border-bottom:1px solid #F0F0F0;
         .title {
@@ -117,6 +153,13 @@ export default {
           line-height: 28px;
           font-size: 14px;
           font-family: MicrosoftYaHeiLight;
+          text-overflow: -o-ellipsis-lastline;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          -webkit-box-orient: vertical;
         }
         .time{
             font-size:14px;
