@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Message } from 'iview';
 import storage from './storage';
-import routes from './routers';
 
 axios.defaults.baseURL = '/uc'
 let http = {}
@@ -15,13 +14,14 @@ http.ajax.interceptors.request.use(config => {
     config.headers['User_Id'] = userId
     return config
 }, function(error) {
-    return Promise.reject(error)
+    return Promise.reject(error);
 });
 
 //token过期重新登录
 http.ajax.interceptors.response.use((response) => {
     // 用户禁用状态拦截
     if(response.data.code == '4000'){
+        window.location="/";    //返回首页
         Message.error("登录失效，请重新登录...");        
         return response;
     }

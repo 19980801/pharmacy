@@ -206,7 +206,7 @@ export default {
             showLoginList: false, //显示用户列表
             selectShow: false, //头部下拉框内容
             historyShow: false, //历史搜索内容
-            nologin: true, //登录状态
+            nologin: false, //登录状态
             routeName: "/", //当前路由
             searchKey: "", //搜索关键字
             showModel: false,

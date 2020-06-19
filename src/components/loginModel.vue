@@ -210,9 +210,10 @@ export default {
                 password:this.formInline.password
             }).then(res=>{
                 if(res.code==0){
+                    console.log(res.data.user);
                     this.$Message.success("登录成功!");
                     storage.set("User_Id",res.data.user.id);
-                    storage.set("userInfo",res.data.user);
+                    storage.set("userInfo",JSON.stringify(res.data.user));
                     storage.set("token",res.data.token);
                     this.loginP.showModel=false;
                 }
