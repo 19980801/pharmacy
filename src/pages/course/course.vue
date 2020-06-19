@@ -33,8 +33,8 @@
         </div>
         <div class="listBox">
           <div class="courseList">
-            <div class="courseItem" v-for="(item,index) in list" :key="index" @click="choice">
-              <img src alt class="top" />
+            <div class="courseItem" v-for="(item,index) in list" :key="index" @click="choice(item)">
+              <img :src="item.imgUrl" alt class="top" />
               <div class="bottom">
                 <div class="subTitle">{{item.courseTitle}}</div>
                 <div class="price">
@@ -86,11 +86,15 @@ export default {
     };
   },
   created(){
-    this.findClass();
-  },
-  mounted(){
+    console.log(this.$route.query);
+    this.typeCur=this.$route.query.type;
+    this.moneyTypeCur=this.$route.query.isPay;
     this.findClass();
     this.findListByClass();
+  },
+  mounted(){
+    // this.findClass();
+    
     
   },
   methods:{
@@ -158,8 +162,10 @@ export default {
         }
       })
     },
-    choice(){
-      this.$router.push("/courseBuy");
+    // 跳转详情
+		choice(item){
+      localStorage.setItem('videoDetail',JSON.stringify(item))
+		  this.$router.push("/detail");
     },
     choiceType(i){
       this.vipType=i;

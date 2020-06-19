@@ -164,6 +164,7 @@ export default {
             verContent:'',
             uuid:"",
             captchaPath:"",         //图片验证码
+            isLogin:false
         };
     },
     created() {
@@ -214,7 +215,10 @@ export default {
                     storage.set("User_Id",res.data.user.id);
                     storage.set("userInfo",res.data.user);
                     storage.set("token",res.data.token);
+                    storage.set("isLogin",true)
+                    this.isLogin=true;
                     this.loginP.showModel=false;
+                    this.$emit("isLogin",this.isLogin)
                 }
             })
         },

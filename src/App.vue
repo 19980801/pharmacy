@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <!-- 未登录 -->
-                    <div class="login" v-if="nologin">
+                    <div class="login" v-if="!isLogin">
                         <span @click='showLoginModel(0)'>登录</span>
                         <span @click='showLoginModel(1)'>注册</span>
                     </div>
@@ -166,7 +166,7 @@
                 </div>
             </div>
         </footer>
-        <loginModel :loginInfo="type" @showLogin="showLogins"></loginModel>
+        <loginModel :loginInfo="type" @isLogin="isLoginUser" @showLogin="showLogins"></loginModel>
 
     </div>
 </template>
@@ -218,12 +218,17 @@ export default {
             wait_timer:false,
             verContent:'',
             type:{},
+            isLogin:false,
         };
     },
     created() {
-        // this.sendCode();
+        this.isLogin=localStorage.getItem("isLogin")
     },
     methods: {
+        isLoginUser(data){
+            console.log(data);
+            this.isLogin=data;
+        },
         showLoginModel(i){
             this.showLogins(i)
         },
@@ -406,7 +411,7 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 99999;
+    z-index: 9;
 }
 #app {
     width: 100%;
