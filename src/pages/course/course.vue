@@ -4,13 +4,15 @@
       <div class="typeLine">
         <p class="typeTitle">分类：</p>
         <ul>
-          <li @click="choseTab(1,index)" :class="{active:classCur==index}" v-for="(item,index) in classList" :key="index">{{item.name}}</li>
+          <li  @click="choseTab(1,0)" :class="{active:classCur==0}">全部</li>
+          <li @click="choseTab(1,index+1)" :class="{active:classCur==index+1}" v-for="(item,index) in classList" :key="index">{{item.categoryName}}</li>
         </ul>
       </div>
       <div class="typeLine">
         <p class="typeTitle">授课内容：</p>
         <ul>
-          <li @click="choseTab(2,index)" :class="{active:contentCur==index}" v-for="(item,index) in conList" :key="index">{{item.name}}</li>
+          <li  @click="choseTab(2,0)" :class="{active:contentCur==0}">全部</li>
+          <li @click="choseTab(2,index+1)" :class="{active:contentCur==index+1}" v-for="(item,index) in conList" :key="index">{{item.contentName}}</li>
           
         </ul>
       </div>
@@ -48,7 +50,7 @@
           <div class="pageBox">
             <div class="page">
               <p>首页</p>
-              <Page @on-change="changePage" :total="100" prev-text="上一页" next-text="下一页"/>
+              <Page @on-change="changePage" :total="list.length" prev-text="上一页" next-text="下一页"/>
               <p>尾页</p>
             </div>
           </div>
@@ -68,27 +70,8 @@ export default {
       moneyTypeCur:0,
       vipType: 1,
       list:[],
-      classList:[
-        {id:1,name:'全部'},
-        {id:2,name:'药学知识'},
-        {id:3,name:'药学技能'},
-        {id:4,name:'药学管理'},
-        {id:5,name:'人文医学'},
-      ],
-      conList:[
-        {id:1,name:'全部'},
-        {id:2,name:'高血压'},
-        {id:3,name:'糖尿病'},
-        {id:4,name:'特殊人群用药'},
-        {id:5,name:'心血管系统'},
-        {id:6,name:'中药'},
-        {id:7,name:'肿瘤'},
-        {id:8,name:'注射剂'},
-        {id:9,name:'处方审核'},
-        {id:10,name:'药学监护'},
-        {id:11,name:'药物经济学'},
-        {id:12,name:'药学教育'},
-      ],
+      classList:[],
+      conList:[],
       typeList:[
         {id:1,name:'全部'},
         {id:2,name:'最新'},
@@ -98,21 +81,54 @@ export default {
         {id:1,name:'免费'},
         {id:2,name:'付费'},
         {id:3,name:'VIP'},
-      ]
+      ],
+      page:1,
     };
   },
+  created(){
+    this.findClass();
+  },
   mounted(){
+    this.findClass();
     this.findListByClass();
+    
   },
   methods:{
+    // 查询课程分类
+    findClass(){
+      this.$http.get('course/getCourseCategory').then(res=>{
+        console.log(res);
+        this.classList=res.data;
+        let list=res.data;
+        let courList=[];
+        list.forEach((item,index) => {
+          item.courseContentList.forEach((i,v)=>{
+            courList.push(i)
+          })
+        });
+        this.conList=courList;
+      })
+    },
     // 更改页码
     changePage(e){
-
+      this.page=e;
+      this.findListByClass();
     },
     // 选择tab
     choseTab(i,index){
       if(i==1){ //
         this.classCur=index
+        if(i=0){
+          let courList=[];
+          list.forEach((item,index) => {
+            item.courseContentList.forEach((i,v)=>{
+              courList.push(i)
+            })
+          });
+          this.conList=courList;
+        }else{
+          this.conList=this.classList[index].courseContentList;
+        }
       }
       if(i==2){
         this.contentCur=index
@@ -129,9 +145,11 @@ export default {
     findListByClass(){
       let data={
         charge:this.moneyTypeCur,
-        courseCategoryId:this.classCur==0?'':this.classList[this.classCur].id,
-        courseContentId:this.contentCur==0?'':this.conList[this.contentCur].id,
-        sortType:this.typeCur==0?'':this.typeCur-1
+        courseCategoryId:this.classCur==0?'':this.classList[this.classCur-1].id,
+        courseContentId:this.contentCur==0?'':this.conList[this.contentCur-1].id,
+        sortType:this.typeCur==0?'':this.typeCur-1,
+        pageSize:10,
+        pageNum:this.page,
       }
       this.$http.post('course/pageQuery',data).then(res=>{
         console.log(res);

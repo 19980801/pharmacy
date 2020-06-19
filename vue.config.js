@@ -61,7 +61,8 @@ module.exports = {
     devServer: {
         proxy: {
             '/uc': {
-                target: "http://62.234.59.112:6002", //服务器
+                // target: "http://62.234.59.112:6002", //服务器
+                target: "http://121.41.69.65:6002", //服务器
             }
         }
     }

@@ -53,8 +53,8 @@
                     </div>
                     <!-- 未登录 -->
                     <div class="login" v-if="nologin">
-                        <span @click="showModel=true">登录</span>
-                        <span>注册</span>
+                        <span @click='showLoginModel(0)'>登录</span>
+                        <span @click='showLoginModel(1)'>注册</span>
                     </div>
                     <!-- 已登录 -->
                     <div class="logined" v-else>
@@ -166,6 +166,7 @@
                 </div>
             </div>
         </footer>
+        <loginModel :loginInfo="type" @showLogin="showLogins"></loginModel>
         <!-- 登录注册弹框 -->
         <div class="loginModel" v-if="showModel">
             <div class="login" v-if="login">
@@ -271,13 +272,12 @@
 </template>
 
 <script>
+import loginModel from '@/components/loginModel.vue'
 export default {
     name: "App",
-    // provide() {
-    //   return {
-    //     reload: this.reload
-    //   };
-    // },
+    components:{
+        loginModel
+    },
     data() {
         return {
             formInline: {
@@ -316,13 +316,24 @@ export default {
             checkAUrl: require("./assets/imgs/index/loginCheckA.png"),
             login: true,
             wait_timer:false,
-            verContent:''
+            verContent:'',
+            type:{},
         };
     },
     created() {
         // this.sendCode();
     },
     methods: {
+        showLoginModel(i){
+            this.showLogins(i)
+        },
+        showLogins(data){
+            console.log(data)
+            this.type={
+                loginCur:data,
+                showModel:true
+            }
+        },
         // 注册
         register(){
             console.log("注册");
