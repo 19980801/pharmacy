@@ -57,11 +57,11 @@ http.post = (url, data) => {
         if (res.data.code == 0) {
           resolve(res.data)
         } else {
+          Message.error(res.data.message);
           reject(res.data.message)
         }
       } else {
-        reject(res.status)
-        Message.error(res.status)
+        reject(res.data);
       }
     }).catch((error) => {
       reject(error)
@@ -85,11 +85,30 @@ http.form = (url, data) => {
                 if (res.data.code == 0) {
                     resolve(res.data);
                 } else {
+                    Message.error(res.data.message);
                     reject(res.data.message);
                 }
             } else {
                 reject(res.status || "失败");
             }
+        }).catch((error) => {
+            reject(error);
+        })
+    })
+}
+
+// 获取图片验证码
+http.getImg=(url,data)=>{
+    return new Promise((resolve, reject) => {
+        http.ajax.post(url,querystring.stringify(data), {
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            responseType: 'arraybuffer'
+        }).then((res) => {
+            resolve( 'data:image/png;base64,' + btoa(
+                new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
+            ))
         }).catch((error) => {
             reject(error);
         })

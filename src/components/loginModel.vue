@@ -22,7 +22,7 @@
                         <FormItem prop="verImgCode" class="inpItem verifyByPhone" v-if="loginP.loginCur==1">
                             <div class="verifyBox flex">
                                 <Input type="text" style="width:70%;" class="verCodeInp" v-model="formInline.verImgCode" placeholder="请输入图片验证码"></Input>
-                                <div class>5678</div>
+                                <img :src="captchaPath" alt="" class="codeImg" @click="getCaptcha">
                             </div>
                         </FormItem>
                          <FormItem prop="verCode" class="inpItem verifyByPhone" v-if="loginP.loginCur==1">
@@ -105,6 +105,12 @@
 </template>
 
 <script>
+// 图片验证码方法
+export function getUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        return (c === 'x' ? (Math.random() * 16 | 0) : ('r&0x3' | '0x8')).toString(16)
+    })
+}
 export default {
     name: "loginModel",
     props:{
@@ -122,7 +128,7 @@ export default {
                 phone: '',
                 password: '',
                 verCode:'',
-                // verImgCode:''
+                verImgCode:''
             },
             ruleInline: {
                 phone: [
@@ -154,10 +160,13 @@ export default {
             checkAUrl: require("@/assets/imgs/index/loginCheckA.png"),
             login: true,
             wait_timer:false,
-            verContent:''
+            verContent:'',
+            uuid:"",
+            captchaPath:"",         //图片验证码
         };
     },
     created() {
+        this.getCaptcha();      //获取图片验证码
     },
     methods: {
         isShow(){
@@ -166,14 +175,19 @@ export default {
         },
         // 注册
         register(){
-            console.log("注册");
             let data={
                 mobilePhone:this.formInline.phone,
                 password:this.formInline.password,
-                msgCode:this.formInline.verCode
+                msgCode:this.formInline.verCode,
+                uuid:this.uuid,
+                code:this.formInline.verImgCode
             }
-            this.$http.post('register/user/phone',data).then(res=>{
+            this.$http.post('/register/user/phone',data).then(res=>{
                 console.log(res);
+                if(res.code==0){
+                    this.$Message.success(res.message);
+                    this.loginP.loginCur=0;     //转为登录
+                }
             })
         },
         // 短信验证码
@@ -210,9 +224,21 @@ export default {
                 this.$http.form("sms/register/code",{
                     mobilePhone:this.formInline.phone
                 }).then(res=>{
-                    console.log(res);
+                    if(res.code==0){
+                        this.$Message.success(res.message);
+                    }
                 })
             }
+        },
+        // 获取图片验证码
+        getCaptcha() {
+            this.uuid = getUUID();
+            console.log(this.uuid);
+            this.$http.getImg("/register/captcha.jpg",{
+                uuid:this.uuid
+            }).then(res=>{
+                this.captchaPath=res;
+            })
         },
         closeLoginList() {
             this.showLoginList = false;
@@ -305,7 +331,7 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 99999;
+    // z-index: 99999;
 }
 #login {
     width: 100%;
@@ -319,7 +345,7 @@ input {
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 99999;
+        z-index:222;
         .login {
             width: 380px;
             padding: 20px 30px;
@@ -362,6 +388,10 @@ input {
             .inpList {
                 width: 100%;
                 margin-top: 30px;
+                .codeImg{
+                    width:150px;
+                    height:48px;
+                }
                 .inpItem,
                 .verifyByPhone {
                     width: 100%;

@@ -2,6 +2,9 @@
 端口号：6002
 需要一个全局请求头:
 	User_Id：当前登陆人id
+需要token的接口我会在接口标题后面加一个*
+2020/06/18：新增查询分类4.1，新增用户登录并返回token 接口9，修改缺少的收藏字段和课程封面字段
+
 
 1. 用户注册发送短信
 URL = sms/register/code
@@ -27,6 +30,8 @@ URL = register/user/phone
 		"mobilePhone":"15194607793",(手机号)
 		"msgCode":"129975",(验证码)
 		"password":"dpy19980707"(密码)
+		"uuid":"37e9c58a-41db-4e08-a992-0dffd2aa1525",(生成验证码用的uuid传到这)
+		"code":"tnmk"(用户输入验证码)
 	}
 返回参数：
 	{
@@ -36,6 +41,17 @@ URL = register/user/phone
 		"totalElement": null,
 		"data": null
 	}
+
+2.1 生成验证码
+URL = register/captcha.jpg
+请求方式：POST
+参数类型：x-www-form-urlencoded
+请求参数：
+	uuid：(生成一个uuid传递后端)
+返回参数：
+	一个图片
+
+
 
 3. 查询首页数据
 URL = course/homePage
@@ -53,6 +69,7 @@ URL = course/homePage
                 "id": 2,(课程id)
                 "courseTitle": "测试标题6",(课程标题)
                 "description": "这是一个H5",(课程描述)
+				"imgUrl": "http://www.baidu.com",(封面图片链接)
                 "memberOnly": 0,(会员专属 0-否 1-是)
                 "whetherPay": 0,(是否付费 0-否 1-是)
                 "coursePrice": 100.21,(课程价格/元)
@@ -417,6 +434,7 @@ URL = course/pageQuery
                 "id": 1,
                 "courseTitle": "测试标题6",
                 "description": "这是一个H5",
+				"imgUrl": "http://www.baidu.com",(封面图片链接)
                 "memberOnly": 0,
                 "whetherPay": 0,
                 "coursePrice": 100.21,
@@ -554,7 +572,120 @@ URL = course/pageQuery
     }
 }
 
-5. 查询通知
+
+4.1 课程分类内容查询
+URL = course/getCourseCategory
+请求方式：GET
+参数类型：无参数
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": [
+        {
+            "id": 1,
+            "categoryName": "药学知识",(分类名称)
+            "createTime": "2020-05-30 12:14:03",
+            "courseContentList": [(分类下的内容)
+                {
+                    "id": 1,(内容id)
+                    "contentName": "高血压",(内容名称)
+                    "categoryId": 1,(所属分类id)
+                    "createTime": "2020-05-30 12:14:59"(创建时间)
+                },
+                {
+                    "id": 2,
+                    "contentName": "麻醉用药",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:15:12"
+                },
+                {
+                    "id": 3,
+                    "contentName": "糖尿病",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:15:26"
+                },
+                {
+                    "id": 4,
+                    "contentName": "特殊人群用药",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:15:35"
+                },
+                {
+                    "id": 5,
+                    "contentName": "心血管系统",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:15:46"
+                },
+                {
+                    "id": 6,
+                    "contentName": "中药",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:16:01"
+                },
+                {
+                    "id": 7,
+                    "contentName": "肿瘤",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:16:10"
+                },
+                {
+                    "id": 8,
+                    "contentName": "注射剂",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:16:27"
+                },
+                {
+                    "id": 9,
+                    "contentName": "处方审核",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:16:38"
+                },
+                {
+                    "id": 10,
+                    "contentName": "药学监护",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:16:49"
+                },
+                {
+                    "id": 11,
+                    "contentName": "药物经济学",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:17:02"
+                },
+                {
+                    "id": 12,
+                    "contentName": "药学教育",
+                    "categoryId": 1,
+                    "createTime": "2020-05-30 12:17:10"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "categoryName": "药学技能",
+            "createTime": "2020-05-30 12:14:13",
+            "courseContentList": []
+        },
+        {
+            "id": 3,
+            "categoryName": "药学管理",
+            "createTime": "2020-05-30 12:14:23",
+            "courseContentList": []
+        },
+        {
+            "id": 4,
+            "categoryName": "人文医学",
+            "createTime": "2020-05-30 12:14:33",
+            "courseContentList": []
+        }
+    ]
+}
+
+
+5. 查询通知 *
 URL = inform/pageQuery
 请求方式：POST
 参数类型：JSON
@@ -622,7 +753,7 @@ URL = inform/pageQuery
     }
 }
 
-6. 点击通知修改记录阅读状态 未读-已读
+6. 点击通知修改记录阅读状态 未读-已读 *
 URL = inform/updateStatus/{id}
 请求方式：GET
 参数类型：路径参数
@@ -636,7 +767,7 @@ URL = inform/updateStatus/{id}
     "data": null
 }
 
-7. 查询学习记录
+7. 查询学习记录 *
 URL = user/findStudyRecordIn
 请求方式：POST
 参数类型：JSON
@@ -666,7 +797,7 @@ URL = user/findStudyRecordIn
                 "lastTimestamp": "2020-06-16 19:23:37",(最后观看时间戳)
                 "createTime": "2020-06-16 11:23:33",(创建时间)
                 "updateTime": null,
-                "collectStatus": 0
+                "collectStatus": 0(是否收藏 0-否 1-是)
             }
         ],
         "pageable": {
@@ -783,7 +914,7 @@ URL = user/findStudyRecordIn
     }
 }
 
-8. 收藏/取消收藏 学习记录-课程(有问题未对接)
+8. 收藏/取消收藏 学习记录-课程 *
 URL = user/updateCollect/class
 请求方式：x-www-form-urlencoded
 请求参数：
@@ -796,4 +927,469 @@ URL = user/updateCollect/class
     "totalPage": null,
     "totalElement": null,
     "data": null
+}
+
+
+9. 用户登录
+URL = login/user/phone
+请求方式：x-www-form-urlencoded
+请求参数：
+	mobilePhone:手机号
+	password:用户密码
+返回参数：
+{
+    "code": 0,
+    "message": null,
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "user": {
+            "id": 5,(用户id)
+            "mobilePhone": "15194607793",(用户手机号)
+            "userName": "151****7793",(用户昵称)
+            "password": "432ff0f117e847eb9e43436bfa578550",
+            "gender": null,
+            "idNumber": null,
+            "idCardUrl": null,
+            "workCardUrl": null,
+            "headUrl": null,
+            "profession": null,
+            "jobTitle": null,
+            "workUnit": null,
+            "certificationStatus": null,
+            "memberStatus": 0,
+            "createUser": null,
+            "createTime": "2020-06-17 20:19:09",
+            "remark": null
+        },
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1IiwiaWF0IjoxNTkyMzk2NTkyLCJleHAiOjE1OTMwMDEzOTJ9.DGMh8yxqHWELazpc0TbBOIpjla87S83psCLUpc38-ElyvENvEM0jJdc_nOLoW2J5gxgVkjC5Nw1iEI8Ib3s39Q",(登录返回的token)
+        "expire": 604800(过期时间)
+    }
+}
+
+
+10. 添加用户反馈 *
+URL = feedback/add
+请求方式：POST
+参数类型：JSON
+请求参数：
+
+在列表中添加时传递：
+{
+
+    "feedbackContent":"好玩好玩",(反馈内容)
+    "feedbackType":"0"反馈类型 0-用户 1-题目)
+}
+在做题后添加时传递
+{
+    "feedbackContent":"好玩好玩",(反馈内容)
+	"feedbackCause":"0",(反馈原因 0-错别字 1-答案错误 2-题目不完整 3-图片不存在 4-解析错误 5-其他)
+    "feedbackType":"1"(反馈类型 0-用户 1-题目)
+}
+
+返回参数：
+{
+    "code": 0,
+    "message": "提交成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+
+11. 查询用户反馈 *
+URL = feedback/pageQuery
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",
+    "pageSize":"10"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 5,(主键id)
+                "userId": 5,(所属用户id)
+                "feedbackContent": "select * from zs_user",(反馈内容)
+                "feedbackAnswer": null,(回答)
+                "createTime": "2020-06-18 12:35:54",(反馈内容创建时间)
+                "answerTime": null(回答创建时间)
+            },
+            {
+                "id": 4,
+                "userId": 5,
+                "feedbackContent": "你们太厉害了",
+                "feedbackAnswer": null,
+                "createTime": "2020-06-18 12:31:23",
+                "answerTime": null
+            },
+            {
+                "id": 3,
+                "userId": 5,
+                "feedbackContent": "你们太厉害了",
+                "feedbackAnswer": null,
+                "createTime": "2020-06-18 12:31:05",
+                "answerTime": null
+            },
+            {
+                "id": 2,
+                "userId": 5,
+                "feedbackContent": "\"你们太厉害了\"",
+                "feedbackAnswer": null,
+                "createTime": "2020-06-18 12:30:53",
+                "answerTime": null
+            },
+            {
+                "id": 1,
+                "userId": 5,
+                "feedbackContent": "{\r\n    \"feedbackContent\":\"你们这个开发真是太厉害了\"\r\n}",
+                "feedbackAnswer": null,
+                "createTime": "2020-06-18 12:28:31",
+                "answerTime": null
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "unpaged": false,
+            "paged": true
+        },
+        "totalElements": 5,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 5,
+        "first": true,
+        "empty": false
+    }
+}
+
+
+12. 查询用户收藏
+URL = user/findCollect *
+参数类型：JSON
+请求方式：POST
+请求参数：
+{
+    "pageNum":"1",
+    "pageSize":"10",
+    "collectType":"0"(0 - 课程， 1 - 题库)
+}
+返回参数：
+
+课程返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 4,
+                "userId": 1,(用户id)
+                "courseId": 1,(课程id)
+                "courseTitle": "课程标题",(课程标题)
+                "courseImg": "http://www.baidu.com",(封面链接)
+                "courseTime": 123456,(课程有效期/天)
+                "lastWatch": null,(最后观看课时id)
+                "lastTimestamp": "2020-06-16 19:23:37",(最后观看时间戳)
+                "createTime": "2020-06-16 11:43:42"(创建时间)
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "unpaged": false,
+            "paged": true
+        },
+        "totalElements": 1,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 1,
+        "first": true,
+        "empty": false
+    }
+}
+
+题库返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 1,(主键id)
+                "userId": 1,(用户id)
+                "bankId": 1,(题库id)
+                "subjectId": 1,(题目id)
+                "answer": "B",(答案)
+                "caseResult": 0,(选择结果 0-错误 1-正确)
+                "collectStatus": 1,(是否收藏 0-否 1-是)
+                "createTime": "2020-06-15 03:06:10",(创建时间)
+                "questionSubject": {(关联题目)
+                    "id": 1,
+                    "questionTitle": "测试题目",(题目标题)
+                    "questionType": 0,(题目类型 0-单选题 1-多选题)
+                    "questionValue": 3.00,(分值)
+                    "answerExplain": "这个题目这么简单你不会吗",(答案解析)
+                    "createUser": "杜品言",(创建人)
+                    "createTime": "2020-06-12 08:30:39",(创建时间)
+                    "questionOptionList": [(题目关联选项)
+                        {
+                            "id": 1,(选项id)
+                            "optionContent": "选项1",(选项内容)
+                            "isTrue": 0,(是否是正确答案 0-否 1-是)
+                            "questionId": 1,(关联题目id)
+                            "createTime": "2020-06-12 08:40:41"(创建时间)
+                        },
+                        {
+                            "id": 2,
+                            "optionContent": "选项2",
+                            "isTrue": 0,
+                            "questionId": 1,
+                            "createTime": "2020-06-12 08:40:54"
+                        },
+                        {
+                            "id": 3,
+                            "optionContent": "选项3",
+                            "isTrue": 0,
+                            "questionId": 1,
+                            "createTime": "2020-06-12 08:41:01"
+                        },
+                        {
+                            "id": 4,
+                            "optionContent": "选项4",
+                            "isTrue": 0,
+                            "questionId": 1,
+                            "createTime": "2020-06-12 08:41:10"
+                        }
+                    ]
+                }
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "unpaged": false,
+            "paged": true
+        },
+        "totalElements": 1,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 1,
+        "first": true,
+        "empty": false
+    }
+}
+
+
+13. 查询题库
+URL = bank/pageQuery
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",(页码)
+    "pageSize":"10",(每页记录数)
+    "updateTime":"2020"(年)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 2,(题库id)
+                "bankTitle": "测试题库2",(题库标题)
+                "userType": 1,
+                "createTime": "2020-06-18 08:23:33",
+                "updateTime": "2020-06-18 19:11:53",
+                "questionSubjectSet": [
+                    {
+                        "id": 1,
+                        "questionTitle": "测试题目",
+                        "questionType": 0,
+                        "questionValue": 3.00,
+                        "answerExplain": "这个题目这么简单你不会吗",
+                        "createUser": "杜品言",
+                        "createTime": "2020-06-12 08:30:39",
+                        "questionOptionList": [
+                            {
+                                "id": 1,
+                                "optionContent": "选项1",
+                                "isTrue": 0,
+                                "questionId": 1,
+                                "createTime": "2020-06-12 08:40:41"
+                            },
+                            {
+                                "id": 2,
+                                "optionContent": "选项2",
+                                "isTrue": 0,
+                                "questionId": 1,
+                                "createTime": "2020-06-12 08:40:54"
+                            },
+                            {
+                                "id": 3,
+                                "optionContent": "选项3",
+                                "isTrue": 0,
+                                "questionId": 1,
+                                "createTime": "2020-06-12 08:41:01"
+                            },
+                            {
+                                "id": 4,
+                                "optionContent": "选项4",
+                                "isTrue": 0,
+                                "questionId": 1,
+                                "createTime": "2020-06-12 08:41:10"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 1,
+                "bankTitle": "测试题库",
+                "userType": 1,
+                "createTime": "2020-06-15 03:06:48",
+                "updateTime": "2020-06-18 19:11:49",
+                "questionSubjectSet": [
+                    {
+                        "id": 1,
+                        "questionTitle": "测试题目",
+                        "questionType": 0,
+                        "questionValue": 3.00,
+                        "answerExplain": "这个题目这么简单你不会吗",
+                        "createUser": "杜品言",
+                        "createTime": "2020-06-12 08:30:39",
+                        "questionOptionList": [
+                            {
+                                "id": 1,
+                                "optionContent": "选项1",
+                                "isTrue": 0,
+                                "questionId": 1,
+                                "createTime": "2020-06-12 08:40:41"
+                            },
+                            {
+                                "id": 2,
+                                "optionContent": "选项2",
+                                "isTrue": 0,
+                                "questionId": 1,
+                                "createTime": "2020-06-12 08:40:54"
+                            },
+                            {
+                                "id": 3,
+                                "optionContent": "选项3",
+                                "isTrue": 0,
+                                "questionId": 1,
+                                "createTime": "2020-06-12 08:41:01"
+                            },
+                            {
+                                "id": 4,
+                                "optionContent": "选项4",
+                                "isTrue": 0,
+                                "questionId": 1,
+                                "createTime": "2020-06-12 08:41:10"
+                            }
+                        ]
+                    },
+                    {
+                        "id": 2,
+                        "questionTitle": "测试题目2",
+                        "questionType": 0,
+                        "questionValue": 5.00,
+                        "answerExplain": "这个题目这么简单你肯定不会",
+                        "createUser": "杜品言",
+                        "createTime": "2020-06-13 08:21:20",
+                        "questionOptionList": []
+                    },
+                    {
+                        "id": 3,
+                        "questionTitle": "测试题目3",
+                        "questionType": 0,
+                        "questionValue": 8.00,
+                        "answerExplain": "这个题目这么简单我猜你会",
+                        "createUser": "杜品言",
+                        "createTime": "2020-06-13 08:56:57",
+                        "questionOptionList": []
+                    }
+                ]
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 2,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 2,
+        "first": true,
+        "empty": false
+    }
 }
