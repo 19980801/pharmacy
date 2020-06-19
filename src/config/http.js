@@ -10,8 +10,10 @@ http.ajax = axios.create();
 http.ajax.interceptors.request.use(config => {
     // 从本地拿用户id
     const userId = storage.get("User_Id") || "";
+    // token
+    config.headers['ACCESS-TOKEN'] = storage.get("token") || "";
     // 增加用户id请求头
-    config.headers['User_Id'] = userId
+    config.headers['User_Id'] = userId;
     return config
 }, function(error) {
     return Promise.reject(error);
@@ -21,8 +23,9 @@ http.ajax.interceptors.request.use(config => {
 http.ajax.interceptors.response.use((response) => {
     // 用户禁用状态拦截
     if(response.data.code == '4000'){
+        storage.clear();        //清除缓存  
         window.location="/";    //返回首页
-        Message.error("登录失效，请重新登录...");        
+        Message.error("登录失效，请重新登录...");
         return response;
     }
     return response;

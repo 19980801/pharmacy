@@ -4,12 +4,12 @@
 			<div class="detailBox">
 				<div class="crumbBox flex">
 					<Breadcrumb>
-						<BreadcrumbItem to="/">Home</BreadcrumbItem>
-						<BreadcrumbItem to="/components/breadcrumb">Components</BreadcrumbItem>
-						<BreadcrumbItem>Breadcrumb</BreadcrumbItem>
+						<BreadcrumbItem>全部课程</BreadcrumbItem>
+						<BreadcrumbItem>{{components}}</BreadcrumbItem>
 					</Breadcrumb>
 				</div>
 				<div class="videoBox flex">
+					<div class="shade" v-if="isJoinStudy"></div>
 					<video-player  class="video-player vjs-custom-skin"
 						 ref="videoPlayer"
 						 :playsinline="true"
@@ -27,10 +27,10 @@
 						 @ready="playerReadied"
 						></video-player>
 					<div class="classList">
-						<div class="classItem" v-for="(item,index) in 8" :key="index" :class="{isPlay:index==0}">
+						<div class="classItem" @click="choseVideo(index,item.classUrl)" v-for="(item,index) in videoList" :key="index" :class="{isPlay:index==videoCur}">
 							<div class="videoType">录播</div>
 							<div class="rightTitle">
-								<div>开启全民短视频</div>
+								<div>{{item.classTitle}}</div>
 								<div>10分钟30秒</div>
 							</div>
 						</div>
@@ -38,9 +38,10 @@
 				</div>
 				<div class="videoTitleBox flex-btween">
 					<div class="leftVideoInfo">
-						<div class="videoTitle">第六届技能大赛-药师药学服务人文胜任力宣讲会-技能大能大赛比赛题型解解析</div>
+						<div class="videoTitle">{{videoDetail.courseTitle}}</div>
 						<div class="flex subTItleBox">
-							<span class="isFree">免费</span>
+							<span class="isFree" v-if="videoDetail.whetherPay==0">免费</span>
+							<span class="isFree" v-if="videoDetail.whetherPay==1">¥{{videoDetail.coursePrice}}</span>
 							<span class="period">有效期180天</span>
 							<div class="collect">
 								<Icon type="md-heart" />
@@ -60,14 +61,15 @@
 				</div>
 				<div class="tabContent">
 					<div class="summarize" v-if="tabCur==0">
-						<img src="../../assets/imgs/detail.jpg" mode="widthFix" alt="">
+						{{videoDetail.description}}
+						<!-- <img src="../../assets/imgs/detail.jpg" mode="widthFix" alt=""> -->
 					</div>
 					<div class="catalogue" v-if="tabCur==1">
 						<div class="list">
-							<div class="item" v-for="(item,index) in 5" :key="index">
+							<div class="item" v-for="(item,index) in videoList" :key="index">
 								<img src="../../assets/imgs/video.png" alt="">
 								<div class="rightInfo">
-									<div class="title">突破创新——药学服务模式与药师职业发展</div>
+									<div class="title">{{item.classTitle}}</div>
 									<div class="time">109分钟9秒</div>
 								</div>
 							</div>
@@ -98,22 +100,40 @@
 			return {
 				video:'',         //具体视频
 				fileType: 'mp4', // 资源的类型
-				videoUrl: require('../../assets/video/x.mp4'),	// 资源的路径地址
+				videoUrl: '',	// 资源的路径地址
 				posterUrl:''  ,//封面地址
-				tabCur:0
+				tabCur:0,
+				videoList:[],
+				videoDetail:{},
+				videoCur:0,
+				isJoinStudy:false,
+				components:''
 			}
 		},
 		mounted() {
+
 			this.detail();
 		},
 		methods: {
+			// 选择视频
+			choseVideo(index,url){
+				this.videoUrl=url
+				this.videoCur=index
+				this.components=this.videoList[index].classTitle
+			},
 			// 详情渲染
 			detail(){
 				console.log(JSON.parse(localStorage.getItem("videoDetail")));
+				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"))
+				this.videoDetail=videoDetail;
+				this.videoList=videoDetail.classHours
+				this.videoUrl=this.videoList[0].classUrl
+				this.components=this.videoList[0].classTitle
 			},
 			// 选项卡
 			choseTab(i){
 				this.tabCur=i
+				
 			},
 			// 播放回调
 			onPlayerPlay(player) {
@@ -177,7 +197,7 @@
 					width:"900px",
 					height:"490px",
 					// aspectRatio: '3:1', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
-					fluid: true, // 是否流体从而按比例缩放以适应其容器。
+					fluid: false, // 是否流体从而按比例缩放以适应其容器。
 					flash:{hls:{withCreadentials:false}},//可以播放rtmp视频
 					html5:{hls:{withCreadentials:false}},//可以播放m3u8视频
 					sources: [{
@@ -222,6 +242,19 @@
 					width:100%;
 					height:490px;
 					background:#000;
+					position: relative;
+					.shade{
+						width:900px;
+						height:490px;
+						position: absolute;
+						top:0;
+						left:0;
+						background:rgba(0,0,0,0.7);
+						z-index:999;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					}
 					.video-player,.vjs_video_3,.vjs-tech{
 						width:900px;
 						height:490px;
@@ -313,10 +346,14 @@
 							}
 							.collect{
 								font-size: 14px;
-								color:#FF077A;
+								color:#fff;
+								cursor: pointer;
 								span{
 									margin-left:4px;
 								}
+							}
+							.collect.active{
+								color:#FF077A;
 							}
 						}
 					}

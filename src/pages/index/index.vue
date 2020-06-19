@@ -5,30 +5,30 @@
             <div class="userBox flex-center">
                 <div class="userCenter flex-end">
                     <!-- 未登录状态显示 -->
-                    <div class="userStateBox loginBox">
-                        <div class="loginTitle">记录你的学习进度</div>
-                        <img src="../../assets/imgs/index/loginPic.png" alt="">
-                        <div class="loginBtn" @click="login">登录</div>
-                    </div>
+                    <!-- <div class="userStateBox loginBox" v-if="!isLogin">
+						<div class="loginTitle">记录你的学习进度</div>
+						<img src="../../assets/imgs/index/loginPic.png" alt="">
+						<div class="loginBtn" @click="login">登录</div>
+					</div> -->
                     <!-- 已登录状态显示 -->
-                    <div class="userStateBox userInfoBox">
-                        <div class="userTitle flex">
-                            <img class="userImg" src="../../assets/imgs/index/userImg.png" alt="">
-                            <div>小酒窝~</div>
-                            <img class="vipImg" src="../../assets/imgs/index/vip1.png" alt="">
-                        </div>
-                        <div class="collectBox flex-btween">
-                            <div>收藏课程<span>1</span></div>
-                            <div>收藏题目<span>1</span></div>
-                        </div>
-                        <div class="recommendBox">
-                            <div class="recommendTitle">特别推荐</div>
-                            <div class='recommendContent'>
-                                2019紫禁城国际药师论坛精彩回顾
-                            </div>
-                        </div>
-                        <div class="classBtn" @click="goMine">我的课表</div>
-                    </div>
+                    <div class="userStateBox userInfoBox" v-if="isLogin">
+						<div class="userTitle flex">
+							<img class="userImg" src="../../assets/imgs/index/userImg.png" alt="">
+							<div>小酒窝~</div>
+							<img class="vipImg" src="../../assets/imgs/index/vip1.png" alt="">
+						</div>
+						<div class="collectBox flex-btween">
+							<div>收藏课程<span>1</span></div>
+							<div>收藏题目<span>1</span></div>
+						</div>
+						<div class="recommendBox">
+							<div class="recommendTitle">特别推荐</div>
+							<div class='recommendContent'>
+								2019紫禁城国际药师论坛精彩回顾
+							</div>
+						</div>
+						<div class="classBtn" @click="goMine">我的课表</div>
+					</div>
                 </div>
             </div>
             <Carousel autoplay class="banner">
@@ -55,14 +55,14 @@
                 <div class="title flex-btween">
                     <div class="left">最新课程</div>
                     <div class="right">
-                        <span>查看更多</span>
+                        <span @click="more(1,0)">查看更多</span>
                         <Icon type="ios-arrow-forward" />
                     </div>
                 </div>
                 <div class="courseList">
                     <div class="courseItem" v-for="(item,index) in list.latestCurriculum" :key="index"
                         @click="choice(item)">
-                        <img src alt class="top" />
+                        <img :src="item.imgUrl" alt class="top" />
                         <div class="bottom">
                             <div class="subTitle">{{item.courseTitle}}</div>
                             <div class="price flex-btween">
@@ -83,13 +83,13 @@
                 <div class="title flex-btween">
                     <div class="left">热门课程</div>
                     <div class="right">
-                        <span>查看更多</span>
+                        <span @click="more(2,0)">查看更多</span>
                         <Icon type="ios-arrow-forward" />
                     </div>
                 </div>
                 <div class="courseList">
                     <div class="courseItem" v-for="(item,index) in list.hotCourses" :key="index" @click="choice(item)">
-                        <img src alt class="top" />
+                        <img :src="item.imgUrl" alt class="top" />
                         <div class="bottom">
                             <div class="subTitle">{{item.courseTitle}}</div>
                             <div class="price flex-btween">
@@ -110,13 +110,13 @@
                 <div class="title flex-btween">
                     <div class="left">免费课程</div>
                     <div class="right">
-                        <span>查看更多</span>
+                        <span @click="more(0,0)">查看更多</span>
                         <Icon type="ios-arrow-forward" />
                     </div>
                 </div>
                 <div class="courseList">
                     <div class="courseItem" v-for="(item,index) in list.freeCourse" :key="index" @click="choice(item)">
-                        <img src alt class="top" />
+                        <img :src="item.imgUrl" alt class="top" />
                         <div class="bottom">
                             <div class="subTitle">{{item.courseTitle }}</div>
                             <div class="price flex-btween">
@@ -130,7 +130,7 @@
                 </div>
             </div>
         </div>
-        <loginModel :loginInfo="type" @showLogin="showLogins"></loginModel>
+        <loginModel :loginInfo="type" @isLogin="isLoginUser" @showLogin="showLogins"></loginModel>
     </div>
 </template>
 
@@ -147,13 +147,25 @@ export default {
             speed: 5000,
             valueCal: 0,
             list: {}, //首页列表对象
-            type: {}
+            type: {},
+            isLogin: false
         };
     },
     mounted() {
+        this.isLogin = localStorage.getItem("isLogin");
         this.findList();
     },
     methods: {
+        more(type, isPay) {
+            this.$router.push({
+                path: "/course",
+                query: { type: type, isPay: isPay }
+            });
+        },
+        isLoginUser(data) {
+            console.log(data);
+            this.isLogin = data;
+        },
         showLogins(data) {
             console.log(data);
             this.type = {
@@ -174,6 +186,7 @@ export default {
         goMine() {
             this.$router.push("/mine");
         },
+        // 跳转详情
         choice(item) {
             localStorage.setItem("videoDetail", JSON.stringify(item));
             this.$router.push("/detail");

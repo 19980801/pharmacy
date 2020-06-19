@@ -8,15 +8,15 @@
                         v-for="(item,index) in learningList" :key="index">{{item.name}}</div>
                 </div>
                 <div class="classList" v-if="learningCur==0">
-                    <div class="classItem flex" v-for="(item,index) in 3" :key="index">
+                    <div class="classItem flex" v-for="(item,index) in list" :key="index">
                         <img class="leftImg" src="../../assets/imgs/index/loginPic.png" alt="">
                         <div class="rightClassTitle">
                             <div class="studyBtn">继续学习</div>
-                            <div class="topTitle">第六届技能大赛-药师药学服务人学服务人文胜服务人文胜任力宣讲会-技能大赛比赛题型解析</div>
+                            <div class="topTitle">{{item.courseTitle}}</div>
                             <div class="validityTime flex">
                                 <div class="validityTimeBox">
                                     <p>学习有效期（倒计时）</p>
-                                    <p>有效期至：2020.11.07</p>
+                                    <p>有效期至：{{item.courseTime}}</p>
                                 </div>
                                 <div class="collectBox" :class="{active:index==0}">
                                     <Icon type="md-heart" />
@@ -28,20 +28,30 @@
                 </div>
                 <div class="errorsList" v-if="learningCur==1">
                     <ul class="tab">
-                        <li class="tabItem" :class="{acitve:itemId==i}" v-for="{item,i} in 4" :key="i" @click="clickList(i)">选择题</li>
+                        <li class="tabItem" :class="{acitve:itemId==i}" v-for="{item,i} in 4" :key="i"
+                            @click="clickList(i)">选择题</li>
                     </ul>
-                    <div class="errorsItem flex-btween" v-for="(item,index) in 6" :key="index">
+                    <div class="errorsItem flex-btween" v-for="(item,index) in list" :key="index">
                         <div class="errorsTitleBox flex">
-                            <span>（单选题）</span>
-                            <p>具有中枢抑制作用的抗胆碱药是 </p>
+                            <span v-if="item.questionSubject && item.questionSubject.questionType==0">（单选题）</span>
+                            <span v-if="item.questionSubject && item.questionSubject.questionType==1">（多选题）</span>
+                            <p>{{item.questionSubject && item.questionSubject.questionTitle}} </p>
                         </div>
-                        <div class="errorsBtn">查看</div>
+                        <div class="errorsBtn" @click="showDetail(index)">查看</div>
+                    </div>
+                </div>
+                <div class="pageBox">
+                    <div class="page">
+                        <p>首页</p>
+                        <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
+                            @on-change="onPageChange" />
+                        <p>尾页</p>
                     </div>
                 </div>
             </div>
         </div>
         <!-- 错题详情弹框 -->
-        <div class="alertMask" v-show="alert">
+        <div class="alertMask" v-if="alert">
             <div class="alert">
                 <div class="alertTitle">
                     <p>错题详情</p>
@@ -49,59 +59,55 @@
                 </div>
                 <div class="alertCon">
                     <div>
-                        <p class="title">（单选题）具有中枢抑制作用的抗胆碱药是</p>
+                        <p class="title">
+                            <span v-if="detail&& detail.questionSubject.questionType==0">（单选题）</span>
+                            <span v-else>（双选题）</span>
+                            <span>{{detail.questionSubject.questionTitle}}</span>
+                        </p>
                         <div class="optionBox">
-                            <RadioGroup v-model="vertical" vertical>
-                                <Radio label="资产保值，我不愿意承担任何投资风险">
-                                    <span>资产保值，我不愿意承担任何投资风险</span>
-                                </Radio>
-                                <Radio label="尽可能保证本金安全，不在乎收益率比较低">
-                                    <span>尽可能保证本金安全，不在乎收益率比较低</span>
-                                </Radio>
-                                <Radio label="产生较多的收益，可以承担一定的投资风险">
-                                    <span>产生较多的收益，可以承担一定的投资风险</span>
-                                </Radio>
-                                <Radio label="实现资产大幅增长，愿意承担很大的投资风险">
-                                    <span>实现资产大幅增长，愿意承担很大的投资风险</span>
-                                </Radio>
-                            </RadioGroup>
+                            <div class="optionItem" v-for="(item,i) in detail.questionSubject.questionOptionList" :key="i">
+                                <span class="option" v-if="item.isTrue==0"></span>
+                                <img src="../../assets/imgs/clicked.png" alt="" class="clicked" v-else>
+                                <span>{{item.optionContent}}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="answerBox">
                         <div class="line">
                             <p class="marginRight">
                                 <span class="answerTit">正确答案：</span>
-                                <span class="correct">B</span>
+                                <span class="correct">{{detail.answer}}</span>
                             </p>
                             <p>
                                 <span>您的答案：</span>
-                                <span class="error">A</span>
+                                <span class="error" v-for="(item,i) in rightOption" :key="i">{{item}}</span>
                             </p>
                         </div>
                         <div class="borderBottom">
                             <div class="line middle">
                                 <p>
                                     <span class="answerTit">答案解析：</span>
-                                    <p>阿片类药物常见的不良反应有：便秘，恶心、呕吐，嗜睡及过度镇静，尿储留，瘙痒，眩晕，精神错乱及中枢神经毒性反应，呼吸抑制等。(麻醉药品临床应用指导原则》）</p>
+                                    <p>{{detail.questionSubject.answerExplain}}</p>
                                 </p>
                             </div>
                             <div class="collectionBox">
                                 <div>
-                                    <img src="../../assets/imgs/collection.png" alt="">
+                                    <img src="../../assets/imgs/collection.png" alt="" v-if="detail.collectStatus==0">
+                                    <Icon type="md-heart" v-else class="hearted"/>
                                     <span>收藏</span>
                                 </div>
                                 <div>
                                     <img src="../../assets/imgs/feedback.png" alt="">
-                                    <span>收藏</span>
+                                    <span>反馈</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="line middle">
+                        <!-- <div class="line middle">
                             <p>
                                 <span class="answerTit">相关课程：</span>
                                 <p>暂无相关课程</p>
                             </p>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -121,13 +127,22 @@ export default {
             ],
             learningCur: 0, //学习记录选项卡
             alert: false,
-            itemId:0
+            itemId: 0,
+            pageNum: 1,
+            limit: 10,
+            total:0,
+            list:[],
+            detail:{}
         };
+    },
+    created() {
+        this.getList(0);
     },
     methods: {
         // 学习记录选项卡
         choseLearningTab(i) {
             this.learningCur = i;
+            this.getList(i);
         },
         // 显示弹框
         showAlert() {
@@ -138,10 +153,44 @@ export default {
             this.alert = false;
         },
         // 显示对应列表
-        clickList(i){
+        clickList(i) {
             console.log(i);
-            this.itemId=i;
-        }
+            this.itemId = i;
+        },
+        getList(type) {
+            this.$http
+                .post("/user/findCollect", {
+                    pageNum: this.pageNum,
+                    pageSize: this.limit,
+                    collectType: type
+                })
+                .then(res => {
+                    if (res.code == 0) {
+                        console.log(res);
+                        this.list = res.data.content;
+                        this.total = res.data.totalElements;
+                    }
+                });
+        },
+        onPageChange(page) {
+            this.pageNum = page;
+            this.getList(this.type);
+        },
+        // 查看错题详情
+        showDetail(index) {
+            this.alert = true;
+            this.detail=this.list[index];
+            // 判断是否是正确答案
+            for(let i=0;i<this.detail.questionSubject.questionOptionList.length;i++){
+                if(this.detail.questionSubject.questionOptionList[i].isTrue==1){
+                    this.rightOption.push(Number(i+1));
+                }
+            }
+            // 下标转为选项
+            this.rightOption=this.rightOption.map(ele=>{
+                return String.fromCharCode(64 + parseInt(ele));
+            });
+        },
     }
 };
 </script>
@@ -273,27 +322,60 @@ export default {
                         cursor: default;
                     }
                 }
-                .tab{
-                    display:flex;
+                .tab {
+                    display: flex;
                     flex-direction: row;
                     flex-wrap: wrap;
-                    cursor:default;
-                    .tabItem{
-                        font-size:14px;
-                        font-family:PingFang-SC-Regular,PingFang-SC;
-                        font-weight:400;
-                        color:rgba(28,31,33,1);
-                        line-height:34px;
-                        margin:30px 40px 0;
-                        height:34px;
-                        text-align:center;
-                        .active{
-                            color:#fff;
-                            background:rgba(41,178,139,1);
-                            border-radius:17px;
+                    cursor: default;
+                    .tabItem {
+                        font-size: 14px;
+                        font-family: PingFang-SC-Regular, PingFang-SC;
+                        font-weight: 400;
+                        color: rgba(28, 31, 33, 1);
+                        line-height: 34px;
+                        margin: 30px 40px 0;
+                        height: 34px;
+                        text-align: center;
+                        .active {
+                            color: #fff;
+                            background: rgba(41, 178, 139, 1);
+                            border-radius: 17px;
                         }
                     }
                 }
+            }
+            // 分页样式
+            /deep/ .ivu-page-item {
+                border-radius: 50%;
+                margin: 0 20px;
+                border: 0;
+                color: #4d555d;
+                font-size: 14px;
+                width: 35px;
+                height: 35px;
+                line-height: 35px;
+            }
+            /deep/ .ivu-page-item-active {
+                background: rgba(77, 85, 93, 1);
+                color: #fff;
+            }
+            /deep/ .ivu-page-item-active a,
+            .ivu-page-item-active:hover a {
+                color: #fff;
+            }
+            .pageBox {
+                text-align: center;
+                .page {
+                    display: inline-flex;
+                    height: 35px;
+                    line-height: 35px;
+                    color: #4d555d;
+                    font-size: 14px;
+                }
+                p {
+                    margin: 0 20px;
+                }
+                margin: 50px auto;
             }
         }
     }

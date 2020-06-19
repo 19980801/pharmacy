@@ -914,7 +914,7 @@ URL = user/findStudyRecordIn
     }
 }
 
-8. 收藏/取消收藏 学习记录-课程 *
+8. 收藏/取消收藏 学习记录-课程 *(有问题需要再次测试)
 URL = user/updateCollect/class
 请求方式：x-www-form-urlencoded
 请求参数：
@@ -1231,7 +1231,7 @@ URL = user/findCollect *
 }
 
 
-13. 查询题库
+13. 查询题库(有问题)
 URL = bank/pageQuery
 请求方式：POST
 参数类型：JSON

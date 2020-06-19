@@ -165,7 +165,7 @@ export default {
             })
         },
         onPageChange(page) {
-            this.page = page;
+            this.pageNum = page;
             this.getList();
         },
         // 查看错题详情

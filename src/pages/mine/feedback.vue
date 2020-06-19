@@ -3,38 +3,46 @@
         <div class="rightContent">
             <div class="title">
                 <p>我的反馈</p>
-                <div class="add" @click="showAlert">添加反馈</div>
+                <div class="add" @click="alert=true">添加反馈</div>
             </div>
             <ul class="list">
-                <li class="listItem" v-for="(item,i) in 2" :key="i">
-                    <p class="listTit">反馈：网站体验不是特别好，建议优化依稀啊！！</p>
+                <li class="listItem" v-for="(item,i) in list" :key="i">
+                    <p class="listTit">反馈:{{item.feedbackContent}}</p>
                     <p>
                         <img src="../../assets/imgs/time.png" alt="" class="time">
-                        <span class="date">2019-09-09</span>
+                        <span class="date">{{item.createTime}}</span>
                     </p>
-                    <div class="bg">
-                        <span class="answer">回答：网站体验不是特别好，建议优化依稀啊！！</span>
+                    <div class="bg" v-if="item.feedbackAnswer">
+                        <span class="answer">回答：{{item.feedbackAnswer}}</span>
                         <div>
                             <img src="../../assets/imgs/time.png" alt="" class="time">
-                            <span class="date">2019-09-09</span>
+                            <span class="date">{{item.answerTime}}</span>
                         </div>
                     </div>
                 </li>
             </ul>
+            <div class="pageBox" v-if="Number(total)>10">
+                <div class="page">
+                    <p>首页</p>
+                    <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
+                        @on-change="onPageChange" />
+                    <p>尾页</p>
+                </div>
+            </div>
         </div>
         <!-- 我的反馈 -->
         <div class="alertMask" v-show="alert">
             <div class="alert">
                 <div class="alertTitle">
                     <p>添加反馈</p>
-                    <Icon type="md-close" @click="closeAlert" />
+                    <Icon type="md-close" @click="alert=false" />
                 </div>
                 <div class="alertCon">
                     <Input v-model="feedContent" type="textarea" :rows="8" placeholder="输入反馈内容" />
                 </div>
                 <div class="butBox">
-                    <div class="button sure">确定</div>
-                    <div class="button cancel" @click="closeAlert">取消</div>
+                    <div class="button sure" @click="addCallInfo">确定</div>
+                    <div class="button cancel" @click="alert=false">取消</div>
                 </div>
             </div>
         </div>
@@ -46,15 +54,53 @@ export default {
     data() {
         return {
             alert: false,
-            feedContent:""
+            feedContent: "",
+            pageNum: 1,
+            limit: 10,
+            list: [],
+            total: 0
         };
     },
+    created() {
+        this.getList();
+    },
     methods: {
-        closeAlert() {
-            this.alert = false;
+        getList() {
+            this.$http
+                .post("/feedback/pageQuery", {
+                    pageNum: this.pageNum,
+                    pageSize: this.limit
+                })
+                .then(res => {
+                    console.log(res);
+                    if (res.code == 0) {
+                        this.list = res.data.content;
+                        this.total = res.data.totalElements;
+                    }
+                });
         },
-        showAlert(){
-            this.alert = true;
+        onPageChange(page) {
+            this.pageNum = page;
+            this.getList();
+        },
+        // 添加反馈
+        addCallInfo(){
+            if(this.feedContent){
+                this.$http.post("feedback/add",{
+                    feedbackContent:this.feedContent,
+                    feedbackType:0      //0-用户 1-题目
+                }).then(res=>{
+                    console.log(res);
+                    if(res.code==0){
+                        this.feedContent="";
+                        this.alert=false;
+                        this.$Message.success("添加成功！");
+                        this.getList();
+                    }
+                })
+            }else{
+                this.$Message.error("请填写反馈内容！");
+            }
         }
     }
 };
@@ -89,7 +135,7 @@ export default {
                 font-family: PingFangSC-Regular, PingFang SC;
                 font-weight: 400;
                 color: rgba(255, 255, 255, 1);
-                cursor: default; 
+                cursor: default;
             }
         }
         .list {
@@ -138,6 +184,39 @@ export default {
                 border: 0;
             }
         }
+        // 分页样式
+        /deep/ .ivu-page-item {
+            border-radius: 50%;
+            margin: 0 20px;
+            border: 0;
+            color: #4d555d;
+            font-size: 14px;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+        }
+        /deep/ .ivu-page-item-active {
+            background: rgba(77, 85, 93, 1);
+            color: #fff;
+        }
+        /deep/ .ivu-page-item-active a,
+        .ivu-page-item-active:hover a {
+            color: #fff;
+        }
+        .pageBox {
+            text-align: center;
+            .page {
+                display: inline-flex;
+                height: 35px;
+                line-height: 35px;
+                color: #4d555d;
+                font-size: 14px;
+            }
+            p {
+                margin: 0 20px;
+            }
+            margin: 50px auto;
+        }
     }
     .alertMask {
         width: 100%;
@@ -173,10 +252,10 @@ export default {
                 margin: 20px 0;
             }
             .butBox {
-                width:80%;
-                margin:40px auto 0;
+                width: 80%;
+                margin: 40px auto 0;
                 display: flex;
-                justify-content:space-around;
+                justify-content: space-around;
                 cursor: default;
                 .button {
                     width: 140px;
@@ -190,11 +269,11 @@ export default {
                 }
                 .sure {
                     background: rgba(41, 178, 139, 1);
-                    color:#fff;
+                    color: #fff;
                 }
-                .cancel{
-                    border:1px solid rgba(41,178,139,1);
-                    color:#29B28B;
+                .cancel {
+                    border: 1px solid rgba(41, 178, 139, 1);
+                    color: #29b28b;
                 }
             }
         }

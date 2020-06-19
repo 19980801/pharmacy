@@ -19,16 +19,16 @@
         <div class="listBox">
             <div class="list">
                 <ul>
-                    <li class="listItem" v-for="(item,i) in 8" :key="i">
+                    <li class="listItem" v-for="(item,i) in list" :key="i">
                         <div class="left">
                             <img src="../../assets/imgs/1.png" alt="">
                         </div>
                         <div class="right">
                             <div class="title">
-                                <p>省市赛题库（原实践题题库）-第六届中国药师技能大赛</p>
+                                <p>{{item.bankTitle}}</p>
                                 <div class="time">
                                     <img src="../../assets/imgs/time.png" alt="">
-                                    <span>2019-09-09</span>
+                                    <span>{{item.createTime}}</span>
                                 </div>
                             </div>
                             <div class="msgBox">
@@ -56,7 +56,8 @@
         <div class="pageBox">
             <div class="page">
                 <p>首页</p>
-                <Page :total="100" prev-text="上一页" next-text="下一页" />
+                <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
+                    @on-change="onPageChange" />
                 <p>尾页</p>
             </div>
         </div>
@@ -118,22 +119,47 @@
 export default {
     data() {
         return {
-            alert: false //弹框
+            alert: false,    //弹框
+            total:0,
+            limit:10,
+            pageNum:1,
+            year:"",
+            list:[]
         };
     },
+    created(){
+        this.getList();
+    },
     methods: {
-			// 跳转练习
-			goExercise(){
-				this.$router.push("/exercise");
-			},
+        // 跳转练习
+        goExercise() {
+            this.$router.push("/exercise");
+        },
         // 显示弹框
         showAlert() {
             this.alert = true;
         },
         // 关闭弹框
-        closeAlert(){
-            this.alert=false;
-        }
+        closeAlert() {
+            this.alert = false;
+        },
+        getList() {
+            this.$http.post("/bank/pageQuery", {
+                pageNum:this.pageNum,
+                pageSize:this.limit,
+                updateTime:this.year
+            }).then(res=>{
+                if(res.code==0){
+                    console.log(res);
+                    this.list=res.data.content;
+                    this.total = res.data.totalElements;
+                }
+            })
+        },
+        onPageChange(page) {
+            this.pageNum = page;
+            this.getList();
+        },
     }
 };
 </script>
@@ -225,7 +251,6 @@ export default {
                 display: flex;
                 padding: 15px;
                 .left {
-                    border: 1px solid red;
                     img {
                         width: 340px;
                         height: 200px;
