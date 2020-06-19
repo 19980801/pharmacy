@@ -10,7 +10,7 @@ http.ajax = axios.create();
 // 增加请求头
 http.ajax.interceptors.request.use(config => {
     // 从本地拿用户id
-    const userId = storage.get("User_Id") || 1;
+    const userId = storage.get("User_Id") || "";
     // 增加用户id请求头
     config.headers['User_Id'] = userId
     return config

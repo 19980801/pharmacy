@@ -53,7 +53,7 @@
                             <div @click="backPassword" style="cursor: default;">忘记密码</div>
                         </div>
                     </div>
-                    <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==0">登录</div>
+                    <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==0" @click="userLogin">登录</div>
                     <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==1" @click="register">注册</div>
                 </div>
             </div>
@@ -105,6 +105,7 @@
 </template>
 
 <script>
+import storage from "../config/storage";
 // 图片验证码方法
 export function getUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -186,7 +187,34 @@ export default {
                 console.log(res);
                 if(res.code==0){
                     this.$Message.success(res.message);
+                    this.formInline.phone="";
+                    this.formInline.password="";
+                    this.formInline.verCode="";
+                    this.formInline.verImgCode="";
                     this.loginP.loginCur=0;     //转为登录
+                }
+            })
+        },
+        // 登录
+        userLogin(){
+            if(!this.formInline.phone){
+                this.$Message.error("请输入手机号!");
+                return;
+            }
+            if(!this.formInline.password){
+                this.$Message.error("请输入密码!");
+                return;
+            }
+            this.$http.form("/login/user/phone",{
+                mobilePhone:this.formInline.phone,
+                password:this.formInline.password
+            }).then(res=>{
+                if(res.code==0){
+                    this.$Message.success("登录成功!");
+                    storage.set("User_Id",res.data.user.id);
+                    storage.set("userInfo",res.data.user);
+                    storage.set("token",res.data.token);
+                    this.loginP.showModel=false;
                 }
             })
         },
@@ -233,7 +261,6 @@ export default {
         // 获取图片验证码
         getCaptcha() {
             this.uuid = getUUID();
-            console.log(this.uuid);
             this.$http.getImg("/register/captcha.jpg",{
                 uuid:this.uuid
             }).then(res=>{
