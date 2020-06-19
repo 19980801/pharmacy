@@ -1,7 +1,8 @@
 import axios from 'axios'
 import qs from 'qs'
 
-export const BASEURL = axios.defaults.baseURL = 'http://62.234.59.112:6004';    //开发服务器
+// export const BASEURL = axios.defaults.baseURL = 'http://62.234.59.112:6004';    //开发服务器
+export const BASEURL = axios.defaults.baseURL = 'http://121.41.69.65:6004';    //开发服务器
 
 export const fetch = (url, params = {}) => {
   return new Promise((resolve, reject) => {
