@@ -7,35 +7,47 @@
                     <FormItem label="题库标题：" prop="questionTitle">
                         <Input v-model="formValidate.questionTitle" placeholder="请输入题库标题"></Input>
                     </FormItem>
-                    <FormItem label="用户分类：" prop="userType">
+                    <FormItem label="用户分类：" prop="userType" style="width:400px">
                         <Select v-model="formValidate.userType">
-                            <Option v-for="(item,i) of userType" :key="i" :value="toString(item.id)">{{item.categoryName}}</Option>
+                            <Option v-for="(item,i) of userType" :key="i" :value="(item.id)">
+                                {{item.categoryName}}</Option>
                         </Select>
-                        <!-- <CheckboxGroup v-model="formValidate.userType">
-              <Checkbox :label="item.id" v-for="(item,index) in userType" :key="index">{{item.categoryName}}</Checkbox>
-            </CheckboxGroup> -->
                     </FormItem>
-                    <FormItem label="全部分类：" prop="allType">
-                        <CheckboxGroup v-model="formValidate.allType">
-                            <Checkbox label="Eat"></Checkbox>
-                            <Checkbox label="Sleep"></Checkbox>
-                            <Checkbox label="Run"></Checkbox>
-                            <Checkbox label="Movie"></Checkbox>
-                        </CheckboxGroup>
+                    <FormItem label="题库封面：" prop="imgUrl" style="width:400px">
+                        <Input v-model="formValidate.imgUrl" placeholder="只能上传一张jpg/png格式文件">
+                        <span slot="append">
+                            <Upload :action="uploadImgUrl" :format="['jpg','jpeg','png']" :data="uploadData"
+                                :show-upload-list="false" :before-upload="onBeforeImgUploading"
+                                :on-success="onImgUploadInforSuccess" :on-format-error="handleImgFormatError">
+                                <Button icon="ios-cloud-upload-outline" :loading="imgUploadLoading">选择上传文件</Button>
+                            </Upload>
+                        </span>
+                        </Input>
                     </FormItem>
-                    <div class="search">
-                        <FormItem label="题目标题：" prop="subjectTitle">
-                            <Input v-model="formValidate.subjectTitle" placeholder="请输入课程标题"></Input>
+                    <Card>
+                        <p slot="title">题目搜索</p>
+                        <FormItem label="全部分类：" style="width:400px;">
+                            <Select v-model="formValidate.allType">
+                                <Option v-for="(item,i) of topicList" :key="i" :value="(item.id)">
+                                    {{item.categoryName}}</Option>
+                            </Select>
                         </FormItem>
-                        <Button type="primary" @click="search" class="button">
-                            <Icon type="ios-search" style="font-size:16px" />搜索
-                        </Button>
-                        <Button type="primary" @click="add">新增题目</Button>
-                    </div>
-                    <Table :columns="tableColumns" :data="tableData" border></Table>
-                    <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
+                        <div class="search">
+                            <FormItem label="题目标题：">
+                                <Input v-model="formValidate.subjectTitle" placeholder="请输入课程标题"></Input>
+                            </FormItem>
+                            <Button type="primary" @click="search" class="button">
+                                <Icon type="ios-search" style="font-size:16px" />搜索
+                            </Button>
+                            <Button @click="clear" style="margin-right:20px;">取消</Button>
+                            <Button type="primary" @click="add">新增题目</Button>
+                        </div>
+                        <Table @on-selection-change="select" :columns="tableColumns" :data="tableData" border></Table>
+                        <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
+                    </Card>
                 </Form>
             </div>
+            <Button type="primary" @click="submitSubject" style="width:400px;margin:20px;">提交</Button>
         </Card>
         <!-- 弹框 -->
         <Modal v-model="addModal" title="新增题目" :closable="false">
@@ -71,24 +83,29 @@
 </template>
 
 <script>
-import { BASICURL, getUserClass } from "@/service/getData";
+import {
+    BASICURL,
+    getUserClass,
+    getTopicType,
+    getTopicList,
+    uploadBank
+} from "@/service/questionApi/api";
 export default {
     data() {
         return {
-            uploadUrl: `${this.host}/admin/upload/file`, //服务器
-            uploadData: {
-                type: ""
-            },
+            uploadImgUrl: `${this.host}/admin/upload/oss/image`,
             imgUploadLoading: false,
+            uploadData: {},
             total: 0,
             page: 1,
             limit: 10,
             addModal: false,
             formValidate: {
                 questionTitle: "",
-                userType: [],
-                allType: [],
-                subjectTitle: ""
+                userType:null,
+                allType: "",
+                subjectTitle: "",
+                imgUrl: ""
             },
             ruleValidate: {
                 questionTitle: [
@@ -103,7 +120,14 @@ export default {
                         required: true,
                         message: "用户分类不能为空",
                         trigger: "change",
-                        type: "array"
+                        type: "number"
+                    }
+                ],
+                imgUrl: [
+                    {
+                        required: true,
+                        message: "题库封面不能为空",
+                        trigger: "change"
                     }
                 ],
                 allType: [
@@ -139,29 +163,35 @@ export default {
                 },
                 {
                     title: "题目标题",
-                    key: "contractNum"
+                    key: "questionTitle"
                 },
                 {
                     title: "类型",
-                    key: "contractTitle"
+                    key: "questionType",
+                    render: (h, params) => {
+                        let txt =
+                            params.row.questionType == 0 ? "单选" : "多选";
+                        return h("span", {}, txt);
+                    }
                 },
                 {
                     title: "分值",
-                    key: "contractPrice"
+                    key: "questionValue"
                 },
                 {
                     title: "分类",
-                    key: "contractSubscriptionPercent"
+                    key: "questionCategoryId"
                 },
                 {
                     title: "创建时间",
-                    key: "contractGoldPercent"
+                    key: "createTime"
                 },
                 {
                     title: "创建人",
-                    key: "contractDate"
+                    key: "createUser"
                 }
             ],
+            topicList: [],
             addValidate: {
                 title: "",
                 type: "",
@@ -198,18 +228,97 @@ export default {
                 { name: "特殊人群用药" }
             ],
             optionList: [],
-            userType: []
+            userType: [],
+            selectedArr:[]
         };
     },
     created() {
         this.getUserType();
+        this.getTopic();
+        this.getTopicTable();
     },
     methods: {
+        // 选择表格
+        select(selection) {
+            console.log(selection)
+            this.selectedArr = selection;
+        },
+        submitSubject() {
+            this.$refs["formValidate"].validate(valid => {
+                if (valid) {
+                    if(this.selectedArr.length==0){
+                        this.$Message.error("请选择要添加的题目！");
+                        return;
+                    }
+                    let list=[];
+                    this.selectedArr.forEach(ele=>{
+                        list.push({
+                            id:ele.id
+                        })
+                    })
+                    console.log(list);
+                    let data={
+                        bankTitle:this.formValidate.questionTitle,
+                        imgUrl:this.formValidate.imgUrl,
+                        userType:this.formValidate.userType,
+                        questionSubjectSet:list
+                    }
+                    console.log(data);
+                    uploadBank({
+                        ...data
+                    }).then(res=>{
+                        console.log(res);
+                        if(res.code==0){
+                            this.$refs["formValidate"].resetFields();
+                            this.selectedArr=[];
+                            this.$Message.success(res.message);
+                        }
+                    })
+                }
+            });
+        },
+        onBeforeImgUploading() {
+            this.imgUploadLoading = true;
+        },
+        onImgUploadInforSuccess(res) {
+            console.log(res);
+            this.imgUploadLoading = false;
+            this.formValidate.imgUrl = res.data || "";
+        },
+        handleImgFormatError(file) {
+            this.$Notice.error({
+                title: "文件格式错误",
+                desc: "上传的文件格式是错误的，请选择jpg或者png格式的图片"
+            });
+        },
+        getTopicTable() {
+            console.log(this.formValidate.allType);
+            getTopicList({
+                subjectCategory: this.formValidate.allType,
+                subjectTitle: this.formValidate.subjectTitle,
+                pageNum: this.page,
+                pageSize: this.limit
+            }).then(res => {
+                console.log(res);
+                if (res.code == 0) {
+                    this.tableData = res.data.content;
+                    this.total = res.data.totalElements;
+                }
+            });
+        },
         getUserType() {
             getUserClass().then(res => {
                 console.log(res);
                 if (res.code == 0) {
                     this.userType = res.data;
+                }
+            });
+        },
+        getTopic() {
+            getTopicType().then(res => {
+                console.log(res);
+                if (res.code == 0) {
+                    this.topicList = res.data;
                 }
             });
         },
@@ -229,27 +338,19 @@ export default {
         add() {
             this.addModal = true;
         },
-        onBeforeImgUploading() {
-            this.imgUploadLoading = true;
-        },
-        onImgUploadInforSuccess(res) {
-            this.imgUploadLoading = false;
-            this.formValidate.contractImg = res.message || "";
-        },
-        handleFormatError(file) {
-            this.$Notice.warning({
-                title: "文件格式错误",
-                desc: "上传的文件格式是错误的，请选择jpg或者png格式的图片"
-            });
-        },
         onPageChange(page) {
             this.page = page;
-            this.getTableData();
+            this.getTopicTable();
         },
         search() {
             this.page = 1;
-            this.getTableData();
-            this.formIte = {};
+            this.getTopicTable();
+        },
+        clear() {
+            this.page = 1;
+            this.formValidate.allType = "";
+            this.formValidate.subjectTitle = "";
+            this.getTopicTable();
         },
         cancel() {
             this.addModal = false;
@@ -258,41 +359,10 @@ export default {
         sure() {
             console.log(this.options);
         },
-        roleadd() {
-            addContract({
-                ...this.formValidate
-            }).then(res => {
-                if (res.code == 0) {
-                    this.cancel();
-                    this.getTableData();
-                } else {
-                    this.$Message.error(res.message);
-                }
-            });
-        },
-        roleeditor() {
-            editContract({
-                ...this.formValidate
-            }).then(res => {
-                if (res.code == 0) {
-                    this.cancel();
-                    this.getTableData();
-                } else {
-                    this.$Message.error(res.message);
-                }
-            });
-        },
         resetForm() {
             for (let key in this.formValidate) {
                 this.formValidate[key] = "";
             }
-        },
-        getTableData() {
-            getList().then(res => {
-                console.log(res);
-                this.tableData = res.data;
-                this.total = res.data.length;
-            });
         }
     }
 };

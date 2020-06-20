@@ -7,4 +7,4 @@ export const getCoursetypeList = data => fetch('admin/course/findAllCategory', d
 export const getUserClass = data => fetch('admin/user/findAllCategory', data);
 
 // 上传课程
-export const addCourseData = data => post('/admin/course/upload', data);
+export const addCourseData = data => postConfig('/admin/course/upload', data);

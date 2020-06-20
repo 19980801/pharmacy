@@ -8,22 +8,41 @@ URL = /course/upload
 请求参数：
 {
 	"courseTitle":"测试标题6",(课程标题)
+	"imgUrl":"http://www.heye.fun/2020/06/19/aeb9fc61-0bd3-42b1-948e-836ce22d30ae.png",(封面url)
 	"description":"这是一个H5",(课程描述，富文本)
-	"coursePrice":"100.21",(课程价格)
+	"coursePrice":"100.21",(课程价格/元)
 	"courseCategoryId":"1",(关联分类id)
+	"memberOnly":"0",(会员专属 0-否 1-是)
+	"whetherPay":"0",(是否付费 0-否 1-是)
 	"createUser":"杜品言222",(当前登录用户名称)
 	"courseStatus":"0",(课程状态 0-上架 1-下架)
-	"classHours":[{
-		"classTitle":"课时标题7",
-		"classUrl":"www.baidu.com",
-		"createUser":"1111222"
+	"classHours":[{(课时数组)
+		"classTitle":"第一课时",(课时标题)
+		"classUrl":"http://www.heye.fun/2020/06/19/a8fa9b4c-fa92-45be-a07a-2b05e6587a81.mp4",(课时视频url)
+		"createUser":"root"(创建人)
 	},
 	{
-		"classTitle":"课时标题8",
-		"classUrl":"www.baidu.com",
-		"createUser":"2223332"
+		"classTitle":"第二课时",
+		"classUrl":"http://www.heye.fun/2020/06/19/ddb4c987-9a67-445c-863e-9fa739ff217f.mp4",
+		"createUser":"root"
 	}
-		]
+		],
+	"courseContentSet":[(课程内容id数组)
+		{
+			"id":"1"
+		},
+		{
+			"id":"2"
+		}
+	],
+	"userCategorySet":[(用户分类id数组)
+		{
+			"id":"1"
+		},
+		{
+			"id":"2"
+		}
+	]
 }
 返回参数：
 {
@@ -195,6 +214,199 @@ URL = user/findAllCategory
             "id": 3,
             "categoryName": "进修生",
             "createTime": "2020-06-03 14:31:58"
+        }
+    ]
+}
+
+
+5. 上传题库(接口500)
+URL = bank/uploadBank
+请求方式：POST
+参数类型：JSON
+请求参数：
+
+{
+    "bankTitle":"测试题库2020",(标题)
+	"imgUrl":"http://www.baidu.com",(封面)
+    "userType":"0",(用户类型)
+    "questionSubjectSet":[
+        {
+            "id":"1"
+        },
+        {
+            "id":"2"
+        }
+    ]
+}
+
+返回参数：
+{
+    "code": 0,
+    "message": "上传成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+6. 查询题目
+URL = subject/pageQuery
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "subjectCategory":"1",(题目分类id)
+    "subjectTitle":"测试"(题目标题)
+	pageNum、pageSize
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 3,(题目id)
+                "questionTitle": "测试题目3",(题目标题)
+                "questionType": 0,(题目类型 0-单选 1-多选)
+                "questionValue": 8.00,(分值)
+                "answerExplain": "这个题目这么简单我猜你会",(题目解析)
+                "questionCategoryId": 1,(题目分类id)
+                "createUser": "杜品言",(创建人)
+                "createTime": "2020-06-13 08:56:57",(创建时间)
+                "questionOptionList": [](选项集合)
+            },
+            {
+                "id": 2,
+                "questionTitle": "测试题目2",
+                "questionType": 0,
+                "questionValue": 5.00,
+                "answerExplain": "这个题目这么简单你肯定不会",
+                "questionCategoryId": 1,
+                "createUser": "杜品言",
+                "createTime": "2020-06-13 08:21:20",
+                "questionOptionList": []
+            },
+            {
+                "id": 1,
+                "questionTitle": "测试题目",
+                "questionType": 0,
+                "questionValue": 3.00,
+                "answerExplain": "这个题目这么简单你不会吗",
+                "questionCategoryId": 1,
+                "createUser": "杜品言",
+                "createTime": "2020-06-12 08:30:39",
+                "questionOptionList": [
+                    {
+                        "id": 1,
+                        "optionContent": "选项1",(选项内容)
+                        "isTrue": 0,(是否正确答案)
+                        "questionId": 1,(题目id)
+                        "createTime": "2020-06-12 08:40:41"
+                    },
+                    {
+                        "id": 2,
+                        "optionContent": "选项2",
+                        "isTrue": 0,
+                        "questionId": 1,
+                        "createTime": "2020-06-12 08:40:54"
+                    },
+                    {
+                        "id": 3,
+                        "optionContent": "选项3",
+                        "isTrue": 0,
+                        "questionId": 1,
+                        "createTime": "2020-06-12 08:41:01"
+                    },
+                    {
+                        "id": 4,
+                        "optionContent": "选项4",
+                        "isTrue": 0,
+                        "questionId": 1,
+                        "createTime": "2020-06-12 08:41:10"
+                    }
+                ]
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "unpaged": false,
+            "paged": true
+        },
+        "totalElements": 3,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "first": true,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 3,
+        "empty": false
+    }
+}
+
+7. oss上传图片
+URL = upload/oss/image
+请求方式：POST
+参数类型：form-data
+请求参数：
+	file:(key 文件类型)
+返回参数：
+{
+    "code": 0,
+    "message": "上传成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": "http://www.heye.fun/2020/06/20/877d669c-ece4-426c-9f49-e116d9972e45.png"(图片url)
+}
+
+8. oss上传视频
+URL = upload/oss/video
+请求方式：POST
+参数类型：form-data
+请求参数：
+	file:(key 文件类型)
+返回参数：
+{
+    "code": 0,
+    "message": "上传成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": "http://www.heye.fun/2020/06/20/7b742766-3575-4556-9d24-5393ddb2985e.mp4"(视频url)
+}
+
+9. 获取题目分类
+URL = subject/getQuestionCategory
+请求方式：GET
+无参数
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": [
+        {
+            "id": 1,(分类id)
+            "categoryName": "医学知识",(分类名称)
+            "createTime": 1592631147000
+        },
+        {
+            "id": 2,
+            "categoryName": "药学技能",
+            "createTime": 1592631156000
         }
     ]
 }

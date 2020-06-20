@@ -1,22 +1,13 @@
 import { fetch, postConfig } from '../http.js'
 
-// 查询合约列表
-export const getList = () => fetch("/admin/contract/findAllContract");
+// 获取用户分类
+export const getUserClass = data => fetch('admin/user/findAllCategory', data);
 
-// 根据id查合约
-export const getContract = (id) => fetch(`/admin/contract/findContract/${id}`);
+// 获取题目分类
+export const getTopicType = data => fetch('admin/subject/getQuestionCategory', data);
 
-// 修改合约
-export const editContract = data => postConfig('/admin/contract/updateContract', data);
+//查询题目
+export const getTopicList = data => postConfig('admin/subject/pageQuery', data);
 
-// 添加合约
-export const addContract = data => postConfig('/admin/contract/saveContract', data);
-
-// 抢购批次查询
-export const getBatchList = data => postConfig('/admin/contractLoot/getContractLootList', data);
-
-// 添加批次
-export const addBatch = data => postConfig('/admin/contractLoot/addContractLoot', data);
-
-// 删除
-export const delBatch = (id) => fetch(`/admin/contractLoot/deleteContractLoot/${id}`);
+// 上传题库
+export const uploadBank = data => postConfig('admin/bank/uploadBank', data);

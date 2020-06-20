@@ -7,7 +7,7 @@
                     <FormItem label="课程标题：" prop="courseTitle">
                         <Input v-model="addForm.courseTitle" placeholder="请输入课程标题"></Input>
                     </FormItem>
-                    <FormItem label="封面图片：" prop="imgUrl" style="width:200px">
+                    <FormItem label="封面图片：" prop="imgUrl" style="width:400px">
                         <Input v-model="addForm.imgUrl" placeholder="只能上传一张jpg/png格式文件">
                         <span slot="append">
                             <Upload :action="uploadImgUrl" :format="['jpg','jpeg','png']" :data="uploadData"
@@ -24,24 +24,25 @@
                                 {{item.categoryName}}</Option>
                         </Select>
                     </FormItem>
-                    <FormItem label="全部内容：" prop="content">
-                        <CheckboxGroup v-model="addForm.content">
-                            <Checkbox :label="item.id" v-for="(item,index) in allContent" :key="index">{{item.contentName}}
+                    <FormItem label="全部内容：" prop="courseContentSet">
+                        <CheckboxGroup v-model="addForm.courseContentSet">
+                            <Checkbox :label="item.id" v-for="(item,index) in allContent" :key="index">
+                                {{item.contentName}}
                             </Checkbox>
                         </CheckboxGroup>
                     </FormItem>
-                    <FormItem label="用户分类：" prop="userType">
-                        <CheckboxGroup v-model="addForm.userType">
+                    <FormItem label="用户分类：" prop="userCategorySet">
+                        <CheckboxGroup v-model="addForm.userCategorySet">
                             <Checkbox :label="item.id" v-for="(item,index) in userTypeList" :key="index">
                                 {{item.categoryName}}</Checkbox>
                         </CheckboxGroup>
                     </FormItem>
-                    <FormItem label="课程视频:" prop="courseVideos">
+                    <FormItem label="课程视频:">
                         <Button type="primary" @click="addVideo=true">添加</Button>
                     </FormItem>
                     <div>
                         <div class="videoBox">
-                            <div class="videoItem" v-for="(item,i) in addForm.courseVideos" :key="i">
+                            <div class="videoItem" v-for="(item,i) in addForm.classHours" :key="i">
                                 <video :src="item.classUrl"></video>
                                 <p>{{item.classTitle}}</p>
                                 <Button type="error" class="delvideo" @click="delconfirm(i)">删除</Button>
@@ -50,17 +51,17 @@
                     </div>
                     <FormItem label="收费：" prop="whetherPay">
                         <RadioGroup v-model="addForm.whetherPay">
-                            <Radio label="0">是</Radio>
-                            <Radio label="1">否</Radio>
+                            <Radio label="0">否</Radio>
+                            <Radio label="1">是</Radio>
                         </RadioGroup>
                     </FormItem>
                     <FormItem label="价格：">
-                        <Input v-model="addForm.coursePrice" placeholder="请输入价格" :disabled="addForm.price==1"></Input>
+                        <Input v-model="addForm.coursePrice" placeholder="请输入价格" :disabled="addForm.whetherPay==0"></Input>
                     </FormItem>
                     <FormItem label="会员专属：" prop="memberOnly">
                         <RadioGroup v-model="addForm.memberOnly">
-                            <Radio label="0">是</Radio>
-                            <Radio label="1">否</Radio>
+                            <Radio label="0">否</Radio>
+                            <Radio label="1">是</Radio>
                         </RadioGroup>
                     </FormItem>
                     <FormItem label="课程状态：" prop="courseStatus">
@@ -69,7 +70,7 @@
                             <Radio label="1">下架</Radio>
                         </RadioGroup>
                     </FormItem>
-                    <FormItem label="课程信息：">
+                    <FormItem label="课程信息：" prop="description">
                         <smeditor :config="config" ref="smeditor" @isUploading="ifUploading"></smeditor>
                     </FormItem>
                 </Form>
@@ -101,7 +102,8 @@ import smeditor from "@/SMEditor/SMEditor.vue";
 import {
     BASICURL,
     getCoursetypeList,
-    getUserClass
+    getUserClass,
+    addCourseData
 } from "@/service/courseApi/api";
 import { getStore, removeStore, setStore } from "@/config/storage";
 export default {
@@ -127,25 +129,26 @@ export default {
                 }
             },
             addVideo: false,
-            uploadImgUrl:`${this.host}/admin/upload/oss/image`,
+            uploadImgUrl: `${this.host}/admin/upload/oss/image`,
             uploadUrl: `${this.host}/admin/upload/oss/video`,
             uploadData: {},
             userTypeList: [],
             addForm: {
                 courseTitle: "",
-                imgUrl:"",
-                courseCategoryId:null,
-                content: [],
-                userType: [],
-                courseVideos: [],
+                imgUrl: "",
+                courseCategoryId: null,
+                courseContentSet: [],
+                userCategorySet: [],
+                classHours: [],
                 whetherPay: "0",
                 coursePrice: "",
                 memberOnly: "0",
-                courseStatus: "0"
+                courseStatus: "0",
+                description: "",
+                createUser: ""
             },
-            courseContentSet:[],      //全部内容已选数组
             typeList: [],
-            allContent:[],      //全部内容
+            allContent: [], //全部内容
             ruleInline: {
                 courseTitle: [
                     {
@@ -158,7 +161,7 @@ export default {
                     {
                         required: true,
                         message: "封面图片不能为空",
-                        trigger: "blur"
+                        trigger: "change"
                     }
                 ],
                 courseCategoryId: [
@@ -166,10 +169,10 @@ export default {
                         required: true,
                         message: "课程分类不能为空",
                         trigger: "change",
-                        type:"number"
+                        type: "number"
                     }
                 ],
-                content: [
+                courseContentSet: [
                     {
                         required: true,
                         message: "全部内容不能为空",
@@ -177,7 +180,7 @@ export default {
                         type: "array"
                     }
                 ],
-                userType: [
+                userCategorySet: [
                     {
                         required: true,
                         message: "用户分类不能为空",
@@ -185,14 +188,14 @@ export default {
                         type: "array"
                     }
                 ],
-                courseVideos: [
-                    {
-                        required: true,
-                        message: "课程视频不能为空",
-                        trigger: "change",
-                        type: "array"
-                    }
-                ],
+                // classHours: [
+                //     {
+                //         required: true,
+                //         message: "课程视频不能为空",
+                //         trigger: "change",
+                //         type: "array"
+                //     }
+                // ],
                 whetherPay: [
                     {
                         required: true,
@@ -212,6 +215,13 @@ export default {
                         required: true,
                         message: "课程状态不能为空",
                         trigger: "change"
+                    }
+                ],
+                description: [
+                    {
+                        required: true,
+                        message: "课程信息不能为空",
+                        trigger: "blur"
                     }
                 ]
             },
@@ -239,17 +249,18 @@ export default {
         removeStore("smeditor");
         this.getType();
         this.getUserList();
+        // setStore("smeditor", res.data.content);
     },
     methods: {
-        showContent(val){
-            console.log(val)
-            let list=[];
-            this.typeList.forEach(ele=>{
-                if(ele.id==val){
-                    return list=ele;        
+        showContent(val) {
+            console.log(val);
+            let list = [];
+            this.typeList.forEach(ele => {
+                if (ele.id == val) {
+                    return (list = ele);
                 }
-            })
-            this.allContent=list.courseContentList;
+            });
+            this.allContent = list.courseContentList;
         },
         onBeforeImgUploading() {
             this.imgUploadLoading = true;
@@ -267,7 +278,7 @@ export default {
         },
         sure() {
             this.addVideo = false;
-            this.addForm.courseVideos.push({
+            this.addForm.classHours.push({
                 classTitle: this.addValidate.videoTitle,
                 classUrl: this.addValidate.video,
                 createUser: getStore("username")
@@ -281,7 +292,7 @@ export default {
                 loading: true,
                 onOk: () => {
                     // 删除对应视频
-                    this.addForm.courseVideos.splice(index, 1);
+                    this.addForm.classHours.splice(index, 1);
                     setTimeout(() => {
                         this.$Modal.remove();
                         this.$Message.success("删除成功！");
@@ -318,7 +329,7 @@ export default {
                     // res.data.forEach(item=>{
                     //    item.courseContentList.forEach(ele=>{
                     //        allContent.push(ele);
-                    //    }) 
+                    //    })
                     // });
                     // this.allContent=allContent;
                 }
@@ -332,44 +343,46 @@ export default {
                 }
             });
         },
-        upload() {
-            this.$refs.smeditor.$emit("saveInner");
-            let uploadObj = {
-                title: this.title,
-                sysHelpClassification: 1,
-                status: this.status,
-                isTop: this.isTop,
-                content: getStore("smeditor")
-            };
-            let fn = null;
-            if (this.ifAdd) fn = addHelpManage;
-            else {
-                uploadObj.id = this.queryDetailId;
-                uploadObj.createTime = this.createTime;
-                fn = updateHelpManage;
-            }
-            if (getStore("smeditor") === "" || getStore("smeditor") === null) {
-                this.$Message.warning("请完善信息！");
-            } else {
-                fn(uploadObj).then(res => {
-                    if (!res.code) {
-                        this.$Message.success("操作成功!");
-                        // this.$router.push("/content/helpManage");
-                        removeStore("smeditor");
-                    } else this.$Message.error("异常错误!");
-                });
-            }
-        },
         ifUploading(val) {
+            console.log(val);
             this.uploading = val;
         },
         addCourse() {
-            console.log(this.addForm.content);
-            
+            // this.$refs.smeditor.$emit("saveInner");
+            console.log(this.addForm.courseContentSet);
+            console.log(this.addForm.userCategorySet);
+            // 处理数据格式
+            this.addForm.courseContentSet = this.addForm.courseContentSet.map(
+                ele => {
+                    return { id: ele };
+                }
+            );
+            this.addForm.userCategorySet = this.addForm.userCategorySet.map(
+                ele => {
+                    return { id: ele };
+                }
+            );
+            console.log(this.addForm.courseContentSet);
+            console.log(this.addForm.userCategorySet);
+            console.log(getStore("smeditor"));
+            this.addForm.description = getStore("smeditor");
+            this.addForm.createUser = getStore("username");
             this.$refs["addForm"].validate(valid => {
                 if (valid) {
+                    if (this.addForm.classHours.length == 0) {
+                        this.$Message.error("请上传课程视频！");
+                        return;
+                    }
+                    console.log(this.addForm);
                     addCourseData({
-
+                        ...this.addForm
+                    }).then(res => {
+                        console.log(res);
+                        if (res.code == 0) {
+                            removeStore("smeditor");
+                            this.$refs["addForm"].resetFields();
+                            this.$Message.success(res.message);
+                        }
                     });
                 }
             });
