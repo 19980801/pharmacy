@@ -68,10 +68,12 @@ export default {
       signIn(this.form)
         .then(res => {
           if (!res.code) {
+              console.log(res);
             Cookies.set("user", res.data.admin.username, { expires: 7 });
             Cookies.set("userInfo", res.data.admin, { expires: 7 });
             setStore("leftSidebarList", res.data.permissions);
             // console.log("左侧菜单",res.data.permissions);
+            setStore("username",res.data.admin.username);
             this.$router.push({ name: "home_index" });
           } else this.$Message.error(res.message);
         })

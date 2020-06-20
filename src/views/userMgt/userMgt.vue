@@ -218,7 +218,8 @@ export default {
         this.tableData = res.data.content;
         this.total = res.data.totalElements;
       });
-    }
+    },
+    
   }
 };
 </script>
