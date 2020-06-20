@@ -18,8 +18,8 @@
                         </span>
                         </Input>
                     </FormItem>
-                    <FormItem label="课程分类：" prop="courseType">
-                        <Select v-model="addForm.courseType" @on-change="showContent">
+                    <FormItem label="课程分类：" prop="courseCategoryId">
+                        <Select v-model="addForm.courseCategoryId" @on-change="showContent">
                             <Option v-for="(item,i) of typeList" :key="i" :value="(item.id)">
                                 {{item.categoryName}}</Option>
                         </Select>
@@ -48,8 +48,8 @@
                             </div>
                         </div>
                     </div>
-                    <FormItem label="收费：" prop="price">
-                        <RadioGroup v-model="addForm.price">
+                    <FormItem label="收费：" prop="whetherPay">
+                        <RadioGroup v-model="addForm.whetherPay">
                             <Radio label="0">是</Radio>
                             <Radio label="1">否</Radio>
                         </RadioGroup>
@@ -57,8 +57,8 @@
                     <FormItem label="价格：">
                         <Input v-model="addForm.coursePrice" placeholder="请输入价格" :disabled="addForm.price==1"></Input>
                     </FormItem>
-                    <FormItem label="会员专属：" prop="vip">
-                        <RadioGroup v-model="addForm.vip">
+                    <FormItem label="会员专属：" prop="memberOnly">
+                        <RadioGroup v-model="addForm.memberOnly">
                             <Radio label="0">是</Radio>
                             <Radio label="1">否</Radio>
                         </RadioGroup>
@@ -134,15 +134,16 @@ export default {
             addForm: {
                 courseTitle: "",
                 imgUrl:"",
-                courseType:null,
+                courseCategoryId:null,
                 content: [],
                 userType: [],
                 courseVideos: [],
-                price: "0",
+                whetherPay: "0",
                 coursePrice: "",
-                vip: "0",
+                memberOnly: "0",
                 courseStatus: "0"
             },
+            courseContentSet:[],      //全部内容已选数组
             typeList: [],
             allContent:[],      //全部内容
             ruleInline: {
@@ -160,7 +161,7 @@ export default {
                         trigger: "blur"
                     }
                 ],
-                courseType: [
+                courseCategoryId: [
                     {
                         required: true,
                         message: "课程分类不能为空",
@@ -192,14 +193,14 @@ export default {
                         type: "array"
                     }
                 ],
-                price: [
+                whetherPay: [
                     {
                         required: true,
                         message: "是否收费不能为空",
                         trigger: "change"
                     }
                 ],
-                vip: [
+                memberOnly: [
                     {
                         required: true,
                         message: "会员专属不能为空",
@@ -363,11 +364,13 @@ export default {
             this.uploading = val;
         },
         addCourse() {
-            console.log(this.addForm.price);
-            console.log(this.addForm.userType);
+            console.log(this.addForm.content);
+            
             this.$refs["addForm"].validate(valid => {
                 if (valid) {
-                    addCourseData({});
+                    addCourseData({
+
+                    });
                 }
             });
         }
