@@ -240,7 +240,6 @@ export default {
     methods: {
         // 选择表格
         select(selection) {
-            console.log(selection)
             this.selectedArr = selection;
         },
         submitSubject() {
@@ -270,7 +269,8 @@ export default {
                         console.log(res);
                         if(res.code==0){
                             this.$refs["formValidate"].resetFields();
-                            this.selectedArr=[];
+                            this.selectedArr.length=0;
+                            this.getTopicTable();
                             this.$Message.success(res.message);
                         }
                     })

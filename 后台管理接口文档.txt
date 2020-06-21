@@ -219,7 +219,7 @@ URL = user/findAllCategory
 }
 
 
-5. 上传题库(接口500)
+5. 上传题库
 URL = bank/uploadBank
 请求方式：POST
 参数类型：JSON
