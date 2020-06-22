@@ -40,12 +40,12 @@
                         <div class="errorsBtn" @click="showDetail(index)">查看</div>
                     </div>
                 </div>
-                <div class="pageBox" v-if="list.length>10">
+                <div class="pageBox" v-if="total>0">
                     <div class="page">
-                        <p>首页</p>
+                        <p @click="onPageChange(1)">首页</p>
                         <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
                             @on-change="onPageChange" />
-                        <p>尾页</p>
+                        <p @click="onPageChange(totalPages)">尾页</p>
                     </div>
                 </div>
             </div>
@@ -132,7 +132,8 @@ export default {
             limit: 10,
             total:0,
             list:[],
-            detail:{}
+            detail:{},
+            totalPages:0
         };
     },
     created() {
@@ -156,6 +157,7 @@ export default {
         choseLearningTab(i) {
             this.learningCur = i;
             this.list.length=0;
+            this.total=0;
             this.getList(i);
         },
         // 显示弹框
@@ -183,6 +185,7 @@ export default {
                         console.log(res);
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
+                        this.totalPages=res.data.totalPages;
                     }
                 });
         },

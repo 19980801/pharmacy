@@ -36,12 +36,12 @@
                         <div class="errorsBtn" @click="showDetail(index)">查看</div>
                     </div>
                 </div>
-                <div class="pageBox" v-if="list.length>10">
+                <div class="pageBox" v-if="total>0">
                     <div class="page">
-                        <p>首页</p>
+                        <p @click="onPageChange(1)">首页</p>
                         <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
                             @on-change="onPageChange" />
-                        <p>尾页</p>
+                        <p @click="onPageChange(totalPages)">尾页</p>
                     </div>
                 </div>
             </div>
@@ -121,15 +121,15 @@ export default {
                 { name: "在学课程", id: 1 },
                 { name: "错题本", id: 2 }
             ],
-            learningCur: 0, //学习记录选项卡
+            learningCur: 0, //0-在学课程 1-错题本
             alert: false,
             list: [],
             total: 0,
             pageNum: 1,
             limit: 10,
-            type: 0, //0-在学课程 1-错题本
             detail: {},
             rightOption:[],     //用户选项
+            totalPages:0
         };
     },
     created() {
@@ -148,6 +148,7 @@ export default {
                     if (res.code == 0) {
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
+                        this.totalPages=res.data.totalPages;
                     }
                 });
         },
@@ -166,7 +167,7 @@ export default {
         },
         onPageChange(page) {
             this.pageNum = page;
-            this.getList();
+            this.getList(this.learningCur);
         },
         // 查看错题详情
         showDetail(index) {
@@ -187,6 +188,7 @@ export default {
         choseLearningTab(i) {
             this.learningCur = i;
             this.list.length=0;
+            this.total=0;
             this.getList(i);
         },
         // 显示弹框
@@ -208,6 +210,7 @@ export default {
         background: #fff;
         border-radius: 2px;
         min-height: 600px;
+        padding-bottom:20px;
         .rightBox {
             .tabCar {
                 width: 100%;
@@ -357,6 +360,7 @@ export default {
                     line-height: 35px;
                     color: #4d555d;
                     font-size: 14px;
+                    cursor: pointer;
                 }
                 p {
                     margin: 0 20px;

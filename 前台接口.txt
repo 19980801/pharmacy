@@ -789,10 +789,10 @@ URL = user/findStudyRecordIn
             {
                 "id": 1,(主键)
                 "userId": 1,(用户id)
-                "classId": 1,(课程id)
-                "classTitle": "课程标题",(课程标题)
-                "classImg": "http://www.baidu.com",(课程缩略图)
-                "classTime": 123456,(课程有效期/天)
+                "courseId": 1,(课程id)
+                "courseTitle": "课程标题",(课程标题)
+                "courseImg": "http://www.baidu.com",(课程缩略图)
+                "courseTime": 123456,(课程有效期/天)
                 "lastWatch": 1,(最后观看课时id)
                 "lastTimestamp": "2020-06-16 19:23:37",(最后观看时间戳)
                 "createTime": "2020-06-16 11:23:33",(创建时间)
@@ -914,7 +914,7 @@ URL = user/findStudyRecordIn
     }
 }
 
-8. 收藏/取消收藏 学习记录-课程 *(有问题需要再次测试)
+8. 收藏/取消收藏 学习记录-课程 *
 URL = user/updateCollect/class
 请求方式：x-www-form-urlencoded
 请求参数：
@@ -1231,7 +1231,7 @@ URL = user/findCollect *
 }
 
 
-13. 查询题库(有问题)
+13. 查询题库
 URL = bank/pageQuery
 请求方式：POST
 参数类型：JSON
@@ -1392,4 +1392,83 @@ URL = bank/pageQuery
         "first": true,
         "empty": false
     }
+}
+
+14. 取消收藏 *
+URL = user/cancelCollect
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "collectType":"0",(0-课程 1-题库)
+    "recordId":"4"(记录id)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "取消成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+15. 播放视频判断是否加入学习，不加入学习无法播放
+URL = course/isStudyRecord/{courseId}
+请求方式：GET
+参数类型：路径参数
+请求参数：
+	courseId:当前课程id
+返回参数：
+{
+    "code": 0,
+    "message": "1",(0-未加入 1-已加入)
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+16. 添加学习
+URL = course/addStudyRecord/{courseId}
+请求方式：GET
+参数类型：路径参数
+请求参数：
+	courseId:当前课程id
+返回参数：
+{
+    "code": 0,
+    "message": "添加成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+17. 添加/取消收藏课程
+URL = course/collect
+请求方式：POST
+参数类型：x-www-form-urlencoded
+请求参数：
+	courseId:课程id
+	status: true或者false(true为添加收藏 false为取消收藏)
+返回参数：
+{
+    "code": 0,
+    "message": "操作成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+18. 查询课程是否收藏
+URL = course/queryCollect/{courseId}
+请求方式：GET
+参数类型：路径参数
+请求参数：
+	courseId:当前课程id
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": true(true为收藏 false为未收藏)
 }

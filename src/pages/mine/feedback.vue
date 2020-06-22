@@ -21,12 +21,12 @@
                     </div>
                 </li>
             </ul>
-            <div class="pageBox" v-if="Number(total)>10">
+            <div class="pageBox" v-if="total>0">
                 <div class="page">
-                    <p>首页</p>
+                    <p @click="onPageChange(1)">首页</p>
                     <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
                         @on-change="onPageChange" />
-                    <p>尾页</p>
+                    <p @click="onPageChange(totalPages)">尾页</p>
                 </div>
             </div>
         </div>
@@ -58,7 +58,8 @@ export default {
             pageNum: 1,
             limit: 10,
             list: [],
-            total: 0
+            total: 0,
+            totalPages:0
         };
     },
     created() {
@@ -76,6 +77,7 @@ export default {
                     if (res.code == 0) {
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
+                        this.totalPages = res.data.totalPages;
                     }
                 });
         },

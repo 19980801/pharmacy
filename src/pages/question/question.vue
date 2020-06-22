@@ -53,12 +53,12 @@
                 </ul>
             </div>
         </div>
-        <div class="pageBox">
+        <div class="pageBox" v-if="total>0">
             <div class="page">
-                <p>首页</p>
+                <p @click="onPageChange(1)">首页</p>
                 <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
                     @on-change="onPageChange" />
-                <p>尾页</p>
+                <p @click="onPageChange(totalPages)">尾页</p>
             </div>
         </div>
 
@@ -124,7 +124,8 @@ export default {
             limit:10,
             pageNum:1,
             year:"",
-            list:[]
+            list:[],
+            totalPages:0,   //总页数
         };
     },
     created(){
@@ -153,6 +154,7 @@ export default {
                     console.log(res);
                     this.list=res.data.content;
                     this.total = res.data.totalElements;
+                    this.totalPages=res.data.totalPages;
                 }
             })
         },
@@ -344,6 +346,7 @@ export default {
     .pageBox {
         text-align: center;
         .page {
+            cursor:pointer;
             display: inline-flex;
             height: 35px;
             line-height: 35px;

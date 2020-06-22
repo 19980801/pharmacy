@@ -15,18 +15,18 @@
 						<div class="userTitle flex">
 							<img class="userImg" src="../../assets/imgs/index/userImg.png" alt="">
 							<div>小酒窝~</div>
-							<img class="vipImg" src="../../assets/imgs/index/vip1.png" alt="">
+							<!-- <img class="vipImg" src="../../assets/imgs/index/vip1.png" alt=""> -->
 						</div>
 						<div class="collectBox flex-btween">
 							<div>收藏课程<span>1</span></div>
 							<div>收藏题目<span>1</span></div>
 						</div>
-						<div class="recommendBox">
+						<!-- <div class="recommendBox">
 							<div class="recommendTitle">特别推荐</div>
 							<div class='recommendContent'>
 								2019紫禁城国际药师论坛精彩回顾
 							</div>
-						</div>
+						</div> -->
 						<div class="classBtn" @click="goMine">我的课表</div>
 					</div>
                 </div>
@@ -322,6 +322,7 @@ export default {
                         color: #fff;
                         margin-top: 20px;
                         cursor: default;
+                        margin-top:40px;
                     }
                 }
             }

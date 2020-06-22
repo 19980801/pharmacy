@@ -35,7 +35,6 @@
                             <ul>
                                 <li class="active">课程</li>
                                 <li>题库</li>
-                                <li>活动</li>
                             </ul>
                         </div>
                         <!-- 历史搜索内容 -->
@@ -454,7 +453,7 @@ input {
                 top: 55px;
                 cursor: pointer;
                 ul {
-                    height: 140px;
+                    height:100px;
                     li {
                         margin: 5px 0;
                         height: 40px;
@@ -465,7 +464,7 @@ input {
                     }
                 }
                 width: 64px;
-                height: 140px;
+                height:100px;
                 text-align: center;
                 background: rgba(255, 255, 255, 1);
                 box-shadow: 0px 4px 8px 8px rgba(24, 31, 29, 0.08);

@@ -115,8 +115,19 @@
 		},
 		mounted() {
 			this.detail();
+			this.getIsCollect();
 		},
 		methods: {
+			// 查询课程是否收藏
+			getIsCollect(){
+				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"));
+				this.$http.get(`/course/queryCollect/${videoDetail.id}`).then(res=>{
+					if(res.code==0){
+						console.log(res);
+						this.isCollect=res.data;
+					}
+				})
+			},
 			// 取消收藏
 			cancelCollect(){
 				let data={
@@ -147,7 +158,7 @@
 				this.$http.form('course/collect',data).then(res=>{
 					console.log(res);
 					if(res.code==0){
-						this.$Message.success("已添加收藏")
+						this.$Message.success("已添加收藏！");
 					}
 				})
 			},

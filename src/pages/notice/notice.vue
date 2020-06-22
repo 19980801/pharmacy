@@ -3,7 +3,12 @@
     <div class="notice">
       <div class="left">
         <ul>
-          <li @click="choseTab(index)" :class="{active:index==cur}" v-for="(item,index) in leftList" :key="index">{{item.name}}</li>
+          <li
+            @click="choseTab(index)"
+            :class="{active:index==cur}"
+            v-for="(item,index) in leftList"
+            :key="index"
+          >{{item.name}}</li>
         </ul>
       </div>
       <div class="right">
@@ -13,7 +18,7 @@
               <i class="dot" :class="{doted:item.messageStatus==0}"></i>
             </div>
             <div>
-                <!-- <img src="../../assets/imgs/index/logo.png" alt="" class="infoImg"> -->
+              <!-- <img src="../../assets/imgs/index/logo.png" alt="" class="infoImg"> -->
             </div>
             <div class="con">
               <span class="title">{{item.informTitle}}</span>
@@ -22,8 +27,19 @@
             </div>
           </li>
         </ul>
-        <div style="display:flex;justify-content:center">
-          <Page v-if="showPage" @on-change="changeSize" :total='mesList.totalElements' />
+        <div class="pageBox" v-if="total>0">
+          <div class="page">
+            <p @click="changePage(1)">首页</p>
+            <Page
+              @on-change="changePage"
+              :current="page"
+              :page-size="limit"
+              :total="total"
+              prev-text="上一页"
+              next-text="下一页"
+            />
+            <p @click="changePage(totalPages)">尾页</p>
+          </div>
         </div>
       </div>
     </div>
@@ -34,53 +50,60 @@
 export default {
   data() {
     return {
-      leftList:[
-        {id:1,name:'全部通知'},
-        {id:2,name:'系统通知'},
-        {id:3,name:'考核通知'},
-        {id:4,name:'审批通知'},
-        {id:5,name:'成绩通知'},
+      leftList: [
+        { id: 1, name: "全部通知" },
+        { id: 2, name: "系统通知" },
+        { id: 3, name: "考核通知" },
+        { id: 4, name: "审批通知" },
+        { id: 5, name: "成绩通知" }
       ],
-      cur:0,
-      page:1,
-      size:10,
-      mesList:{},
-      showPage:false
+      cur: 0,
+      page: 1,
+      size: 10,
+      mesList: {},
+      // showPage:false
+      showPage: true,
+      total: 0,
+      limit: 10
     };
   },
-  mounted(){
+  mounted() {
     this.findMes();
   },
-  methods:{
-    changeSize(e){
-      this.page=e;
+  methods: {
+    changeSize(e) {
+      this.page = e;
       this.findMes();
     },
     // 查询消息通知
-    findMes(){
-      let data={
-        pageNum:this.page,
-        paegSize:this.size,
-        informType:this.cur==0?'':this.cur-1
-      }
-      this.$http.post('inform/pageQuery',data).then(res=>{
-        if(res.code==0){
-          this.mesList=res.data;
-          if(this.mesList.content.length==0){
-            this.showPage=false
-          }else{
-            this.showPage=true
-          }
+    findMes() {
+      let data = {
+        pageNum: this.page,
+        paegSize: this.size,
+        informType: this.cur == 0 ? "" : this.cur - 1
+      };
+      this.$http.post("inform/pageQuery", data).then(res => {
+        if (res.code == 0) {
+          console.log(res);
+          this.mesList = res.data;
+          this.total = res.data.totalElements;
+          this.totalPages = res.data.totalPages;
         }
-      })
+      });
     },
-    choseTab(i){
-      this.cur=i;
+    choseTab(i) {
+      this.cur = i;
       this.findMes();
     },
-    goDetail(id){
-      this.$router.push({path:"/noticeDetail",query:{id:id}});
+    goDetail(id) {
+      this.$router.push({ path: "/noticeDetail", query: { id: id } });
       // this.$router.push("/noticeDetail");
+    },
+    // 更改页码
+    changePage(e) {
+      console.log(e);
+      this.page = e;
+      this.findListByClass();
     }
   }
 };
@@ -119,10 +142,10 @@ export default {
       height: auto;
       padding: 2%;
       li {
-        width:100%;
+        width: 100%;
         display: flex;
         // justify-content: space-between;
-        margin-bottom:10px;
+        margin-bottom: 10px;
       }
       .dot {
         display: inline-block;
@@ -130,24 +153,24 @@ export default {
         height: 10px;
         border-radius: 50%;
         background: #dce5ec;
-        margin-top:9px;
+        margin-top: 9px;
       }
-      .doted{
-        background:#1cb38a;
+      .doted {
+        background: #1cb38a;
       }
       .con {
-        width:900px;
+        width: 900px;
         margin-left: 15px;
-        border-bottom:1px solid #F0F0F0;
+        border-bottom: 1px solid #f0f0f0;
         .title {
           font-size: 16px;
           font-family: MicrosoftYaHei;
           color: #333;
           line-height: 28px;
         }
-        .infoImg{
-            width:112px;
-            height:112px;
+        .infoImg {
+          width: 112px;
+          height: 112px;
         }
         .info {
           line-height: 28px;
@@ -161,14 +184,52 @@ export default {
           line-clamp: 2;
           -webkit-box-orient: vertical;
         }
-        .time{
-            font-size:14px;
-            font-family:MicrosoftYaHeiLight;
-            color:rgba(153,153,153,1);
-            line-height:19px;
-            margin:10px auto 15px;
+        .time {
+          font-size: 14px;
+          font-family: MicrosoftYaHeiLight;
+          color: rgba(153, 153, 153, 1);
+          line-height: 19px;
+          margin: 10px auto 15px;
         }
       }
+    }
+    // 分页样式
+    /deep/ .ivu-page-item {
+      border-radius: 50%;
+      margin: 0 20px;
+      border: 0;
+      color: #4d555d;
+      font-size: 14px;
+      width: 35px;
+      height: 35px;
+      line-height: 35px;
+    }
+    /deep/ .ivu-page-item-active {
+      background: rgba(77, 85, 93, 1);
+      color: #fff;
+    }
+    /deep/ .ivu-page-item-active a,
+    .ivu-page-item-active:hover a {
+      color: #fff;
+    }
+    /deep/ .ivu-page-next,
+    .ivu-page-prev {
+      background: rgba(0, 0, 0, 0);
+    }
+    .pageBox {
+      text-align: center;
+      .page {
+        cursor: pointer;
+        display: inline-flex;
+        height: 35px;
+        line-height: 35px;
+        color: #4d555d;
+        font-size: 14px;
+      }
+      p {
+        margin: 0 20px;
+      }
+      margin: 50px auto;
     }
   }
 }

@@ -46,11 +46,11 @@
               </div>
             </div>
           </div>
-          <div class="pageBox">
+          <div class="pageBox" v-if="total>0">
             <div class="page">
-              <p>首页</p>
-              <Page @on-change="changePage" :total="list.length" prev-text="上一页" next-text="下一页"/>
-              <p>尾页</p>
+              <p @click="changePage(1)">首页</p>
+              <Page @on-change="changePage"  :current="page" :page-size="limit" :total="total" prev-text="上一页" next-text="下一页"/>
+              <p @click ="changePage(totalPages)">尾页</p>
             </div>
           </div>
         </div>
@@ -82,6 +82,9 @@ export default {
         {id:3,name:'VIP'},
       ],
       page:1,
+      totalPages:0,
+      total:0,
+      limit:10
     };
   },
   created(){
@@ -93,8 +96,6 @@ export default {
   },
   mounted(){
     // this.findClass();
-    
-    
   },
   methods:{
     // 查询课程分类
@@ -114,6 +115,7 @@ export default {
     },
     // 更改页码
     changePage(e){
+      console.log(e);
       this.page=e;
       this.findListByClass();
     },
@@ -157,7 +159,9 @@ export default {
       this.$http.post('course/pageQuery',data).then(res=>{
         console.log(res);
         if(res.code==0){
-          this.list=res.data.content
+          this.list=res.data.content;
+          this.total = res.data.totalElements;
+          this.totalPages=res.data.totalPages;
         }
       })
     },
@@ -358,6 +362,7 @@ export default {
       .pageBox{
         text-align:center;
         .page{
+          cursor: pointer;
           display:inline-flex;
           height:35px;
           line-height:35px;
