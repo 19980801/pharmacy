@@ -18,7 +18,7 @@
                                     <p>学习有效期（倒计时）</p>
                                     <p>有效期至：{{item.courseTime}}</p>
                                 </div>
-                                <div class="collectBox" :class="{active:index==0}">
+                                <div class="collectBox" @click="cancelCollect(0,item.courseId)" :class="{active:index==0}">
                                     <Icon type="md-heart" />
                                     <span>收藏</span>
                                 </div>
@@ -91,7 +91,7 @@
                                 </p>
                             </div>
                             <div class="collectionBox">
-                                <div>
+                                <div @click="cancelCollect(1,item.id)">
                                     <img src="../../assets/imgs/collection.png" alt="" v-if="detail.collectStatus==0">
                                     <Icon type="md-heart" v-else class="hearted"/>
                                     <span>收藏</span>
@@ -139,6 +139,19 @@ export default {
         this.getList(0);
     },
     methods: {
+        // 取消收藏
+        cancelCollect(type,id){
+            let data={
+                collectType:type,
+                recordId:id,
+            }
+            this.$http.post('user/cancelCollect',data).then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    this.$Message.success('已取消收藏')
+                }
+            })
+        },
         // 学习记录选项卡
         choseLearningTab(i) {
             this.learningCur = i;

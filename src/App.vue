@@ -66,7 +66,7 @@
                         <div class="userBox">
                             <div @click="showLogin">
                                 <img src="./assets/imgs/index/userImg.png" alt class="userImg" />
-                                <span>小酒窝</span>
+                                <span>{{userInfo.mobilePhone}}</span>
                             </div>
                             <div class="loginList" v-show="showLoginList">
                                 <ul>
@@ -219,15 +219,22 @@ export default {
             verContent:'',
             type:{},
             isLogin:false,
+            userInfo:''
         };
     },
     created() {
-        this.isLogin=localStorage.getItem("isLogin")
+        if(localStorage.getItem("isLogin")){
+            this.isLogin=localStorage.getItem("isLogin")
+            this.userInfo=JSON.parse(localStorage.getItem("userInfo"))
+        }
+       
+        console.log(this.userInfo);
     },
     methods: {
         isLoginUser(data){
             console.log(data);
-            this.isLogin=data;
+            this.isLogin=data.isLogin;
+            this.userInfo=data.userInfo
         },
         showLoginModel(i){
             this.showLogins(i)

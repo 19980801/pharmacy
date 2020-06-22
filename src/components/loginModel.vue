@@ -219,7 +219,11 @@ export default {
                     storage.set("isLogin",true)
                     this.isLogin=true;
                     this.loginP.showModel=false;
-                    this.$emit("isLogin",this.isLogin)
+                    let obj={
+                        isLogin:this.isLogin,
+                        userInfo:res.data.user
+                    }
+                    this.$emit("isLogin",obj)
                 }
             })
         },

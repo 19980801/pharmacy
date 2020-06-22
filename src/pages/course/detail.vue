@@ -10,7 +10,8 @@
 				</div>
 				<div class="videoBox flex">
 					<div class="shade" v-if="isJoinStudy"></div>
-					<video-player  class="video-player vjs-custom-skin"
+					<img v-if="!isInStudy" style="width:900px;height:490px;" :src="videoDetail.imgUrl" alt="">
+					<video-player  v-if="isInStudy" class="video-player vjs-custom-skin"
 						 ref="videoPlayer"
 						 :playsinline="true"
 						 :options="videoPlayerOptions"
@@ -31,7 +32,7 @@
 							<div class="videoType">录播</div>
 							<div class="rightTitle">
 								<div>{{item.classTitle}}</div>
-								<div>10分钟30秒</div>
+								<div>{{item.hour}}时{{item.minute}}分钟{{item.second}}秒</div>
 							</div>
 						</div>
 					</div>
@@ -43,13 +44,13 @@
 							<span class="isFree" v-if="videoDetail.whetherPay==0">免费</span>
 							<span class="isFree" v-if="videoDetail.whetherPay==1">¥{{videoDetail.coursePrice}}</span>
 							<span class="period">有效期180天</span>
-							<div class="collect">
+							<div class="collect" :class="{active:isCollect}" @click="collect">
 								<Icon type="md-heart" />
 								<span>收藏</span>
 							</div>
 						</div>
 					</div>
-					<div class="studyBtn">+加入学习</div>
+					<div class="studyBtn" @click="addStudy(videoDetail.id)">+加入学习</div>
 				</div>
 			</div>
 		</div>
@@ -60,8 +61,8 @@
 					<div :class="{active:tabCur==1}" @click="choseTab(1)">课程目录</div>
 				</div>
 				<div class="tabContent">
-					<div class="summarize" v-if="tabCur==0">
-						{{videoDetail.description}}
+					<div v-html="videoDetail.description" class="summarize" v-if="tabCur==0">
+						
 						<!-- <img src="../../assets/imgs/detail.jpg" mode="widthFix" alt=""> -->
 					</div>
 					<div class="catalogue" v-if="tabCur==1">
@@ -70,7 +71,7 @@
 								<img src="../../assets/imgs/video.png" alt="">
 								<div class="rightInfo">
 									<div class="title">{{item.classTitle}}</div>
-									<div class="time">109分钟9秒</div>
+									<div class="time">{{item.hour}}时{{item.minute}}分钟{{item.second}}秒</div>
 								</div>
 							</div>
 						</div>
@@ -107,28 +108,95 @@
 				videoDetail:{},
 				videoCur:0,
 				isJoinStudy:false,
-				components:''
+				components:'',
+				isInStudy:false,
+				isCollect:true
 			}
 		},
 		mounted() {
-
 			this.detail();
 		},
 		methods: {
+			// 取消收藏
+			cancelCollect(){
+				let data={
+					collectType:0,
+					recordId:this.videoDetail.id,
+				}
+				this.$http.post('user/cancelCollect',data).then(res=>{
+					console.log(res);
+					if(res.code==0){
+						this.$Message.success('已取消收藏')
+					}
+				})
+			},
+			// 收藏按钮点击
+			collect(){
+				if(this.isCollect==true){
+					this.cancelCollect()
+				}else{
+					this.addCollect();
+				}
+			},
+			// 添加收藏
+			addCollect(){
+				let data={
+					courseId:this.videoDetail.id,
+					status:true
+				}
+				this.$http.form('course/collect',data).then(res=>{
+					console.log(res);
+					if(res.code==0){
+						this.$Message.success("已添加收藏")
+					}
+				})
+			},
+			// 查询当前课程是否加入学习
+			findStudy(courseId){
+				this.$http.get('/course/isStudyRecord/'+courseId).then(res=>{
+					console.log(res);
+				})
+			},
+			// 加入学习
+			addStudy(id){
+				this.$http.get('course/addStudyRecord/'+id).then(res=>{
+					console.log(res);
+					if(res.code==0){
+						this.$Message.success('加入成功！');
+						this.isInStudy=true
+					}
+				})
+			},
 			// 选择视频
 			choseVideo(index,url){
-				this.videoUrl=url
-				this.videoCur=index
-				this.components=this.videoList[index].classTitle
+				if(!this.isInStudy){
+					 this.$Message.warning('请加入学习！');
+					//  this.videoCur=""
+				}else{
+					this.videoUrl=url
+					this.videoCur=index
+					this.components=this.videoList[index].classTitle
+				}
+				
 			},
 			// 详情渲染
 			detail(){
 				console.log(JSON.parse(localStorage.getItem("videoDetail")));
 				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"))
 				this.videoDetail=videoDetail;
-				this.videoList=videoDetail.classHours
+				let videoList=videoDetail.classHours
+				videoList.forEach((item,index)=>{
+					item.second = parseInt(item.videoDuration);// 秒
+					item.minute = 0;// 分
+					item.hour = 0;// 小时
+					item.hour=Math.floor(item.videoDuration/3600);
+					item.minute=Math.floor(item.videoDuration/60%60);
+					item.second=Math.floor(item.videoDuration%60);
+				})
+				this.videoList=videoList
 				this.videoUrl=this.videoList[0].classUrl
 				this.components=this.videoList[0].classTitle
+				this.findStudy(videoDetail.id)
 			},
 			// 选项卡
 			choseTab(i){
