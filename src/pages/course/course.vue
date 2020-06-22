@@ -13,7 +13,6 @@
         <ul>
           <li  @click="choseTab(2,0)" :class="{active:contentCur==0}">全部</li>
           <li @click="choseTab(2,index+1)" :class="{active:contentCur==index+1}" v-for="(item,index) in conList" :key="index">{{item.contentName}}</li>
-          
         </ul>
       </div>
     </div>
@@ -193,6 +192,9 @@ export default {
   }
   /deep/ .ivu-page-item-active a, .ivu-page-item-active:hover a{
     color:#fff;
+  }
+  /deep/ .ivu-page-next, .ivu-page-prev{
+    background:rgba(0,0,0,0);
   }
   margin-bottom:80px;
   .typeBox {

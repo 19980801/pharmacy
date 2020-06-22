@@ -76,19 +76,19 @@
                                     <li :class="{active:routeName=='myCollection'}" @click="closeLoginList">
                                         <router-link to="/myCollection">我的收藏</router-link>
                                     </li>
-                                    <li class="line" :class="{active:routeName=='tasks'}" @click="closeLoginList">
+                                    <!-- <li class="line" :class="{active:routeName=='tasks'}" @click="closeLoginList">
                                         <router-link to="/tasks">学习任务</router-link>
-                                    </li>
-                                    <li :class="{active:routeName=='myOrder'}" @click="closeLoginList">
+                                    </li> -->
+                                    <!-- <li :class="{active:routeName=='myOrder'}" @click="closeLoginList">
                                         <router-link to="/myOrder">我的订单</router-link>
-                                    </li>
-                                    <li :class="{active:routeName=='memberMgt'}" @click="closeLoginList">
+                                    </li> -->
+                                    <!-- <li :class="{active:routeName=='memberMgt'}" @click="closeLoginList">
                                         <router-link to="/memberMgt">会员管理</router-link>
-                                    </li>
-                                    <li class="line" :class="{active:routeName=='certification'}"
+                                    </li> -->
+                                    <!-- <li class="line" :class="{active:routeName=='certification'}"
                                         @click="closeLoginList">
                                         <router-link to="/certification">职业认证</router-link>
-                                    </li>
+                                    </li> -->
                                     <li :class="{active:routeName=='setting'}" @click="closeLoginList">
                                         <router-link to="/setting">个人设置</router-link>
                                     </li>
@@ -180,28 +180,6 @@ export default {
     },
     data() {
         return {
-            formInline: {
-                phone: '',
-                password: '',
-                verCode:'',
-                // verImgCode:''
-            },
-            ruleInline: {
-                phone: [
-                    { required: true, message: '请输入手机号', trigger: 'blur' },
-                    { pattern: /^1[3456789]\d{9}$/, message: "手机号码格式不正确", trigger: "blur"}
-                ],
-                password: [
-                    { required: true, message: '请输入密码', trigger: 'blur' },
-                    { type: 'string', min: 6, message: '密码格式为6位以上', trigger: 'blur' }
-                ],
-                verCode:[
-                    {required:true,message:"请输入验证码",trigger:"blur"}
-                ],
-                verImgCode:[
-                    {required:true,message:"请输入图片验证码",trigger:'blur'}
-                ]
-            },
             isRouterAlive: true,
             showLoginList: false, //显示用户列表
             selectShow: false, //头部下拉框内容
@@ -244,56 +222,6 @@ export default {
             this.type={
                 loginCur:data,
                 showModel:true
-            }
-        },
-        // 注册
-        register(){
-            console.log("注册");
-            let data={
-                mobilePhone:this.formInline.phone,
-                password:this.formInline.password,
-                msgCode:this.formInline.verCode
-            }
-            this.$http.post('register/user/phone',data).then(res=>{
-                console.log(res);
-            })
-        },
-        // 短信验证码
-        getMobileCodeText(){
-            if(this.wait_timer > 0){
-                return this.wait_timer+'s后获取';
-            }
-
-            if(this.wait_timer === 0){
-                return '重新获取';
-            }
-
-            if(this.wait_timer === false){
-                return '获取验证码';
-            }
-
-        },
-        // 获取短信验证码
-        getVerCode(){
-            if(this.formInline.phone){
-                if (this.wait_timer > 0) {
-                    return false;
-                }
-                this.wait_timer = 59;
-                var that = this;
-                var timer_interval = setInterval(function(){
-                    if(that.wait_timer > 0){
-                        that.wait_timer -- ;
-                    }else{
-                        clearInterval(timer_interval);
-                    }
-                },1000);
-                this.verContent=this.getMobileCodeText();
-                this.$http.form("sms/register/code",{
-                    mobilePhone:this.formInline.phone
-                }).then(res=>{
-                    console.log(res);
-                })
             }
         },
         closeLoginList() {
@@ -611,7 +539,8 @@ input {
                 top: 70px;
                 left: 10px;
                 width: 138px;
-                height: 412px;
+                // height: 412px;
+                height:250px;
                 background: rgba(255, 255, 255, 1);
                 box-shadow: 0px 4px 8px 8px rgba(24, 31, 29, 0.08);
                 border-radius: 2px;

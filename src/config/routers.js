@@ -33,36 +33,36 @@ export default [
                 name: "myCollection",
                 component: resolve => require(['../pages/mine/myCollection'], resolve),
             },
-            {
-                //学习任务
-                path: '/tasks',
-                name: "tasks",
-                component: resolve => require(['../pages/mine/tasks'], resolve),
-            },
-            {
-                //我的订单
-                path: '/myOrder',
-                name: "myOrder",
-                component: resolve => require(['../pages/mine/myOrder'], resolve),
-            },
-            {
-                //会员管理
-                path: '/memberMgt',
-                name: "memberMgt",
-                component: resolve => require(['../pages/mine/memberMgt'], resolve),
-            },
+            // {
+            //     //学习任务
+            //     path: '/tasks',
+            //     name: "tasks",
+            //     component: resolve => require(['../pages/mine/tasks'], resolve),
+            // },
+            // {
+            //     //我的订单
+            //     path: '/myOrder',
+            //     name: "myOrder",
+            //     component: resolve => require(['../pages/mine/myOrder'], resolve),
+            // },
+            // {
+            //     //会员管理
+            //     path: '/memberMgt',
+            //     name: "memberMgt",
+            //     component: resolve => require(['../pages/mine/memberMgt'], resolve),
+            // },
             {
                 //个人设置
                 path: '/setting',
                 name: "setting",
                 component: resolve => require(['../pages/mine/setting'], resolve),
             },
-            {
-                //职业认证
-                path: '/certification',
-                name: "certification",
-                component: resolve => require(['../pages/mine/certification'], resolve),
-            },
+            // {
+            //     //职业认证
+            //     path: '/certification',
+            //     name: "certification",
+            //     component: resolve => require(['../pages/mine/certification'], resolve),
+            // },
             {
                 //我的反馈
                 path: '/feedback',

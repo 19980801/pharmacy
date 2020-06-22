@@ -185,6 +185,9 @@ export default {
     .ivu-page-item-active:hover a {
         color: #fff;
     }
+    /deep/ .ivu-page-next, .ivu-page-prev{
+        background:rgba(0,0,0,0);
+    }
     // 小图标大小
     /deep/ .ivu-icon {
         width: 12px;

@@ -36,7 +36,7 @@
                         <div class="errorsBtn" @click="showDetail(index)">查看</div>
                     </div>
                 </div>
-                <div class="pageBox">
+                <div class="pageBox" v-if="list.length>10">
                     <div class="page">
                         <p>首页</p>
                         <Page :total="total" :current="pageNum" :page-size="limit" prev-text="上一页" next-text="下一页"
@@ -186,6 +186,7 @@ export default {
         // 学习记录选项卡
         choseLearningTab(i) {
             this.learningCur = i;
+            this.list.length=0;
             this.getList(i);
         },
         // 显示弹框

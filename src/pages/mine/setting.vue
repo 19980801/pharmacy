@@ -222,6 +222,7 @@ export default {
                             background: rgba(0, 0, 0, 0.2);
                             width: 70px;
                             height: 35px;
+                            line-height:35px;
                             text-align: center;
                             border-radius: 0 0 50px 50px;
                         }

@@ -16,11 +16,11 @@
 				leftList:[
 					{name:"学习记录",id:1,router:"learningRecords"},
 					{name:"我的收藏",id:2,router:"myCollection"},
-					{name:"学习任务",id:3,router:"tasks"},
-					{name:"我的订单",id:4,router:"myOrder"},
-					{name:"会员管理",id:5,router:"memberMgt"},
+					// {name:"学习任务",id:3,router:"tasks"},
+					// {name:"我的订单",id:4,router:"myOrder"},
+					// {name:"会员管理",id:5,router:"memberMgt"},
 					{name:"个人设置",id:6,router:"setting"},
-					{name:"职业认证",id:7,router:"certification"},
+					// {name:"职业认证",id:7,router:"certification"},
 					{name:"我的反馈",id:8,router:"feedback"},
                 ],
                 routeName:"",       //路由
@@ -54,7 +54,8 @@
 			align-items: flex-start;
 			.left{
 				width:220px;
-				height:548px;
+				// height:548px;
+				height:320px;
 				background:#fff;
 				display: flex;
 				align-items: center;
