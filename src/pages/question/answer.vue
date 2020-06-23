@@ -3,15 +3,15 @@
 		<div class="exerciseBox">
 			<div class="exerciseTitle">
 				<div class="title flex-btween">
-					<div class="leftTitle">第六届药师职业斤呢个大赛-药学知识（下）  <span><span class="num">{{questionCur+1}}</span>/5</span></div>
-					<div class="rightTime">00:10:10</div>
+					<div class="leftTitle">答案结果</div>
+					<!-- <div class="rightTime">00:10:10</div> -->
 				</div>
 				<div class="content flex-btween">
 					<div class="leftQuestion">
 						<div class="questionList" v-if="questionCur==index" v-for="(item,index) in questionList" :key="index">
 							<div class="questionTitle"><span>{{index+1}}</span>.（{{item.type==1?'单选题':'多选题'}}）具有中枢抑制作用的抗胆碱药是    <span> 1分</span></div>
 							<div class="optionsList">
-								<div class="optionsItem flex" @click="choseAnswer(index,answerIndex,item.type)" v-for="(answerItem,answerIndex) in item.list" :key="answerIndex">
+								<div class="optionsItem flex" v-for="(answerItem,answerIndex) in item.list" :key="answerIndex">
 									<div >
 										<Icon type="ios-checkmark-circle" v-if="answerItem.isChecked" class="btns checked" />
 										<Icon type="ios-checkmark-circle-outline" v-if="!answerItem.isChecked" class="btns" />
@@ -19,10 +19,36 @@
 									<div>{{answerItem.answer}}</div>
 								</div>
 							</div>
+                            <div class="answer">
+                                <div class='flex Atitle'>
+                                    <p>正确答案：<b>A</b></p>
+                                    <p>你的答案：<b>B</b></p>
+                                </div>
+                                <div class="flex analysis">
+                                    <p>答案解析：</p>
+                                    <div>阿片类药物常见的不良反应有：便秘，恶心、呕吐，嗜睡及过度镇静，尿储留，瘙痒，眩晕，精神错乱及中枢神经毒性反应，呼吸抑制等。(<麻醉药品临床应用指导原则》）</div>
+                                </div>
+                                <div class="flex typeBox">
+                                    <div>
+                                        <Icon type="md-heart-outline" />
+                                        <span>收藏</span>
+                                    </div>
+                                    <div>
+                                        <Icon type="ios-create-outline" />
+                                        <span>反馈</span>
+                                    </div>
+                                </div>
+                                <div class="line"></div>
+                                <div class="correlation flex">
+                                    <p>相关课程：</p>
+                                    <div>
+                                        暂无课程
+                                    </div>
+                                </div>
+                            </div>
 							<div class="btnBox flex-center">
 								<div @click="previous(index)">上一题</div>
-								<!-- <div @click="next(index)">下一题</div> -->
-								<div @click="submit">提交</div>
+								<div @click="next(index)">下一题</div>
 							</div>
 						</div>
 					</div>
@@ -37,12 +63,20 @@
 							</div>
 						</div>
 						<div class="typeBox flex">
-							<div class="type flex">
-								<span>已做</span>
+							<div class="type mistake flex">
+								<span>正确</span>
 								<div></div>
 							</div>
-							<div class="type unfinished flex">
-								<span>未做</span>
+							<div class="type correct flex">
+								<span>错误</span>
+								<div></div>
+							</div>
+                            <div class="type flex">
+								<span>待批</span>
+								<div></div>
+							</div>
+                            <div class="type unfinished flex">
+								<span>未答</span>
 								<div></div>
 							</div>
 						</div>
@@ -83,20 +117,6 @@
 			}
 		},
 		methods:{
-			// 提交答案
-			submit(){
-				this.$Modal.confirm({
-                    title: '提示',
-                    content: '确认提交答案吗',
-                    onOk: () => {
-						this.$Message.info('提交成功');
-						this.$router.push("/answer")
-                    },
-                    onCancel: () => {
-                        this.$Message.info('取消提交');
-                    }
-                });
-			},
 			choseAnswer(index,answerIndex,type){
 				console.log(index,type);
 				let list=this.questionList[index].list
@@ -186,7 +206,52 @@
 							color:#969696;
 							font-size: 14px;
 						}
-					}
+                    }
+                    .answer{
+                        width:100%;
+                        padding:15px;
+                        box-sizing: border-box;
+                        background:#F6F8FA;
+                        .Atitle{
+                            p{
+                                margin-right:15px;
+                                b{
+                                    color:#1CBBFF;
+                                }
+                            }
+                            p:last-child{
+                                b{
+                                    color:#FF2486;
+                                }
+                            }
+                        }
+                        .analysis{
+                            align-items: flex-start;
+                            margin-top:10px;
+                            p{
+                                width:100px;
+                            }
+                        }
+                        .typeBox{
+                            justify-content: flex-end;
+                            margin-top:30px;
+                            font-size:12px;
+                            div{
+                                margin-left:10px;
+                                cursor: pointer;
+                            }
+                        }
+                        .line{
+                            width:100%;
+                            height:1px;
+                            background:#EBEEF2;
+                            margin-top:10px;
+                        }
+                        .correlation{
+                            margin-right:10px;
+                            margin-top:10px;
+                        }
+                    }
 					.btnBox{
 						width:100%;
 						div{
@@ -234,20 +299,31 @@
 									width:24px;
 									height:24px;
 									border-radius:2px;
-									border:1px solid rgba(220,224,228,1);
+									// border:1px solid rgba(220,224,228,1);
 									text-align: center;
 									line-height: 24px;
 									font-size:14px;
 									margin-top:10px;
-									margin-right:8px;
+                                    margin-right:8px;
+                                    background:#FF2486;
+                                    color:#fff;
 								}
 								.item.acive{
-									background:#29B28B;
+									background:#1CBBFF;
 									color:#fff;
-								}
+                                }
+                                .item.none{
+                                    background:#EEEEF2;
+									color:#000;
+                                }
+                                .item.Awaiting{
+                                    background:#29B28B;
+									color:#fff;
+                                }
 							}
 						}
-					}
+                    }
+                    
 					.typeBox{
 						width:100%;
 						.type{
@@ -265,7 +341,20 @@
 							div{
 								background:#C8CDD0;
 							}
-						}
+                        }
+                        .correct{
+                            div{
+								background:#FF2486;
+							}
+                            
+                        }
+
+                        .mistake{
+                            div{
+								background:#1CBBFF;
+							}
+                            
+                        }
 					}
 				}
 			}

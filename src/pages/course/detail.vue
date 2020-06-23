@@ -131,13 +131,15 @@
 			// 取消收藏
 			cancelCollect(){
 				let data={
-					collectType:0,
-					recordId:this.videoDetail.id,
+					courseId:this.videoDetail.id,
+					status:false
 				}
-				this.$http.post('user/cancelCollect',data).then(res=>{
+				this.$http.form('course/collect',data).then(res=>{
 					console.log(res);
 					if(res.code==0){
+						this.isCollect=false;
 						this.$Message.success('已取消收藏')
+						this.getIsCollect();
 					}
 				})
 			},
@@ -158,7 +160,9 @@
 				this.$http.form('course/collect',data).then(res=>{
 					console.log(res);
 					if(res.code==0){
+						this.isCollect=true;
 						this.$Message.success("已添加收藏！");
+						this.getIsCollect();
 					}
 				})
 			},
