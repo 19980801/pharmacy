@@ -84,7 +84,7 @@
                 </FormItem>
                 <FormItem label="课程视频：" prop="video">
                     <Upload :action="uploadUrl" :format="['mp4']" :on-format-error="handleFormatError"
-                        :before-upload="beforeUpload" :on-success="handleSuccess">
+                        :before-upload="beforeUpload" :on-success="handleSuccess" :show-upload-list="false">
                         <Button type="ghost" icon="ios-cloud-upload-outline">上传视频</Button>
                     </Upload>
                 </FormItem>
@@ -283,6 +283,8 @@ export default {
                 classUrl: this.addValidate.video,
                 createUser: getStore("username")
             });
+            this.addValidate.videoTitle="";
+            this.addValidate.video="";
         },
         // 删除对应视频
         delconfirm(index) {
@@ -348,7 +350,7 @@ export default {
             this.uploading = val;
         },
         addCourse() {
-            // this.$refs.smeditor.$emit("saveInner");
+            this.$refs.smeditor.$emit("saveInner");
             console.log(this.addForm.courseContentSet);
             console.log(this.addForm.userCategorySet);
             // 处理数据格式
@@ -381,6 +383,9 @@ export default {
                         if (res.code == 0) {
                             removeStore("smeditor");
                             this.$refs["addForm"].resetFields();
+                            this.addForm.classHours.length=0;
+                            this.addForm.coursePrice="";
+                            this.addForm.description="";
                             this.$Message.success(res.message);
                         }
                     });

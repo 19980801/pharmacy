@@ -1,10 +1,13 @@
-import { fetch, postConfig } from '../http.js'
+import { fetch, postConfig,post} from '../http.js'
 
-//查询
-export const getList = data => postConfig('/admin/user/getAllUser', data);
+//查询用户
+export const getList = data => postConfig('/admin/user/findAllUser', data);
 
-//启用禁用
-export const changeStatu = (id,status) => fetch(`/admin/user/updateUserStatus/${id}/${status}`);
+// 获取所有用户分类
+export const getUserClass = data => fetch('admin/user/findAllCategory', data);
 
-//推荐关系查询
-export const getrecomment = data => postConfig('/admin/user/getRecommendList', data);
+//修改用户禁用状态
+export const changeStatu = data => post('/admin/user/updateUserStatus/',data);
+
+//新增用户
+export const addUser = data => postConfig('/admin/user/add', data);

@@ -8,3 +8,6 @@ export const getUserClass = data => fetch('admin/user/findAllCategory', data);
 
 // 上传课程
 export const addCourseData = data => postConfig('/admin/course/upload', data);
+
+// 查询课程
+export const getCourseList = data => postConfig('/admin/course/findCourse', data);
