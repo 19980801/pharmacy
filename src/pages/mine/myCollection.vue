@@ -11,7 +11,7 @@
                     <div class="classItem flex" v-for="(item,index) in list" :key="index">
                         <img class="leftImg" src="../../assets/imgs/index/loginPic.png" alt="">
                         <div class="rightClassTitle">
-                            <div class="studyBtn">继续学习</div>
+                            <div class="studyBtn" @click="goStuty(item)">继续学习</div>
                             <div class="topTitle">{{item.courseTitle}}</div>
                             <div class="validityTime flex">
                                 <div class="validityTimeBox">
@@ -140,6 +140,16 @@ export default {
         this.getList(0);
     },
     methods: {
+        // 
+        goStuty(item){
+            console.log(item);
+            this.$http.get('course/findCourse/'+item.id).then(res=>{
+                console.log(res);
+                // JSON.stringify
+                localStorage.setItem('videoDetail',JSON.stringify(res.data))
+                this.$router.push('/detail')
+            })
+        },
         // 取消收藏
         cancelCollect(type,id){
             let data={

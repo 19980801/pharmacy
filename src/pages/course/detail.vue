@@ -115,7 +115,9 @@
 				isCollect:true,
                 playTime: '0',
 				paused: true,
-				isShow:true
+				isShow:true,
+				nowId:'',
+				reqCount:0
 			}
 		},
 		mounted() {
@@ -131,15 +133,16 @@
                 e = e || window.event;
                 if (e) {
 					let data={
-						id:this.id,//视频id
-						userId:this.userId,//用户id
-						courseId:this.courseId,
+						courseClassId:this.videoList[this.videoCur].id,//视频id
+						courseId:this.videoDetail.id,
 						playTime:this.playTime,//播放时间保存
-						sectionId:this.sectionId
 					}
-					// if()
-					// 保存请求
-					this.$http.form('',data).then(res => {})
+					if(this.isInStudy){
+						// 保存请求
+						this.$http.post('course/record',data).then(res => {
+							console.log(res);
+						})
+					}
                 }
                 // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
                 return "您是否确认离开此页面-您输入的数据可能不会被保存";
@@ -232,21 +235,35 @@
 			},
 			// 详情渲染
 			detail(){
+				console.log(this.nowId);
 				console.log(JSON.parse(localStorage.getItem("videoDetail")));
 				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"))
 				this.videoDetail=videoDetail;
 				let videoList=videoDetail.classHours
 				videoList.forEach((item,index)=>{
+					// console.log(index);
 					item.second = parseInt(item.videoDuration);// 秒
 					item.minute = 0;// 分
 					item.hour = 0;// 小时
 					item.hour=Math.floor(item.videoDuration/3600);
 					item.minute=Math.floor(item.videoDuration/60%60);
 					item.second=Math.floor(item.videoDuration%60);
+					if(item.id==this.nowId){
+						console.log(item,"id");
+						this.videoUrl=item.classUrl;
+						this.components=item.classTitle
+						this.videoCur=index
+					}else{
+						if(index==0){
+							this.videoUrl=item.classUrl
+							this.components=item.classTitle
+						}
+						
+					}
 				})
 				this.videoList=videoList
-				this.videoUrl=this.videoList[0].classUrl
-				this.components=this.videoList[0].classTitle
+				// this.videoUrl=this.videoList[0].classUrl
+				// this.components=this.videoList[0].classTitle
 				if(localStorage.getItem("isLogin")){
 					this.getIsCollect();
 					this.findStudy(videoDetail.id)
@@ -288,7 +305,7 @@
 
 			// 当前播放位置发生变化时触发。
 			onPlayerTimeupdate($event) {
-				console.log($event.cache_.currentTime);
+				// console.log($event.cache_.currentTime);
 				this.playTime=$event.cache_.currentTime;
 				//console.log(player)
 			},
@@ -309,9 +326,14 @@
 
 			//将侦听器绑定到组件的就绪状态。与事件监听器的不同之处在于，如果ready事件已经发生，它将立即触发该函数。。
 			playerReadied(player) {
-				if(localStorage.getItem("isLogin")){
+				// this.palyer=payer
+				if(localStorage.getItem("isLogin")&&this.reqCount==0){
 					this.$http.get("course/findRecord/"+this.videoDetail.id).then(res=>{
-						player.currentTime(res.data.lastWatch)
+						console.log(res);
+						this.reqCount++
+						player.currentTime(res.data.lastTimestamp)
+						this.nowId=res.data.lastWatch
+						this.detail();
 					})
 				}
 				

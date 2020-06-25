@@ -155,8 +155,11 @@ export default {
                 console.log(list);
                 list.forEach(item => {
                     if (item.isTrue == 1 && item.isChecked || item.isTrue == 0 && !item.isChecked) {
+						console.log(111)
                         isTrue = true;
-                    }else{
+					}
+					else{
+						console.log(222);
                         isTrue = false;
                     }
                 });
