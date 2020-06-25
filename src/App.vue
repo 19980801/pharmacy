@@ -18,23 +18,22 @@
                         <div class="search">
                             <div class="left">
                                 <div class="select" @click="showSelect">
-                                    <span>课程</span>
+                                    <span>{{selectItem}}</span>
                                     <img src="./assets/imgs/index/down.png" alt />
                                 </div>
-                                <input type="text" placeholder="请输入要查找的内容" @focus="clickInput" v-model="searchKey"
-                                    @blur="hideHistory" />
+                                <input type="text" placeholder="请输入要查找的内容" v-model="searchKey"/>
                                 <img src="./assets/imgs/index/clear.png" alt class="clear" v-show="searchKey"
-                                    @click="clearSearchKey" />
+                                    @click="searchKey=''" />
                             </div>
-                            <div class="searchImg">
+                            <div class="searchImg" @click="searchList">
                                 <img src="./assets/imgs/index/search.png" alt />
                             </div>
                         </div>
                         <!-- 下拉内容 -->
                         <div class="selectContent" v-show="selectShow">
                             <ul>
-                                <li class="active">课程</li>
-                                <li>题库</li>
+                                <li :class="{active:itemType==0}" @click="clickType(0)">课程</li>
+                                <li :class="{active:itemType==1}" @click="clickType(1)">题库</li>
                             </ul>
                         </div>
                         <!-- 历史搜索内容 -->
@@ -173,12 +172,19 @@
 <script>
 import loginModel from '@/components/loginModel.vue'
 export default {
+    provide(){
+        return{
+            reload:this.reload
+        }
+    },
     name: "App",
     components:{
         loginModel
     },
     data() {
         return {
+            selectItem:"课程",
+            itemType:0,
             isRouterAlive: true,
             showLoginList: false, //显示用户列表
             selectShow: false, //头部下拉框内容
@@ -196,18 +202,33 @@ export default {
             verContent:'',
             type:{},
             isLogin:false,
-            userInfo:''
+            userInfo:'',
         };
     },
     created() {
         if(localStorage.getItem("isLogin")){
-            this.isLogin=localStorage.getItem("isLogin")
+            this.isLogin=localStorage.getItem("isLogin");
             this.userInfo=JSON.parse(localStorage.getItem("userInfo"))
         }
-       
-        console.log(this.userInfo);
     },
     methods: {
+        // 搜索
+        searchList(){
+            console.log(this.searchKey);
+            // 搜课程
+            if(this.itemType==0){
+                this.$router.push({name:"course",params:{title:this.searchKey}})
+            }else{
+                this.$router.push({name:"question",params:{title:this.searchKey}})
+            }
+        },
+        // 选择搜索类型
+        clickType(type){
+            console.log(type);
+            this.itemType=type;
+            this.selectShow=false;
+            this.selectItem=type==0?"课程":"题库";
+        },
         isLoginUser(data){
             console.log(data);
             this.isLogin=data.isLogin;
@@ -238,15 +259,7 @@ export default {
         back() {
             this.login = true;
         },
-        // 登录/注册选项卡
-        loginType(i) {
-            this.loginCur = i;
-        },
-        // 选择登录保存
-        choseType() {
-            this.checked = !this.checked;
-        },
-        // header动画效果
+        // 刷新渲染数据
         reload() {
             this.isRouterAlive = false;
             this.$nextTick(function() {
@@ -256,10 +269,6 @@ export default {
         // 点击打开选择框
         showSelect() {
             this.selectShow = !this.selectShow;
-        },
-        // 清除搜索框
-        clearSearchKey() {
-            this.searchKey = "";
         },
         clickInput() {
             this.historyShow = true;
@@ -275,6 +284,7 @@ export default {
     watch: {
         $route(to, from) {
             console.log(this.$route.name);
+            // this.searchKey="";
             this.routeName = this.$route.name;
         }
     }

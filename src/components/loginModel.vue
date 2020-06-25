@@ -113,6 +113,7 @@ export function getUUID() {
     })
 }
 export default {
+    inject:['reload'],
     name: "loginModel",
     props:{
         loginInfo:{
@@ -223,6 +224,8 @@ export default {
                         isLogin:this.isLogin,
                         userInfo:res.data.user
                     }
+                    // this.reload();
+                    location.reload();
                     this.$emit("isLogin",obj)
                 }
             })
@@ -293,6 +296,9 @@ export default {
         },
         // 登录/注册选项卡
         loginType(i) {
+            for (let key in this.formInline) {
+                this.formInline[key] = "";
+            }
             this.loginP.loginCur = i;
         },
         // 选择登录保存

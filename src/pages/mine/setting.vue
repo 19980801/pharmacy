@@ -177,6 +177,7 @@ export default {
                 font-family: PingFangSC-Regular, PingFang SC;
                 font-weight: 400;
                 color: rgba(255, 255, 255, 1);
+                cursor: pointer;
             }
         }
         .conBox {
@@ -210,6 +211,7 @@ export default {
                         overflow: hidden;
                         width: 70px;
                         height: 70px;
+                        cursor: pointer;
                         img {
                             width: 70px;
                             height: 70px;

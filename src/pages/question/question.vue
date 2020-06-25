@@ -117,10 +117,12 @@ export default {
             list:[],
             totalPages:0,   //总页数
             classList:[],
+            title:""
         };
     },
     created(){
-        this.getList();
+        this.title=this.$route.params.title;
+        this.getList(this.$route.params.title);
     },
     methods: {
         // 查询题库分类
@@ -144,11 +146,12 @@ export default {
         closeAlert() {
             this.alert = false;
         },
-        getList() {
+        getList(key) {
             this.$http.post("/bank/pageQuery", {
                 pageNum:this.pageNum,
                 pageSize:this.limit,
-                updateTime:this.year
+                updateTime:this.year,
+                title:key
             }).then(res=>{
                 if(res.code==0){
                     console.log(res);
@@ -160,7 +163,7 @@ export default {
         },
         onPageChange(page) {
             this.pageNum = page;
-            this.getList();
+            this.getList(this.title);
         },
     }
 };

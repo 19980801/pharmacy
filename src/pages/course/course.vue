@@ -84,18 +84,16 @@ export default {
       page:1,
       totalPages:0,
       total:0,
-      limit:10
+      limit:10,
+      title:""
     };
   },
   created(){
-    console.log(this.$route.query);
-    this.typeCur=this.$route.query.type;
+    console.log(this.$route);
+    this.title=this.$route.params.title;
+    this.typeCur=this.$route.query.type || 0;
     this.moneyTypeCur=this.$route.query.isPay;
     this.findClass();
-    
-  },
-  mounted(){
-    // this.findClass();
   },
   methods:{
     // 查询课程分类
@@ -111,17 +109,18 @@ export default {
           })
         });
         this.conList=courList;
-        this.findListByClass();
+        this.findListByClass(this.title);
       })
     },
     // 更改页码
     changePage(e){
       console.log(e);
       this.page=e;
-      this.findListByClass();
+      this.findListByClass(this.title);
     },
     // 选择tab
     choseTab(i,index){
+        console.log(index);
       if(i==1){ //
         this.classCur=index
         if(i=0){
@@ -145,10 +144,10 @@ export default {
       if(i==4){
         this.moneyTypeCur=index
       }
-      this.findListByClass();
+      this.findListByClass(this.title);
     },
     // 分类查询
-    findListByClass(){
+    findListByClass(key){
       let data={
         charge:this.moneyTypeCur,
         courseCategoryId:this.classCur==0?'':this.classList[this.classCur-1].id,
@@ -156,6 +155,7 @@ export default {
         sortType:this.typeCur==0?'':this.typeCur-1,
         pageSize:10,
         pageNum:this.page,
+        title:key
       }
       this.$http.post('course/pageQuery',data).then(res=>{
         console.log(res);
@@ -167,9 +167,9 @@ export default {
       })
     },
     // 跳转详情
-		choice(item){
+	choice(item){
       localStorage.setItem('videoDetail',JSON.stringify(item))
-		  this.$router.push("/detail");
+	  this.$router.push("/detail");
     },
     choiceType(i){
       this.vipType=i;
