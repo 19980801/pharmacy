@@ -3,36 +3,42 @@
 		<div class="exerciseBox">
 			<div class="exerciseTitle">
 				<div class="title flex-btween">
-					<div class="leftTitle">第六届药师职业斤呢个大赛-药学知识（下）  <span><span class="num">{{questionCur+1}}</span>/5</span></div>
+					<div class="leftTitle">{{bank.bankTitle}}<span><span class="num">{{questionCur+1}}</span>/{{questionList.length}}</span></div>
 					<div class="rightTime">00:10:10</div>
 				</div>
 				<div class="content flex-btween">
 					<div class="leftQuestion">
 						<div class="questionList" v-if="questionCur==index" v-for="(item,index) in questionList" :key="index">
-							<div class="questionTitle"><span>{{index+1}}</span>.（{{item.type==1?'单选题':'多选题'}}）具有中枢抑制作用的抗胆碱药是    <span> 1分</span></div>
+							<div class="questionTitle"><span>{{index+1}}</span>.（{{item.questionType==0?'单选题':'多选题'}}）{{item.answerExplain}}<span> {{item.questionValue}}分</span></div>
 							<div class="optionsList">
-								<div class="optionsItem flex" @click="choseAnswer(index,answerIndex,item.type)" v-for="(answerItem,answerIndex) in item.list" :key="answerIndex">
+								<div class="optionsItem flex" @click="choseAnswer(index,answerIndex,item.questionType)" v-for="(answerItem,answerIndex) in item.questionOptionList" :key="answerIndex">
 									<div >
 										<Icon type="ios-checkmark-circle" v-if="answerItem.isChecked" class="btns checked" />
 										<Icon type="ios-checkmark-circle-outline" v-if="!answerItem.isChecked" class="btns" />
 									</div>
-									<div>{{answerItem.answer}}</div>
+									<div>{{answerItem.optionContent}}</div>
 								</div>
 							</div>
 							<div class="btnBox flex-center">
-								<div @click="previous(index)">上一题</div>
-								<!-- <div @click="next(index)">下一题</div> -->
-								<div @click="submit">提交</div>
+								<div :class="{noPre:questionCur==0}" @click="previous(index)">上一题</div>
+								<div v-if="questionCur+1!=questionList.length" @click="next(index)">下一题</div>
+								<div @click="submit" v-if="questionCur+1==questionList.length">提交</div>
 							</div>
 						</div>
 					</div>
 					<div class="rightAnswer">
 						<div class="answerTitle">答题卡</div>
 						<div class="answerList">
-							<div class="answerItem" v-for="(item,index) in 2" :key="index">
-								<div class="listTitle">{{index==0?'单选题':'多选题'}}</div>
+							<div class="answerItem">
+								<div class="listTitle">单选题</div>
 								<div class="listBox flex">
-									<div class="item" :class="{acive:index%2==0}" v-for="(item,index) in 11" :key="index">{{index+1}}</div>
+									<div class="item" v-if="item.questionType==0" :class="{acive:item.isDone}" v-for="(item,index) in questionList" :key="index">{{index+1}}</div>
+								</div>
+							</div>
+							<div class="answerItem">
+								<div class="listTitle">多选题</div>
+								<div class="listBox flex">
+									<div class="item" :class="{acive:item.isDone}" v-if="item.questionType==1" v-for="(item,index) in questionList" :key="index">{{index+1}}</div>
 								</div>
 							</div>
 						</div>
@@ -58,31 +64,41 @@
 		data(){
 			return {
 				questionCur:0,
-				questionList:[
-					{
-						title:"1.（单选题）具有中枢抑制作用的抗胆碱药是",
-						type:1,
-						list:[
-							{answer:"资产保值，我不愿意承担任何投资风险",id:1,isChecked:false},
-							{answer:"尽可能保证本金安全，不在乎收益率比较低 ",id:2,isChecked:false},
-							{answer:"产生较多的收益，可以承担一定的投资风险",id:3,isChecked:true},
-							{answer:"实现资产大幅增长，愿意承担很大的投资风险",id:4,isChecked:false},
-						],
-					},
-					{
-						title:"（单选题）具有中枢抑制作用的抗胆碱药是    ",
-						type:2,
-						list:[
-							{answer:"资产保值，我不愿意承担任何投资风险",id:1,isChecked:false},
-							{answer:"尽可能保证本金安全，不在乎收益率比较低 ",id:2,isChecked:false},
-							{answer:"产生较多的收益，可以承担一定的投资风险",id:3,isChecked:true},
-							{answer:"实现资产大幅增长，愿意承担很大的投资风险",id:4,isChecked:false},
-						],
-					},
-				]
+				questionList:[],
+				bank:"",
 			}
 		},
+		created(){
+			console.log(JSON.parse(localStorage.getItem("bank")));
+			this.findQuestion();
+		},
 		methods:{
+			// 计时器
+			// timers(){
+			// 	s=s+1;
+			// 	if(s>=60){
+			// 		s=00;
+			// 		m=m+1
+			// 	}
+			// 	if(m>=60){
+			// 		m=00;
+			// 		h=h+1;
+			// 	}
+			// },
+			// 获取题库
+			findQuestion(){
+				this.bank=JSON.parse(localStorage.getItem("bank"))
+				let questionList=JSON.parse(localStorage.getItem("questList"))
+				questionList.forEach(item => {
+					item.isDone=false;
+					item.isRight=0;
+					item.questionOptionList.forEach(i=>{
+						i.isChecked=false;
+					})
+				});
+				this.questionList=questionList;
+				console.log(this.questionList);
+			},
 			// 提交答案
 			submit(){
 				this.$Modal.confirm({
@@ -99,25 +115,45 @@
 			},
 			choseAnswer(index,answerIndex,type){
 				console.log(index,type);
-				let list=this.questionList[index].list
-				if(type==1){//单选
+				let list=this.questionList[index].questionOptionList
+				if(type==0){//单选
 					list.map((item,i)=>{
 						if(i==answerIndex){
+							console.log(item);
 							item.isChecked=true;
+							this.questionList[index].isDone=true;
+							if(item.isTrue==1){
+								this.questionList[index].isRight=1
+							}else{
+								this.questionList[index].isRight=0
+							}
+							console.log(this.questionList[index]);
 						}else{
 							item.isChecked=false;
 						}
 					})
-				}else if(type==2){
+				}else if(type==1){
 					list[answerIndex].isChecked=!list[answerIndex].isChecked
+					let isTrue=false;
+					list.forEach(item=>{
+						if(item.isTrue==1&&item.isChecked){
+							isTrue=true;
+						}
+					})
+					list.forEach(item=>{
+						if(item.isTrue==0&&item.isChecked){
+							isTrue=false;
+						}
+					})
+					console.log(isTrue);
+					console.log(this.questionList[index]);
 				}
-				this.questionList[index].list=list;
+				this.questionList[index].questionOptionList=list;
 			},
 			previous(index){
 				this.questionCur!=0?this.questionCur=index-1:this.questionCur
 			},
 			next(index){
-			
 				this.questionCur+1<this.questionList.length?this.questionCur=index+1:this.questionCur
 			},
 		}
@@ -192,7 +228,7 @@
 						div{
 							width:240px;
 							height:50px;
-							background:rgba(220,220,220,1);
+							background:#29B28B;
 							border-radius:4px;
 							text-align: center;
 							line-height: 50px;
@@ -202,8 +238,8 @@
 							margin-top:60px;
 							cursor: default;
 						}
-						div:last-child{
-							background:#29B28B;
+						.noPre{
+							background:rgba(220,220,220,1);
 						}
 					}
 				}
