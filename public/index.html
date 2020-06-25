@@ -11,7 +11,7 @@
   <title>中山二院药学部</title>
 </head>
 
-<body>
+<body onbeforeunload="beforeunloadHandler()">
   <div id="app"></div>
   <!-- built files will be auto injected -->
   <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.js) { %>

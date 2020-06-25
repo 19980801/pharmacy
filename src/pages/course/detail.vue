@@ -9,7 +9,9 @@
 					</Breadcrumb>
 				</div>
 				<div class="videoBox flex">
-					<div class="shade" v-if="isJoinStudy"></div>
+					<!-- <div class="shade" v-if="isInStudy">
+						<Button style="width:200px;height:60px;font-size:16px;background:#29b28b;" type="success" @click=''>继续学习</Button>
+					</div> -->
 					<img v-if="!isInStudy" style="width:900px;height:490px;" :src="videoDetail.imgUrl" alt="">
 					<video-player  v-if="isInStudy" class="video-player vjs-custom-skin"
 						 ref="videoPlayer"
@@ -110,14 +112,46 @@
 				isJoinStudy:false,
 				components:'',
 				isInStudy:false,
-				isCollect:true
+				isCollect:true,
+				id: 0,
+                userId: 1,
+                courseId: 1,
+                playTime: '0',
+                sectionId: 1,
+                paused: true,
 			}
 		},
 		mounted() {
 			this.detail();
 			this.getIsCollect();
+			window.addEventListener("beforeunload", e => {
+                this.beforeunloadHandler(e);
+			});
+			
 		},
 		methods: {
+
+			// 视频保存请求
+			 beforeunloadHandler(e) {
+                e = e || window.event;
+                if (e) {
+					let data={
+						id:this.id,//视频id
+						userId:this.userId,//用户id
+						courseId:this.courseId,
+						playTime:this.playTime,//播放时间保存
+						sectionId:this.sectionId
+					}
+					// 保存请求
+					this.$http.form('',data).then(res => {})
+                }
+                // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+                return "您是否确认离开此页面-您输入的数据可能不会被保存";
+
+            },
+
+
+
 			// 查询课程是否收藏
 			getIsCollect(){
 				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"));
@@ -169,18 +203,27 @@
 			// 查询当前课程是否加入学习
 			findStudy(courseId){
 				this.$http.get('/course/isStudyRecord/'+courseId).then(res=>{
-					console.log(res);
+					if(res.message==1){
+						this.isInStudy=true
+					}else if(res.message==0){
+						this.isInStudy=false
+					}
 				})
 			},
 			// 加入学习
 			addStudy(id){
-				this.$http.get('course/addStudyRecord/'+id).then(res=>{
-					console.log(res);
-					if(res.code==0){
-						this.$Message.success('加入成功！');
-						this.isInStudy=true
-					}
-				})
+				if(this.isInStudy){
+					this.$Message.warning("您已加入学习列表，无需再次加入")
+				}else{
+					this.$http.get('course/addStudyRecord/'+id).then(res=>{
+						console.log(res);
+						if(res.code==0){
+							this.$Message.success('加入成功！');
+							this.isInStudy=true
+						}
+					})
+				}
+				
 			},
 			// 选择视频
 			choseVideo(index,url){
@@ -220,15 +263,18 @@
 			},
 			// 播放回调
 			onPlayerPlay(player) {
+				this.paused = false;
 				//console.log('player play!', player)
 			},
 			// 暂停回调
 			onPlayerPause(player) {
+				this.paused = true
 				//console.log('player pause!', player)
 			},
 			// 视频播完回调
 			onPlayerEnded($event) {
-				this.$refs.videoPlayer.player.src(this.fileUrl)
+				this.paused = false
+				// this.$refs.videoPlayer.player.src(this.fileUrl)//循环播放
 			},
 			// DOM元素上的readyState更改导致播放停止
 			onPlayerWaiting($event) {
@@ -246,6 +292,8 @@
 
 			// 当前播放位置发生变化时触发。
 			onPlayerTimeupdate($event) {
+				console.log($event.cache_.currentTime);
+				this.playTime=$event.cache_.currentTime;
 				//console.log(player)
 			},
 
@@ -265,8 +313,25 @@
 
 			//将侦听器绑定到组件的就绪状态。与事件监听器的不同之处在于，如果ready事件已经发生，它将立即触发该函数。。
 			playerReadied(player) {
+				let a=2.903364
+				player.currentTime(a)   //恢复上次播放进度
 				//console.log('example player 1 readied', player);
 			},
+		},
+		// 销毁后
+		destroyed(){
+			window.removeEventListener("beforeunload", e => {
+                this.beforeunloadHandler(e);
+			});
+			let data={
+				id:this.id,//视频id
+				userId:this.userId,//用户id
+				courseId:this.courseId,
+				playTime:this.playTime,//播放时间保存
+				sectionId:this.sectionId
+			}
+			// 保存请求
+			this.$http.form('',data).then(res => {})
 		},
 		computed:{
 			videoPlayerOptions () {

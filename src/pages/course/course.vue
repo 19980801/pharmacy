@@ -92,7 +92,7 @@ export default {
     this.typeCur=this.$route.query.type;
     this.moneyTypeCur=this.$route.query.isPay;
     this.findClass();
-    this.findListByClass();
+    
   },
   mounted(){
     // this.findClass();
@@ -111,6 +111,7 @@ export default {
           })
         });
         this.conList=courList;
+        this.findListByClass();
       })
     },
     // 更改页码
@@ -132,7 +133,7 @@ export default {
           });
           this.conList=courList;
         }else{
-          this.conList=this.classList[index].courseContentList;
+          this.conList=this.classList[index-1].courseContentList;
         }
       }
       if(i==2){

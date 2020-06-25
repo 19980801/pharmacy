@@ -46,7 +46,7 @@
                                         <span>未做数量</span>
                                     </div>
                                 </div>
-                                <div class="button" @click="showAlert">开始练习</div>
+                                <div class="button" @click="showAlert(item)">开始练习</div>
                             </div>
                         </div>
                     </li>
@@ -81,17 +81,7 @@
                         <li class="typeTit">题目分类：</li>
                         <div class="typeBg">
                             <ul>
-                                <li class="active">全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
-                                <li>全部</li>
+                                <li class="active" v-for="(item,index) in classList" :key="index">{{item.categoryName}}</li>
                             </ul>
                         </div>
                     </ul>
@@ -126,19 +116,29 @@ export default {
             year:"",
             list:[],
             totalPages:0,   //总页数
+            classList:[],
         };
     },
     created(){
         this.getList();
     },
     methods: {
+        // 查询题库分类
+        findQuestionBankClass(id){
+            this.$http.get('test/getBankCondition/'+id).then(res=>{
+                if(res.code==0){
+                    this.classList=res.data
+                }
+            })
+        },
         // 跳转练习
         goExercise() {
             this.$router.push("/exercise");
         },
         // 显示弹框
-        showAlert() {
+        showAlert(item) {
             this.alert = true;
+            this.findQuestionBankClass(item.id)
         },
         // 关闭弹框
         closeAlert() {
