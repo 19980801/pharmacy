@@ -11,3 +11,6 @@ export const changeStatu = data => post('/admin/user/updateUserStatus/',data);
 
 //新增用户
 export const addUser = data => postConfig('/admin/user/add', data);
+
+// 发送消息
+export const sendMsg = data => postConfig('/admin/inform/send', data);

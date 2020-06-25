@@ -246,21 +246,41 @@ export default {
         };
     },
     created() {
-        removeStore("smeditor");
         this.getType();
         this.getUserList();
-        // setStore("smeditor", res.data.content);
+        // removeStore("smeditor");
+        if(getStore("info")){
+            console.log(111111111)
+            let content=JSON.parse(getStore("info"));
+            console.log(content);
+            this.addForm=JSON.parse(getStore("info"));
+            this.addForm.whetherPay=String(content.whetherPay);
+            this.addForm.memberOnly=String(content.memberOnly);
+            this.addForm.courseStatus=String(content.courseStatus);
+            let newArr=[];
+            content.userCategorySet.forEach(ele=>{
+                newArr.push(ele.id);
+            })
+            this.addForm.userCategorySet=newArr;
+            this.showContent(content.courseCategoryId);
+            setStore("smeditor",content.description);
+            console.log(getStore("smeditor"))
+        }
+        // getStore("smeditor");
     },
     methods: {
         showContent(val) {
             console.log(val);
             let list = [];
+            console.log(this.typeList);
             this.typeList.forEach(ele => {
+                console.log(ele);
                 if (ele.id == val) {
                     return (list = ele);
                 }
             });
             this.allContent = list.courseContentList;
+            console.log(this.allContent)
         },
         onBeforeImgUploading() {
             this.imgUploadLoading = true;
@@ -323,6 +343,7 @@ export default {
         //获取所有课程分类
         getType() {
             getCoursetypeList().then(res => {
+                console.log(res);
                 if (res.code == 0) {
                     console.log(res);
                     this.typeList = res.data;

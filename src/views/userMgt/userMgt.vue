@@ -25,11 +25,14 @@
             </div>
             <div class="tableHead">
                 <div style="font-weight:700;">数据列表</div>
-                <Button type="primary" @click="addModal=true">
-                    <Icon type="plus-round"></Icon>添加
-                </Button>
+                <div>
+                    <Button type="primary" @click="addModal=true">
+                        <Icon type="plus-round"></Icon>添加用户
+                    </Button>
+                    <Button type="warning" @click="sendShow">发送通知</Button>
+                </div>
             </div>
-            <Table :columns="tableColumns" :data="tableData" border></Table>
+            <Table ref="selection" @on-selection-change="select" :columns="tableColumns" :data="tableData" border></Table>
             <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
         </Card>
         <!-- 增加编辑弹框 -->
@@ -55,6 +58,36 @@
                 <Button type="primary" @click="sure">确定</Button>
             </div>
         </Modal>
+        <!-- 发消息 -->
+        <Modal v-model="sendModal" title="发送通知" :closable="false">
+            <Form ref="sendValidate" :model="sendValidate" :label-width="120" :rules="rulesSend">
+                <FormItem label="是否是全体通知：" prop="isAll">
+                    <RadioGroup v-model="sendValidate.isAll">
+                        <Radio label="0">否</Radio>
+                        <Radio label="1" :disabled="isAll">是</Radio>
+                    </RadioGroup>
+                </FormItem>
+                <FormItem label="通知类型：" prop="informType">
+                    <Select v-model="sendValidate.informType">
+                        <Option value="0">系统通知</Option>
+                        <Option value="1">考核通知</Option>
+                        <Option value="2">批阅通知</Option>
+                        <Option value="3">成绩通知</Option>
+                    </Select>
+                </FormItem>
+                <FormItem label="通知标题：" prop="informTitle">
+                    <Input v-model="sendValidate.informTitle"></Input>
+                </FormItem>
+                <FormItem label="通知内容：" prop="informContent">
+                    <Input v-model="sendValidate.informContent" type="textarea"
+                        :autosize="{minRows:6,maxRows: 5}"></Input>
+                </FormItem>
+            </Form>
+            <div slot="footer">
+                <Button type="default" @click="sendModal=false">取消</Button>
+                <Button type="primary" @click="send">确定</Button>
+            </div>
+        </Modal>
     </div>
 </template>
 
@@ -63,7 +96,8 @@ import {
     getList,
     getUserClass,
     changeStatu,
-    addUser
+    addUser,
+    sendMsg
 } from "@/service/userMgtApi/api";
 import { getStore, removeStore, setStore } from "@/config/storage";
 // 认证状态
@@ -76,14 +110,12 @@ const certificationStatusMap = new Map([
 export default {
     data() {
         return {
+            selectedArr: [],
+            sendModal: false,
             addModal: false,
-            isDelModal: false,
-            modalTitle: "新增",
-            showMsg: "",
             total: 0,
             page: 1,
             limit: 10,
-            error: false,
             formItem: {
                 mobilePhone: "",
                 userCategoryId: ""
@@ -110,7 +142,7 @@ export default {
                     {
                         required: true,
                         message: "性别不能为空",
-                        trigger: "change",
+                        trigger: "change"
                     }
                 ],
                 userCategoryId: [
@@ -122,10 +154,52 @@ export default {
                     }
                 ]
             },
+            sendValidate: {
+                isAll: "",
+                informType: "",
+                informTitle: "",
+                informContent: ""
+            },
+            rulesSend: {
+                isAll: [
+                    {
+                        required: true,
+                        message: "是否通知全体不能为空",
+                        trigger: "change"
+                    }
+                ],
+                informType: [
+                    {
+                        required: true,
+                        message: "通知类型不能为空",
+                        trigger: "change"
+                        // type:"number"
+                    }
+                ],
+                informTitle: [
+                    {
+                        required: true,
+                        message: "通知标题不能为空",
+                        trigger: "blur"
+                    }
+                ],
+                informContent: [
+                    {
+                        required: true,
+                        message: "通知内容不能为空",
+                        trigger: "blur"
+                    }
+                ]
+            },
             typeList: [], //分类列表
             id: "",
             tableData: [],
             tableColumns: [
+                {
+                    type: "selection",
+                    algin: "center",
+                    width: 80
+                },
                 {
                     title: "用户名",
                     key: "userName"
@@ -225,7 +299,8 @@ export default {
                         ];
                     }
                 }
-            ]
+            ],
+            isAll:false
         };
     },
     created() {
@@ -233,6 +308,44 @@ export default {
         this.getUserList();
     },
     methods: {
+        sendShow(){
+            console.log(this.selectedArr)
+            // 选中用户
+            if(this.selectedArr.length>0){
+                this.sendValidate.isAll="0";
+                this.isAll=true;
+            }else{
+                this.sendValidate.isAll="1";
+                this.isAll=false;
+            }
+            this.sendModal=true;
+        },
+        send() {
+            this.$refs["sendValidate"].validate(valid => {
+                if (valid) {
+                    sendMsg({
+                        userId:this.selectedArr,
+                        ...this.sendValidate
+                    }).then(res => {
+                        if (res.code == 0) {
+                            this.sendModal = false;
+                            this.selectedArr.length=0;
+                            this.$Message.success(res.message);
+                        }
+                    });
+                }
+            });
+        },
+        select(selection) {
+            console.log(selection);
+            let ids=[];
+            selection.forEach(ele=>{
+                ids.push(ele.id);
+            });
+            // this.selectedArr.push(...selection);
+            this.selectedArr=ids;
+            console.log(this.ids);
+        },
         getUserList() {
             getUserClass().then(res => {
                 console.log(res);
@@ -244,21 +357,19 @@ export default {
         sure() {
             this.$refs["formValidate"].validate(valid => {
                 if (valid) {
-                    console.log(1);
-                    
                     addUser({
-                        mobilePhone:this.formValidate.mobilePhone,
-                        gender:this.formValidate.gender,
-                        userCategoryId:this.formValidate.userCategoryId,
-                        createUser:getStore("username")
-                    }).then(res=>{
+                        mobilePhone: this.formValidate.mobilePhone,
+                        gender: this.formValidate.gender,
+                        userCategoryId: this.formValidate.userCategoryId,
+                        createUser: getStore("username")
+                    }).then(res => {
                         if (res.code == 0) {
-                            this.addModal=false;
+                            this.addModal = false;
                             this.$refs["formValidate"].resetFields();
                             this.$Message.success(res.message);
                             this.getTableData();
                         }
-                    })
+                    });
                 }
             });
         },

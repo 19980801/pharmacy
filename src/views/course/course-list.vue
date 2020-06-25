@@ -34,7 +34,8 @@
 </template>
 
 <script>
-import { getCourseList } from "@/service/courseApi/api";
+import { getCourseList,changeStatu,delCourse} from "@/service/courseApi/api";
+import { getStore, removeStore, setStore } from "@/config/storage";
 export default {
     data() {
         return {
@@ -92,7 +93,9 @@ export default {
                 },
                 {
                     title: "操作",
+                    width:240,
                     render: (h, params) => {
+                        let txt=params.row.courseStatus==0?"下架":"上架";
                         return [
                             h(
                                 "Button",
@@ -106,14 +109,8 @@ export default {
                                     on: {
                                         click: () => {
                                             console.log(params.row);
-                                            const {
-                                                id,
-                                                value,
-                                                name
-                                            } = params.row;
-                                            this.formValidate = { id, value };
-                                            this.modalTitle = name;
-                                            this.addModal = true;
+                                            setStore("info",params.row);
+                                            this.$router.push("/add_course");
                                         }
                                     }
                                 },
@@ -123,29 +120,58 @@ export default {
                                 "Button",
                                 {
                                     props: {
-                                        type: "error"
+                                        type: params.row.courseStatus==0?"warning":"success"
+                                    },
+                                    style: {
+                                        marginRight: "10px"
                                     },
                                     on: {
                                         click: () => {
-                                            console.log(params.row);
-                                            const {
-                                                name,
-                                                phone,
-                                                sex,
-                                                type
-                                            } = params.row;
-                                            this.formValidate = {
-                                                name,
-                                                phone,
-                                                sex,
-                                                type
-                                            };
-                                            this.modalTitle = "编辑";
-                                            this.addModal = true;
+                                            console.log(params.row)
+                                            this.$Modal.confirm({
+                                                title: "提示",
+                                                content: txt + "该课程！",
+                                                loading: true,
+                                                onOk: () => {
+                                                    if (txt == "下架") {
+                                                        this.changeStatus(params.row.id,false);
+                                                    } else {
+                                                        this.changeStatus(params.row.id,true);
+                                                    }
+                                                }
+                                            });
                                         }
                                     }
                                 },
-                                "下架"
+                                txt
+                            ),
+                            h(
+                                "Button",
+                                {
+                                    props: {
+                                        type:"error"
+                                    },
+                                    on: {
+                                        click: () => {
+                                            console.log(params.row)
+                                            this.$Modal.confirm({
+                                                title: "提示",
+                                                content:"删除该课程！",
+                                                loading: true,
+                                                onOk: () => {
+                                                    delCourse(0,params.row.id).then(res=>{
+                                                        if(res.code==0){
+                                                            this.$Modal.remove();
+                                                            this.$Message.success(res.message);
+                                                            this.getTableData();
+                                                        }
+                                                    })
+                                                }
+                                            });
+                                        }
+                                    }
+                                },
+                                "删除"
                             )
                         ];
                     }
@@ -159,7 +185,10 @@ export default {
     activated() {},
     methods: {
         changeStatus(id, status) {
-            changeStatu(id, status).then(res => {
+            changeStatu({
+                courseId:id,
+                status:status
+            }).then(res => {
                 if (res.code == 0) {
                     this.$Message.success(res.message);
                     this.getTableData();

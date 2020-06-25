@@ -37,14 +37,14 @@ export const systemRouter = [
     }
   },
    // 意见反馈
-  //  {
-  //   id:233,
-  //   path: '/user_sugg',
-  //   icon: 'person',
-  //   component: resolve => {
-  //     require(['@/views/system/user-sugg.vue'], resolve)
-  //   }
-  // },
+   {
+    id:233,
+    path: '/user_sugg',
+    icon: 'person',
+    component: resolve => {
+      require(['@/views/system/user-sugg.vue'], resolve)
+    }
+  },
   // 系统日志
   {
     id:7,

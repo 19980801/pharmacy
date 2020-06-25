@@ -1,228 +1,182 @@
 <template>
-  <div>
-    <Card>
-      <p slot="title">发送通知</p>
-      <div class="tableHead">
-        <div>数据列表</div>
-        <Button type="primary">发消息</Button>
-      </div>
-      <Table ref="selection" :columns="tableColumns" :data="tableData" border></Table>
-      <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
-      <Modal v-model="addModal" :title="changeTitle" :closable="false">
-        <Form ref="formValidate" :model="formValidate" :label-width="120" :rules="ruleValidate">
-          <FormItem label="公告标题:" prop="title">
-            <Input v-model="formValidate.title"></Input>
-          </FormItem>
-          <FormItem label="公告内容:" prop="content">
-            <Input v-model="formValidate.content" type="textarea"></Input>
-          </FormItem>
-        </Form>
-        <div slot="footer">
-          <Button type="default" @click="cancel">取消</Button>
-          <Button type="primary" @click="sure">确定</Button>
-        </div>
-      </Modal>
-    </Card>
-  </div>
+    <div>
+        <Card>
+            <p slot="title">发送通知</p>
+            <div class="sear">
+                <Form :model="formItem" :label-width="100" inline>
+                    <FormItem label="用户ID：" class="searchInput">
+                        <Input v-model="formItem.userId" placeholder="请输入用户ID"></Input>
+                    </FormItem>
+                    <FormItem label="通知类型：" class="searchInput" style="width:200px">
+                        <Select v-model="formItem.informType">
+                            <Option value="0">系统通知</Option>
+                            <Option value="1">考核通知</Option>
+                            <Option value="2">批阅通知</Option>
+                            <Option value="3">成绩通知</Option>
+                        </Select>
+                    </FormItem>
+                </Form>
+                <div class="btn">
+                    <Button type="primary" @click="search">
+                        <Icon type="ios-search" style="font-size:16px" />查询
+                    </Button>
+                    <Button type="default" style="margin-left:10px" @click="clear">
+                        <Icon type="ios-undo" style="font-size:16px" />重置
+                    </Button>
+                </div>
+            </div>
+            <div class="tableHead">
+                <div>数据列表</div>
+            </div>
+            <Table :columns="tableColumns" :data="tableData" border></Table>
+            <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
+        </Card>
+    </div>
 </template>
 
 <script>
-import {
-  getList,
-  getInfo,
-  updateInfo,
-  addInfo,
-  delInfo
-} from "@/service/newsApi/api";
+import {getList} from "@/service/newsApi/api";
+const informTypeMap=new Map([
+    [0,"系统通知"],
+    [1,"考核通知"],
+    [2,"批阅通知"],
+    [3,"成绩通知"],
+]);
 export default {
-  data() {
-    return {
-      total: 0,
-      page: 1,
-      limit: 10,
-      changeTitle: "",
-      changeType: "",
-      addModal: false,
-      isShowDelModal: false,
-      formValidate: {
-        id: "",
-        title: "",
-        content: ""
-      },
-      isShowDelModal: false,
-      ruleValidate: {
-        title: [
-          { required: true, message: "公告标题不能为空", trigger: "blur" }
-        ],
-        content: [
-          { required: true, message: "公告内容不能为空", trigger: "blur" }
-        ]
-      },
-      tableData: [],
-      tableColumns: [
-        {
-          type: 'selection',
-          align: 'center'
-        },
-        {
-          title: "公告标题",
-          key: "title"
-        },
-        {
-          title: "公告内容",
-          key: "content",
-          render: (h, params) => {
-            let txt = String(params.row.content).substring(0, 4) + "...";
-            return h(
-              "span",
-              {
-                domProps: {
-                  title: params.row.content
-                }
-              },
-              txt
-            );
-          }
-        },
-        {
-          title: "创建时间",
-          key: "createTime"
-        },
-        {
-          title: "操作",
-          render: (h, params) => {
-            console.log(params.row);
-            return [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "error"
-                  },
-                  on: {
-                    click: () => {
-                      this.isShowDelModal = true;
-                      this.id = params.row.id;
+    data() {
+        return {
+            formItem:{
+                userId: "",
+                informType:null
+            },
+            total: 0,
+            page: 1,
+            limit: 10,
+            changeTitle: "",
+            changeType: "",
+            addModal: false,
+            isShowDelModal: false,
+            formValidate: {
+                id: "",
+                title: "",
+                content: ""
+            },
+            isShowDelModal: false,
+            ruleValidate: {
+                title: [
+                    {
+                        required: true,
+                        message: "公告标题不能为空",
+                        trigger: "blur"
                     }
-                  }
+                ],
+                content: [
+                    {
+                        required: true,
+                        message: "公告内容不能为空",
+                        trigger: "blur"
+                    }
+                ]
+            },
+            tableData: [],
+            tableColumns: [
+                {
+                    title: "通知标题",
+                    key: "informTitle"
                 },
-                "发消息"
-              )
-            ];
-          }
+                {
+                    title:"通知类型",
+                    key:"informType",
+                    render:(h,params)=>{
+                        return h("span",{},informTypeMap.get(params.row.informType))
+                    }
+                },
+                {
+                    title: "公告内容",
+                    key: "informContent",
+                    render: (h, params) => {
+                        let txt =
+                            String(params.row.informContent).substring(0,6) + "...";
+                        return h(
+                            "span",
+                            {
+                                domProps: {
+                                    title: params.row.informContent
+                                }
+                            },
+                            txt
+                        );
+                    }
+                },
+                {
+                    title:"消息状态",
+                    key:"messageStatus",
+                    render:(h,params)=>{
+                        let txt=params.row.messageStatus==0?"未读":"已读";
+                        return h("span",{},txt)
+                    }
+                },
+                {
+                    title: "创建时间",
+                    key: "createTime"
+                }
+            ]
+        };
+    },
+    created() {
+        this.getTableData();
+    },
+    methods: {
+        clear() {
+            for (let key in this.formItem) {
+                this.formItem[key] = "";
+            }
+            this.getTableData();
+        },
+        onPageChange(page) {
+            this.page = page;
+            this.getTableData();
+        },
+        search() {
+            this.page = 1;
+            this.getTableData();
+        },
+        getTableData() {
+            getList({
+                pageNum: this.page,
+                pageSize: this.limit,
+                userId: this.formItem.userId,
+                informType:this.formItem.informType
+            }).then(res => {
+                console.log(res);
+                this.tableData = res.data.content;
+                this.total = res.data.totalElements;
+            });
         }
-      ]
-    };
-  },
-  created() {
-    this.getTableData();
-  },
-  methods: {
-    onPageChange(page) {
-      this.page = page;
-      this.getTableData();
-    },
-    del(id) {
-      console.log(id);
-      delInfo(id).then(res => {
-        if (res.code == 0) {
-          this.isShowDelModal = false;
-          this.$Message.success(res.message);
-          this.getTableData();
-        } else {
-          this.$Message.error(res.message);
-        }
-      });
-    },
-    search() {
-      this.page = 1;
-      this.getTableData();
-    },
-    add() {
-      this.addModal = true;
-      this.changeTitle = "添加";
-      this.changeType = "add";
-    },
-    cancel() {
-      this.addModal = false;
-      this.resetForm();
-    },
-    sure() {
-      console.log(this.formValidate);
-      this.$refs["formValidate"].validate(valid => {
-        if (valid) {
-          if (this.changeType == "add") {
-            this.roleadd();
-          } else {
-            this.roleeditor();
-          }
-        }
-      });
-    },
-    roleadd() {
-      addInfo({
-        title: this.formValidate.title,
-        content: this.formValidate.content
-      }).then(res => {
-        if (res.code == 0) {
-          this.cancel();
-          this.getTableData();
-        } else {
-          this.$Message.error(res.message);
-        }
-      });
-    },
-    roleeditor() {
-      updateInfo({
-        ...this.formValidate
-      }).then(res => {
-        if (res.code == 0) {
-          this.cancel();
-          this.getTableData();
-        } else {
-          this.$Message.error(res.message);
-        }
-      });
-    },
-    resetForm() {
-      for (let key in this.formValidate) {
-        this.formValidate[key] = "";
-      }
-    },
-    getTableData() {
-      getList({
-        pageNum: this.page,
-        pageSize: this.limit
-      }).then(res => {
-        console.log(res);
-        this.tableData = res.data.content;
-        this.total = res.data.totalElements;
-      });
     }
-  }
 };
 </script>
 
 <style lang="less" scoped>
 .sear {
-  display: flex;
-  .btn {
-    margin-left: 100px;
-    button:nth-child(2) {
-      margin-left: 10px;
+    display: flex;
+    .btn {
+        margin-left: 100px;
+        button:nth-child(2) {
+            margin-left: 10px;
+        }
     }
-  }
 }
 .ivu-page {
-  margin-top: 10px;
-  text-align: right;
+    margin-top: 10px;
+    text-align: right;
 }
 .tableHead {
-  width: 100%;
-  height: 50px;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 </style>

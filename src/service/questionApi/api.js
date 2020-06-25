@@ -14,3 +14,6 @@ export const uploadBank = data => postConfig('admin/bank/uploadBank', data);
 
 // 新增题目
 export const addSubject = data => postConfig('admin/subject/add', data);
+
+// 查询题库
+export const getList = data => postConfig('admin/bank/pageQuery', data);
