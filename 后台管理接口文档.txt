@@ -256,7 +256,6 @@ URL = subject/pageQuery
 {
     "subjectCategory":"1",(题目分类id)
     "subjectTitle":"测试"(题目标题)
-	pageNum、pageSize
 }
 返回参数：
 {
@@ -407,6 +406,341 @@ URL = subject/getQuestionCategory
             "id": 2,
             "categoryName": "药学技能",
             "createTime": 1592631156000
+        }
+    ]
+}
+
+10. 查询用户
+URL = user/findAllUser
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",(页码)
+    "pageSize":"10",(每页和记录数)
+    "mobilePhone":"",(手机号)
+    "userCategoryId":"1"(用户分类id)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 2,(主键)
+                "mobilePhone": "13523757729",(手机号)
+                "userName": "135****7729",(用户名)
+                "password": "766937a0d403c3cd29c63aaae4d65cbb",
+                "gender": null,(性别 0-男 1-女)
+                "idNumber": null,(身份证号)
+                "idCardUrl": null,(身份证照片)
+                "workCardUrl": null,(工作证照片)
+                "headUrl": null,(头像图片)
+                "profession": null,(职业)
+                "jobTitle": null,(职称)
+                "workUnit": null,(工作单位)
+                "certificationStatus": 0,(认证状态 0-未填写资料 1-认证中 2-认证通过 3-认证未通过)
+                "memberStatus": 0,(用户状态 0-正常 1-禁用)
+                "userCategoryId": 1,(用户分类表id)
+                "createUser": null,(创建者)
+                "createTime": "2020-06-16 16:16:53",(创建时间)
+                "remark": null,
+                "userQuestionBankList": [(这里没啥用不用管)
+                    {
+                        "id": 3,
+                        "haveNum": 0,
+                        "userId": 2,
+                        "bankId": 1
+                    },
+                    {
+                        "id": 4,
+                        "haveNum": 0,
+                        "userId": 2,
+                        "bankId": 2
+                    }
+                ],
+                "userCategory": {(用户分类)
+                    "id": 1,
+                    "categoryName": "自选",(分类名称)
+                    "createTime": "2020-06-16 04:10:13"
+                }
+            },
+            {
+                "id": 1,
+                "mobilePhone": "15194607793",
+                "userName": "151****7793",
+                "password": "432ff0f117e847eb9e43436bfa578550",
+                "gender": null,
+                "idNumber": null,
+                "idCardUrl": null,
+                "workCardUrl": null,
+                "headUrl": null,
+                "profession": null,
+                "jobTitle": null,
+                "workUnit": null,
+                "certificationStatus": 0,
+                "memberStatus": 0,
+                "userCategoryId": 1,
+                "createUser": null,
+                "createTime": "2020-06-17 12:19:09",
+                "remark": null,
+                "userQuestionBankList": [
+                    {
+                        "id": 1,
+                        "haveNum": 1,
+                        "userId": 1,
+                        "bankId": 1
+                    },
+                    {
+                        "id": 2,
+                        "haveNum": 0,
+                        "userId": 1,
+                        "bankId": 2
+                    }
+                ],
+                "userCategory": {
+                    "id": 1,
+                    "categoryName": "自选",
+                    "createTime": "2020-06-16 04:10:13"
+                }
+            },
+            {
+                "id": 8,
+                "mobilePhone": "17537897793",
+                "userName": "175****7793",
+                "password": "432ff0f117e847eb9e43436bfa578550",
+                "gender": null,
+                "idNumber": null,
+                "idCardUrl": null,
+                "workCardUrl": null,
+                "headUrl": null,
+                "profession": null,
+                "jobTitle": null,
+                "workUnit": null,
+                "certificationStatus": 0,
+                "memberStatus": 0,
+                "userCategoryId": 1,
+                "createUser": null,
+                "createTime": "2020-06-18 15:19:40",
+                "remark": null,
+                "userQuestionBankList": [
+                    {
+                        "id": 7,
+                        "haveNum": 0,
+                        "userId": 8,
+                        "bankId": 1
+                    },
+                    {
+                        "id": 8,
+                        "haveNum": 0,
+                        "userId": 8,
+                        "bankId": 2
+                    }
+                ],
+                "userCategory": {
+                    "id": 1,
+                    "categoryName": "自选",
+                    "createTime": "2020-06-16 04:10:13"
+                }
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 5,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 5,
+        "first": true,
+        "empty": false
+    }
+}
+
+11. 新增用户
+URL = user/add
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+	"mobilePhone":"19938999998",(手机号)
+	"gender":"0",(性别 0-男 1-女)
+	"userCategoryId":"1",(用户分类id)
+	"createUser":"root"(创建人)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "新增成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+11.1 修改用户禁用状态
+URL = user/updateUserStatus
+请求方式：POST
+参数类型：x-www-form-urlencoded
+请求参数：
+	userId:用户id
+	status:0-正常 1-禁用
+返回参数：
+{
+    "code": 0,
+    "message": "修改成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+
+12. 分页条件查询课程
+URL = course/findCourse
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",(页码)
+    "pageSize":"10",(每页记录数)
+    "courseTitle":"",(课程标题)
+    "charge":""(收费类型 0-免费 1-收费 2-vip)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 7,(课程id)
+                "courseTitle": "测试标题1",(课程标题)
+                "description": "<p>测试第一次</p>",(描述)
+                "imgUrl":(封面url) "http://www.heye.fun/2020/06/20/a4fcc372-6868-4837-928b-afc909a4b24a.jpg",
+                "memberOnly": 0,(会员专属 0-否 1-是)
+                "whetherPay": 0,(是否付费 0-否 1-是)
+                "coursePrice": null,(收费)
+                "classNum": 1,(视频数量)
+                "courseCategoryId": 1,(关联分类id)
+                "createUser": "root",(创建人)
+                "courseStatus": 0,(课程状态 0-上架 1-下架)
+                "hotSort": null,(热度排序)
+                "createTime": "2020-06-20 15:04:17",(创建时间)
+                "updateTime": null,
+                "classHours": [
+                    {
+                        "id": 13,(课时id)
+                        "classTitle": "测试视频1",(课时标题)
+                        "classUrl": "http://www.heye.fun/2020/06/20/e2b7c4c5-eb4e-4114-94b5-a64391df20ad.mp4",(课时视频链接)
+                        "videoDuration": 60,(视频长度/秒)
+                        "createUser": "root",(创建人)
+                        "createTime": "2020-06-20 15:04:16",(创建时间)
+                        "updateTime": null(更新时间)
+                    }
+                ],
+                "courseContentSet": [(关联内容)
+                    {
+                        "id": 2,(内容id)
+                        "contentName": "麻醉用药",(内容名称)
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:12"
+                    },
+                    {
+                        "id": 1,
+                        "contentName": "高血压",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:14:59"
+                    }
+                ],
+                "userCategorySet": [(关联用户分类)
+                    {
+                        "id": 1,(分类id)
+                        "categoryName": "自选",(分类名称)
+                        "createTime": "2020-06-16 04:10:13"
+                    },
+                    {
+                        "id": 2,
+                        "categoryName": "院内职工",
+                        "createTime": "2020-06-03 14:31:47"
+                    }
+                ]
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 5,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 5,
+        "first": true,
+        "empty": false
+    }
+}
+
+13. 新增题目
+URL = subject/add
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "questionTitle":"新题目1",(题目标题)
+    "questionType":"0",(题目类型 0-单选题 1-多选题)
+    "questionValue":"1",(分值)
+    "answerExplain":"答案解析",(答案解析)
+	"questionCategoryId":"3",(题目分类id)
+    "createUser":"lalal",(创建人)
+    "questionOptionList":[
+        {
+            "optionContent":"回答11",(选项内容)
+            "isTrue":"0"(正确答案标识 0-否 1-是)
+        },
+        {
+            "optionContent":"回答22",
+            "isTrue":"0"
+        },
+        {
+            "optionContent":"回答33",
+            "isTrue":"0"
+        },
+        {
+            "optionContent":"回答44",
+            "isTrue":"0"
         }
     ]
 }
