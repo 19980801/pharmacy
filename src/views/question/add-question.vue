@@ -39,10 +39,12 @@
                             <Button type="primary" @click="search" class="button">
                                 <Icon type="ios-search" style="font-size:16px" />搜索
                             </Button>
-                            <Button @click="clear" style="margin-right:20px;">取消</Button>
+                            <Button type="default" style="margin-right:20px" @click="clear">
+                                <Icon type="ios-undo" style="font-size:16px" />重置
+                            </Button>
                             <Button type="primary" @click="add">新增题目</Button>
                         </div>
-                        <Table @on-selection-change="select" :columns="tableColumns" :data="tableData" border></Table>
+                        <Table ref="selection" @on-selection-change="select" :columns="tableColumns" :data="tableData" border></Table>
                         <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
                     </Card>
                 </Form>
@@ -52,17 +54,27 @@
         <!-- 弹框 -->
         <Modal v-model="addModal" title="新增题目" :closable="false">
             <Form ref="addValidate" :model="addValidate" :label-width="90" :rules="ruleddValidate">
-                <FormItem label="题目标题：" prop="title">
-                    <Input v-model="addValidate.title"></Input>
+                <FormItem label="题目标题：" prop="questionTitle">
+                    <Input v-model="addValidate.questionTitle"></Input>
                 </FormItem>
-                <FormItem label="题型分类：" prop="type">
-                    <CheckboxGroup v-model="addValidate.typeList">
-                        <Checkbox :label="item.name" v-for="(item,index) in typeList" :key="index"></Checkbox>
-                    </CheckboxGroup>
+                <FormItem label="题目类型：" prop="questionType">
+                    <RadioGroup v-model="addValidate.questionType">
+                        <Radio label="0">单选题</Radio>
+                        <Radio label="1">多选题</Radio>
+                    </RadioGroup>
+                </FormItem>
+                <FormItem label="题目分类：" prop="questionCategoryId" style="width:390px">
+                    <Select v-model="addValidate.questionCategoryId">
+                        <Option v-for="(item,i) of topicList" :key="i" :value="(item.id)">
+                            {{item.categoryName}}</Option>
+                    </Select>
+                </FormItem>
+                <FormItem label="题目分值：" prop="questionValue">
+                    <InputNumber v-model="addValidate.questionValue" :min="1" :step="0.5"></InputNumber>
                 </FormItem>
                 <FormItem label="答案选项：" v-for="(item,i) in options" :key="i">
                     <div class="optionsLine">
-                        <Input v-model="item.value"></Input>
+                        <Input v-model="item.optionContent"></Input>
                         <Button type="error" @click="delOption(i)">删除</Button>
                     </div>
                     <div>
@@ -73,6 +85,10 @@
                     </div>
                 </FormItem>
                 <Button type="primary" @click="addOption" class="addoption">添加选项</Button>
+                <FormItem label="答案解析：" style="width:390px">
+                    <Input v-model="addValidate.answerExplain" type="textarea" :autosize="{minRows:5,maxRows: 5}"
+                        placeholder="答案解析"></Input>
+                </FormItem>
             </Form>
             <div slot="footer">
                 <Button type="default" @click="addModal=false">取消</Button>
@@ -88,8 +104,10 @@ import {
     getUserClass,
     getTopicType,
     getTopicList,
-    uploadBank
+    uploadBank,
+    addSubject
 } from "@/service/questionApi/api";
+import { getStore, removeStore, setStore } from "@/config/storage";
 export default {
     data() {
         return {
@@ -102,7 +120,7 @@ export default {
             addModal: false,
             formValidate: {
                 questionTitle: "",
-                userType:null,
+                userType: null,
                 allType: "",
                 subjectTitle: "",
                 imgUrl: ""
@@ -180,7 +198,16 @@ export default {
                 },
                 {
                     title: "分类",
-                    key: "questionCategoryId"
+                    key: "questionCategoryId",
+                    render: (h, params) => {
+                        let txt = "";
+                        this.topicList.forEach(ele => {
+                            if (ele.id == params.row.questionCategoryId) {
+                                txt = ele.categoryName;
+                            }
+                        });
+                        return h("span", {}, txt);
+                    }
                 },
                 {
                     title: "创建时间",
@@ -193,43 +220,54 @@ export default {
             ],
             topicList: [],
             addValidate: {
-                title: "",
-                type: "",
-                optionList: []
+                questionTitle: "",
+                questionType: "",
+                questionValue: 1,
+                answerExplain: "",
+                questionCategoryId: null
             },
             options: [
-                { value: "", isTrue: "0" },
-                { value: "", isTrue: "0" },
-                { value: "", isTrue: "0" },
-                { value: "", isTrue: "0" }
+                { optionContent: "", isTrue: "0" },
+                { optionContent: "", isTrue: "0" },
+                { optionContent: "", isTrue: "0" },
+                { optionContent: "", isTrue: "0" }
             ],
             ruleddValidate: {
-                title: [
+                questionTitle: [
                     {
                         required: true,
                         message: "题目标题不能为空",
                         trigger: "blur"
                     }
                 ],
-                type: [
+                questionType: [
+                    {
+                        required: true,
+                        message: "题目类型不能为空",
+                        trigger: "change"
+                    }
+                ],
+                questionValue: [
+                    {
+                        required: true,
+                        message: "题目分值不能为空",
+                        trigger: "blur",
+                        type: "number"
+                    }
+                ],
+                questionCategoryId: [
                     {
                         required: true,
                         message: "题目分类不能为空",
-                        trigger: "change"
+                        trigger: "change",
+                        type: "number"
                     }
                 ]
-                // optionList:[
-                //   { required: true, message: "答案选项不能为空", trigger: "change",type:"array"}
-                // ]
             },
-            typeList: [
-                { name: "心血管" },
-                { name: "糖尿病" },
-                { name: "特殊人群用药" }
-            ],
             optionList: [],
             userType: [],
-            selectedArr:[]
+            selectedArr: [],
+            selectedIds:[]
         };
     },
     created() {
@@ -240,40 +278,42 @@ export default {
     methods: {
         // 选择表格
         select(selection) {
-            this.selectedArr = selection;
+            console.log(selection);
+            this.selectedArr.push(...selection);
+            console.log(this.selectedArr);
         },
         submitSubject() {
             this.$refs["formValidate"].validate(valid => {
                 if (valid) {
-                    if(this.selectedArr.length==0){
+                    if (this.selectedArr.length == 0) {
                         this.$Message.error("请选择要添加的题目！");
                         return;
                     }
-                    let list=[];
-                    this.selectedArr.forEach(ele=>{
+                    let list = [];
+                    this.selectedArr.forEach(ele => {
                         list.push({
-                            id:ele.id
-                        })
-                    })
+                            id: ele.id
+                        });
+                    });
                     console.log(list);
-                    let data={
-                        bankTitle:this.formValidate.questionTitle,
-                        imgUrl:this.formValidate.imgUrl,
-                        userType:this.formValidate.userType,
-                        questionSubjectSet:list
-                    }
+                    let data = {
+                        bankTitle: this.formValidate.questionTitle,
+                        imgUrl: this.formValidate.imgUrl,
+                        userType: this.formValidate.userType,
+                        questionSubjectSet: list
+                    };
                     console.log(data);
                     uploadBank({
                         ...data
-                    }).then(res=>{
+                    }).then(res => {
                         console.log(res);
-                        if(res.code==0){
+                        if (res.code == 0) {
                             this.$refs["formValidate"].resetFields();
-                            this.selectedArr.length=0;
+                            this.selectedArr.length = 0;
                             this.getTopicTable();
                             this.$Message.success(res.message);
                         }
-                    })
+                    });
                 }
             });
         },
@@ -324,7 +364,7 @@ export default {
         },
         addOption() {
             this.options.push({
-                value: "",
+                optionContent: "",
                 isTrue: "0"
             });
         },
@@ -357,7 +397,45 @@ export default {
             this.resetForm();
         },
         sure() {
-            console.log(this.options);
+            this.$refs["addValidate"].validate(valid => {
+                if (valid) {
+                    // 判断是否填写选项
+                    let isTrue;
+                    this.options.forEach(ele => {
+                        if (ele.optionContent) {
+                            isTrue = true;
+                        } else {
+                            isTrue = false;
+                        }
+                    });
+                    console.log(this.addValidate);
+                    console.log(this.options);
+                    if (isTrue) {
+                        addSubject({
+                            ...this.addValidate,
+                            createUser: getStore("username"),
+                            questionOptionList: this.options
+                        }).then(res => {
+                            console.log(res);
+                            if (res.code == 0) {
+                                this.$refs["addValidate"].resetFields();
+                                this.options = [
+                                    { optionContent: "", isTrue: "0" },
+                                    { optionContent: "", isTrue: "0" },
+                                    { optionContent: "", isTrue: "0" },
+                                    { optionContent: "", isTrue: "0" }
+                                ];
+                                this.addValidate.answerExplain = "";
+                                this.addModal = false;
+                                this.getTopicTable();
+                                this.$Message.success(res.message);
+                            }
+                        });
+                    } else {
+                        this.$Message.error("请填写选项！");
+                    }
+                }
+            });
         },
         resetForm() {
             for (let key in this.formValidate) {
@@ -393,7 +471,7 @@ export default {
     width: 300px;
 }
 .addoption {
-    margin: 0 180px;
+    margin: 0 180px 20px;
 }
 .optionsLine {
     display: flex;

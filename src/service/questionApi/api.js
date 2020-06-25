@@ -11,3 +11,6 @@ export const getTopicList = data => postConfig('admin/subject/pageQuery', data);
 
 // 上传题库
 export const uploadBank = data => postConfig('admin/bank/uploadBank', data);
+
+// 新增题目
+export const addSubject = data => postConfig('admin/subject/add', data);
