@@ -9,7 +9,7 @@
 					</Breadcrumb>
 				</div>
 				<div class="videoBox flex">
-					<!-- <div class="shade" v-if="isInStudy">
+					<!-- <div class="shade" v-if="isInStudy&&isShow">
 						<Button style="width:200px;height:60px;font-size:16px;background:#29b28b;" type="success" @click=''>继续学习</Button>
 					</div> -->
 					<img v-if="!isInStudy" style="width:900px;height:490px;" :src="videoDetail.imgUrl" alt="">
@@ -113,24 +113,19 @@
 				components:'',
 				isInStudy:false,
 				isCollect:true,
-				id: 0,
-                userId: 1,
-                courseId: 1,
                 playTime: '0',
-                sectionId: 1,
-                paused: true,
+				paused: true,
+				isShow:true
 			}
 		},
 		mounted() {
 			this.detail();
-			this.getIsCollect();
 			window.addEventListener("beforeunload", e => {
                 this.beforeunloadHandler(e);
 			});
 			
 		},
 		methods: {
-
 			// 视频保存请求
 			 beforeunloadHandler(e) {
                 e = e || window.event;
@@ -142,6 +137,7 @@
 						playTime:this.playTime,//播放时间保存
 						sectionId:this.sectionId
 					}
+					// if()
 					// 保存请求
 					this.$http.form('',data).then(res => {})
                 }
@@ -149,9 +145,6 @@
                 return "您是否确认离开此页面-您输入的数据可能不会被保存";
 
             },
-
-
-
 			// 查询课程是否收藏
 			getIsCollect(){
 				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"));
@@ -254,7 +247,10 @@
 				this.videoList=videoList
 				this.videoUrl=this.videoList[0].classUrl
 				this.components=this.videoList[0].classTitle
-				this.findStudy(videoDetail.id)
+				if(localStorage.getItem("isLogin")){
+					this.getIsCollect();
+					this.findStudy(videoDetail.id)
+				}
 			},
 			// 选项卡
 			choseTab(i){
@@ -313,8 +309,13 @@
 
 			//将侦听器绑定到组件的就绪状态。与事件监听器的不同之处在于，如果ready事件已经发生，它将立即触发该函数。。
 			playerReadied(player) {
-				let a=2.903364
-				player.currentTime(a)   //恢复上次播放进度
+				if(localStorage.getItem("isLogin")){
+					this.$http.get("course/findRecord/"+this.videoDetail.id).then(res=>{
+						player.currentTime(res.data.lastWatch)
+					})
+				}
+				
+				// player.currentTime(a)   //恢复上次播放进度
 				//console.log('example player 1 readied', player);
 			},
 		},
@@ -324,14 +325,17 @@
                 this.beforeunloadHandler(e);
 			});
 			let data={
-				id:this.id,//视频id
-				userId:this.userId,//用户id
-				courseId:this.courseId,
+				courseClassId:this.videoList[this.videoCur].id,//视频id
+				courseId:this.videoDetail.id,
 				playTime:this.playTime,//播放时间保存
-				sectionId:this.sectionId
 			}
-			// 保存请求
-			this.$http.form('',data).then(res => {})
+			if(this.isInStudy){
+				// 保存请求
+				this.$http.post('course/record',data).then(res => {
+					console.log(res);
+				})
+			}
+			
 		},
 		computed:{
 			videoPlayerOptions () {

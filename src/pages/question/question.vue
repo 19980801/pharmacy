@@ -21,7 +21,7 @@
                 <ul>
                     <li class="listItem" v-for="(item,i) in list" :key="i">
                         <div class="left">
-                            <img src="../../assets/imgs/1.png" alt="">
+                            <img :src="item.imgUrl" alt="">
                         </div>
                         <div class="right">
                             <div class="title">
@@ -72,31 +72,26 @@
                 <div class="alertCon">
                     <ul class="line">
                         <li class="typeTit">题目类型：</li>
-                        <li>选择题</li>
-                        <li>处方审核题</li>
-                        <li>用药交待题</li>
-                        <li>用药风险评估题</li>
+                        <li class="active">选择题</li>
                     </ul>
                     <ul class="line">
                         <li class="typeTit">题目分类：</li>
                         <div class="typeBg">
                             <ul>
-                                <li class="active" v-for="(item,index) in classList" :key="index">{{item.categoryName}}</li>
+                                <li @click="choseClass(index,item.id)" :class="{active:item.checked}" v-for="(item,index) in classList" :key="index">{{item.categoryName}}</li>
                             </ul>
                         </div>
                     </ul>
                     <ul class="line">
                         <li class="typeTit">练习范围：</li>
-                        <li>全部(5352)</li>
-                        <li>已做(20)</li>
-                        <li>未做(888)</li>
-                        <li>错题(888)</li>
+                        <li :class="{active:scopeCur==0}" @click="choseScope(0)">全部({{questionCount.subjectNum}})</li>
+                        <li :class="{active:scopeCur==1}" @click="choseScope(1)">已做({{questionCount.subjectHaveFinish}})</li>
+                        <li :class="{active:scopeCur==2}" @click="choseScope(2)">未做({{questionCount.subjectNotDone}})</li>
+                        <li :class="{active:scopeCur==3}" @click="choseScope(3)">错题({{questionCount.subjectError}})</li>
                     </ul>
                     <ul class="line">
                         <li class="typeTit">练习数量：</li>
-                        <li>10</li>
-                        <li>20</li>
-                        <li>50</li>
+                        <li v-for="(item,index) in countList" :key="index" @click="countCount=item" :class="{active:countCount==item}">{{item}}</li>
                     </ul>
                 </div>
                 <div class="begin" @click="goExercise">开始练习</div>
@@ -117,6 +112,11 @@ export default {
             list:[],
             totalPages:0,   //总页数
             classList:[],
+            bank:'',
+            questionCount:'',
+            countList:[10,20,50],
+            countCount:10,
+            scopeCur:0,
             title:""
         };
     },
@@ -125,21 +125,119 @@ export default {
         this.getList(this.$route.params.title);
     },
     methods: {
+        // 选择题库范围
+        choseScope(index){
+            this.scopeCur=index
+        },
+        // 选择选项卡
+        choseClass(index,id){
+            let checkedList=[];
+            this.classList[index].checked=!this.classList[index].checked
+            let classList=this.classList;
+            classList.forEach(item=>{
+                if(item.checked){
+                    checkedList.push(item.id)
+                }
+            })
+            this.findQuestionCount(checkedList)
+        },
+        // 根据题库条件返回对应数量和对应题目
+        findQuestionCount(list){
+            let data={
+                categoryIds:list,
+                bankId:this.bank.id
+            }
+            this.$http.post('test/getSubject',data).then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    this.questionCount=res.data
+                }
+            })
+        },
         // 查询题库分类
         findQuestionBankClass(id){
             this.$http.get('test/getBankCondition/'+id).then(res=>{
                 if(res.code==0){
-                    this.classList=res.data
+                    let classList=res.data;
+                    classList.forEach(item => {
+                        item.checked=false
+                    });
+                    this.classList=classList
+                    this.choseClass(0,classList[0].id)
                 }
             })
         },
         // 跳转练习
         goExercise() {
+            console.log(this.countCount)
+            let count=this.countCount
+            console.log(this.questionCount);
+            let subjectNum=this.questionCount.subjectNumList;//全部
+            let subjectHaveFinish=this.questionCount.subjectHaveFinishList;//已做
+            let subjectNotDone=this.questionCount.subjectNotDoneList;//未做
+            let subjectError=this.questionCount.subjectErrorList;//错题
+            let questList=[];
+            
+            if(this.scopeCur==0){//全部
+                if(subjectNum.length!=0){
+                    if(subjectNum.length>count){
+                        questList=this.randomCount(subjectNum,count)
+                        console.log(this.randomCount(subjectNum,count));
+                    }else{
+                        questList=subjectNum
+                    }
+                }else{
+                    this.$Message.warning("暂无练习题，请选择其他题库")
+                }
+                
+            }else if(this.scopeCur==1){//已做
+                if(subjectHaveFinish.length!=0){
+                    if(subjectHaveFinish.length>count){
+                        questList=this.randomCount(subjectHaveFinish,count)
+                  }
+                }else{
+                    this.$Message.warning("暂无练习题，请选择其他题库")
+                }
+            }else if(this.scopeCur==2){//未做
+                if(subjectNotDone.length!=0){
+                    if(subjectNotDone.length>count){
+                        questList=this.randomCount(subjectNotDone,count)
+                  }
+                }else{
+                    this.$Message.warning("暂无练习题，请选择其他题库")
+                }
+            }else if(this.scopeCur==3){//错题
+                if(subjectError.length!=0){
+                    if(subjectError.length>count){
+                        questList=this.randomCount(subjectError,count)
+                  }
+                }else{
+                    this.$Message.warning("暂无练习题，请选择其他题库")
+                }
+            }
+            // console.log(questList);
+            localStorage.setItem("questList",JSON.stringify(questList))
+            localStorage.setItem("bank",JSON.stringify(this.bank))
             this.$router.push("/exercise");
+        },
+        // 获取随机数
+        randomCount(list,count){
+            let randomList=[];
+            for(var k = 0; k<count;k++){
+				var id = Math.floor(Math.random()*list.length);	 			
+				if(randomList.indexOf(list[id]) === -1){
+					randomList.push(list[id]);					
+				}else{					
+					k= k - 1;
+					continue;
+				}			  
+            }
+            return randomList
         },
         // 显示弹框
         showAlert(item) {
             this.alert = true;
+            this.bank=item;
             this.findQuestionBankClass(item.id)
         },
         // 关闭弹框
@@ -381,7 +479,6 @@ export default {
             border-top: 3px solid #29b28b;
             position: absolute;
             width: 770px;
-            min-height: 400px;
             margin-top: -200px;
             margin-left: -385px;
             .active {
@@ -411,6 +508,9 @@ export default {
                         padding: 8px;
                         ul {
                             align-items: baseline;
+                            li{
+                                margin:10px;
+                            }
                         }
                     }
                 }
@@ -430,6 +530,7 @@ export default {
                         font-family: PingFang-SC-Regular, PingFang-SC;
                         font-weight: 400;
                         color: rgba(28, 31, 33, 1);
+                        cursor: pointer;
                     }
                     .typeTit {
                         height: 20px;
@@ -442,10 +543,7 @@ export default {
                 }
             }
             .begin {
-                position: absolute;
-                left: 50%;
-                margin-left: -100px;
-                bottom: 20px;
+                margin:30px auto;
                 width: 200px;
                 height: 40px;
                 line-height: 40px;
