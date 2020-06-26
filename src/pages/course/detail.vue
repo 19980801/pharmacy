@@ -117,17 +117,33 @@
 				paused: true,
 				isShow:true,
 				nowId:'',
-				reqCount:0
+				reqCount:0,
+				timeInfo:''
 			}
 		},
 		mounted() {
-			this.detail();
+			
+			this.findLastTime();
 			window.addEventListener("beforeunload", e => {
                 this.beforeunloadHandler(e);
 			});
 			
 		},
 		methods: {
+			// 查询视频上次播放时间节点
+			findLastTime(){
+				let info=""
+				let id=JSON.parse(localStorage.getItem("videoDetail")).id
+				console.log(id)
+				if(localStorage.getItem("isLogin")&&this.reqCount==0){
+					this.$http.get("course/findRecord/"+id).then(res=>{
+						console.log(res);
+						this.reqCount++
+						this.timeInfo=res.data
+						this.detail();
+					})
+				}
+			},
 			// 视频保存请求
 			 beforeunloadHandler(e) {
                 e = e || window.event;
@@ -135,7 +151,7 @@
 					let data={
 						courseClassId:this.videoList[this.videoCur].id,//视频id
 						courseId:this.videoDetail.id,
-						playTime:this.playTime,//播放时间保存
+						position:this.playTime,//播放时间保存
 					}
 					if(this.isInStudy){
 						// 保存请求
@@ -227,6 +243,7 @@
 					 this.$Message.warning('请加入学习！');
 					//  this.videoCur=""
 				}else{
+					this.reqCount++;
 					this.videoUrl=url
 					this.videoCur=index
 					this.components=this.videoList[index].classTitle
@@ -248,7 +265,7 @@
 					item.hour=Math.floor(item.videoDuration/3600);
 					item.minute=Math.floor(item.videoDuration/60%60);
 					item.second=Math.floor(item.videoDuration%60);
-					if(item.id==this.nowId){
+					if(item.id==this.timeInfo.lastWatch){
 						console.log(item,"id");
 						this.videoUrl=item.classUrl;
 						this.components=item.classTitle
@@ -327,17 +344,11 @@
 			//将侦听器绑定到组件的就绪状态。与事件监听器的不同之处在于，如果ready事件已经发生，它将立即触发该函数。。
 			playerReadied(player) {
 				// this.palyer=payer
-				if(localStorage.getItem("isLogin")&&this.reqCount==0){
-					this.$http.get("course/findRecord/"+this.videoDetail.id).then(res=>{
-						console.log(res);
-						this.reqCount++
-						player.currentTime(res.data.lastTimestamp)
-						this.nowId=res.data.lastWatch
-						this.detail();
-					})
-				}
 				
-				// player.currentTime(a)   //恢复上次播放进度
+				if(this.reqCount==0||this.reqCount==1){
+					player.currentTime(this.timeInfo.lastTimestamp)
+				}
+				   //恢复上次播放进度
 				//console.log('example player 1 readied', player);
 			},
 		},
@@ -349,7 +360,7 @@
 			let data={
 				courseClassId:this.videoList[this.videoCur].id,//视频id
 				courseId:this.videoDetail.id,
-				playTime:this.playTime,//播放时间保存
+				position:this.playTime,//播放时间保存
 			}
 			if(this.isInStudy){
 				// 保存请求

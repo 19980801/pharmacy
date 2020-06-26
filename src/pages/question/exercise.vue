@@ -151,20 +151,39 @@ export default {
                 });
             } else if (type == 1) {
                 list[answerIndex].isChecked = !list[answerIndex].isChecked;
-                let isTrue = false;
                 console.log(list);
+                let checkedList=[];
+                let trueList=[];
                 list.forEach(item => {
-                    if (item.isTrue == 1 && item.isChecked || item.isTrue == 0 && !item.isChecked) {
-						console.log(111)
-                        isTrue = true;
-					}
-					else{
-						console.log(222);
-                        isTrue = false;
+                    if(item.isChecked){
+                        checkedList.push(item)
+                    }
+                    if(item.isTrue==1){
+                        trueList.push(item)
                     }
                 });
-                console.log(isTrue);
-                console.log(this.questionList[index]);
+                if(checkedList.length>0){
+                    this.questionList[index].isDone = true;
+                }else{
+                    this.questionList[index].isDone = false;
+                }
+                if(checkedList.length==trueList.length){
+                    let checkedTrueList=[]
+                    checkedList.forEach(checkedItem=>{
+                        trueList.forEach(trueItem=>{
+                            if(checkedItem.id==trueItem.id){
+                                checkedTrueList.push(checkedItem);
+                            }
+                        })
+                    })
+                    if(checkedTrueList.length==trueList.length){
+                        this.questionList[index].isRight=1;
+                    }
+                    
+                }else{
+                    this.questionList[index].isRight=0;
+                }
+                console.log(this.questionList[index].isRight);
             }
             this.questionList[index].questionOptionList = list;
         },

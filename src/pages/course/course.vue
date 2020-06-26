@@ -89,7 +89,6 @@ export default {
     };
   },
   created(){
-    console.log(this.$route);
     this.title=this.$route.params.title;
     this.typeCur=this.$route.query.type || 0;
     this.moneyTypeCur=this.$route.query.isPay;

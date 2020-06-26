@@ -156,8 +156,11 @@ export default {
     mounted() {
         this.isLogin = localStorage.getItem("isLogin");
         this.findList();
-        this.myCollect();
-        this.mySubject();
+        if(localStorage.getItem("isLogin")){
+            this.myCollect();
+            this.mySubject();
+        }
+        
     },
     methods: {
         // 我收藏的课程总数
@@ -177,6 +180,7 @@ export default {
         },
         // 我收藏的题库总数
         mySubject(){
+            
             this.$http
                 .post("/user/findCollect", {
                     pageNum: 1,
