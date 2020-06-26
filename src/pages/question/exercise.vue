@@ -5,7 +5,7 @@
                 <div class="title flex-btween">
                     <div class="leftTitle">{{bank.bankTitle}}<span><span
                                 class="num">{{questionCur+1}}</span>/{{questionList.length}}</span></div>
-                    <div class="rightTime">00:10:10</div>
+                    <div class="rightTime">{{timeStr}}</div>
                 </div>
                 <div class="content flex-btween">
                     <div class="leftQuestion">
@@ -43,7 +43,7 @@
                                 <div class="listTitle">单选题</div>
                                 <div class="listBox flex">
                                     <div v-for="(item,index) in questionList" :key="index">
-                                        <div class="item" v-if="item.questionType==0" :class="{acive:item.isDone}">
+                                        <div @click="choiceQuestion(index)" class="item" v-if="item.questionType==0" :class="{acive:item.isDone,active:questionCur==index}">
                                             {{index+1}}</div>
                                     </div>
                                 </div>
@@ -52,7 +52,7 @@
                                 <div class="listTitle">多选题</div>
                                 <div class="listBox flex">
                                     <div v-for="(item,index) in questionList" :key="index">
-                                        <div class="item" :class="{acive:item.isDone}" v-if="item.questionType==1">
+                                        <div @click="choiceQuestion(index)" class="item" :class="{acive:item.isDone,active:questionCur==index}" v-if="item.questionType==1">
                                             {{index+1}}</div>
                                     </div>
                                 </div>
@@ -81,26 +81,61 @@ export default {
         return {
             questionCur: 0,
             questionList: [],
-            bank: ""
+            bank: "",
+            timeStr:"",
+            h: 0, //定义时，分，秒，毫秒并初始化为0；
+            m: 0,
+            ms: 0,
+            s: 0,
+            time: 0,
         };
     },
     created() {
         console.log(JSON.parse(localStorage.getItem("bank")));
         this.findQuestion();
+        this.start();
     },
     methods: {
+        // 选择对于题目
+        choiceQuestion(index){
+            this.questionCur=index
+        },
+        //开始
+        start() {
+            this.time = setInterval(this.timer, 50);
+        },
         // 计时器
-        // timers(){
-        // 	s=s+1;
-        // 	if(s>=60){
-        // 		s=00;
-        // 		m=m+1
-        // 	}
-        // 	if(m>=60){
-        // 		m=00;
-        // 		h=h+1;
-        // 	}
-        // },
+        timer() {
+            //定义计时函数
+            this.ms = this.ms + 50; //毫秒
+            if (this.ms >= 1000) {
+                this.ms = 0;
+                this.s = this.s + 1; //秒
+            }
+            if (this.s >= 60) {
+                this.s = 0;
+                this.m = this.m + 1; //分钟
+            }
+            if (this.m >= 60) {
+                this.m = 0;
+                this.h = this.h + 1; //小时
+            }
+            this.timeStr =
+                this.toDub(this.h) +
+                ":" +
+                this.toDub(this.m) +
+                ":" +
+                this.toDub(this.s) +
+                "" 
+        },
+        //补0操作
+        toDub(n) {
+            if (n < 10) {
+                return "0" + n;
+            } else {
+                return "" + n;
+            }
+        },
         // 获取题库
         findQuestion() {
             this.bank = JSON.parse(localStorage.getItem("bank"));
@@ -307,6 +342,7 @@ body {
                         .listBox {
                             flex-wrap: wrap;
                             .item {
+                                cursor: pointer;
                                 width: 24px;
                                 height: 24px;
                                 border-radius: 2px;
@@ -316,6 +352,9 @@ body {
                                 font-size: 14px;
                                 margin-top: 10px;
                                 margin-right: 8px;
+                            }
+                            .item.active{
+                                border:1px solid #29b28b;
                             }
                             .item.acive {
                                 background: #29b28b;
