@@ -16,5 +16,8 @@ export const getCourseList = data => postConfig('/admin/course/findCourse', data
 // 修改课程状态
 export const changeStatu = data => postConfig('/admin/course/updateStatus', data);
 
-// 删除课程
-export const delCourse = (type,id) => fetch(`/course/delete/${type}${id}`);
+// 删除课程/课时
+export const delCourse = (type,id) => fetch(`/admin/course/delete/${type}/${id}`);
+
+// 根据id查询信息
+export const getCourseInfo = (id) => fetch(`/admin/course/findCourse/${id}`);

@@ -191,6 +191,14 @@ export const otherRouter = {
       require(['@/views/user/PersonalCenter.vue'], resolve)
     }
   },
+  {
+    path:"/course/edit/:id",
+    title:"编辑课程",
+    name:"course:edit",
+    component: resolve => {
+        require(['@/views/course/edit-course.vue'], resolve)
+    }
+  },
   ]
 };
 

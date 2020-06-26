@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <Card>
-            <p slot="title">新增课程</p>
+            <p slot="title">编辑课程</p>
             <div class="form">
                 <Form ref="addForm" :model="addForm" :label-width="100" :rules="ruleInline">
                     <FormItem label="课程标题：" prop="courseTitle">
@@ -45,7 +45,7 @@
                             <div class="videoItem" v-for="(item,i) in addForm.classHours" :key="i">
                                 <video :src="item.classUrl"></video>
                                 <p>{{item.classTitle}}</p>
-                                <Button type="error" class="delvideo" @click="delconfirm(i)">删除</Button>
+                                <Button type="error" class="delvideo" @click="delconfirm(i,item.id)">删除</Button>
                             </div>
                         </div>
                     </div>
@@ -70,6 +70,9 @@
                             <Radio label="0">上架</Radio>
                             <Radio label="1">下架</Radio>
                         </RadioGroup>
+                    </FormItem>
+                    <FormItem label="价格：" prop="hotSort" >
+                         <InputNumber style="width:300px" :min="1" v-model="addForm.hotSort" placeholder="数字越大热度排序越靠前"></InputNumber>
                     </FormItem>
                     <FormItem label="课程信息：" prop="description">
                         <smeditor :config="config" ref="smeditor" @isUploading="ifUploading"></smeditor>
@@ -104,7 +107,9 @@ import {
     BASICURL,
     getCoursetypeList,
     getUserClass,
-    addCourseData
+    addCourseData,
+    getCourseInfo,
+    delCourse
 } from "@/service/courseApi/api";
 import { getStore, removeStore, setStore } from "@/config/storage";
 export default {
@@ -129,6 +134,7 @@ export default {
                     this.$Message.error("上传失败!");
                 }
             },
+            isEidt: false,
             addVideo: false,
             uploadImgUrl: `${this.host}/admin/upload/oss/image`,
             uploadUrl: `${this.host}/admin/upload/oss/video`,
@@ -138,6 +144,7 @@ export default {
                 courseTitle: "",
                 imgUrl: "",
                 courseCategoryId: null,
+                hotSort:1,
                 courseContentSet: [],
                 userCategorySet: [],
                 classHours: [],
@@ -189,14 +196,6 @@ export default {
                         type: "array"
                     }
                 ],
-                // classHours: [
-                //     {
-                //         required: true,
-                //         message: "课程视频不能为空",
-                //         trigger: "change",
-                //         type: "array"
-                //     }
-                // ],
                 whetherPay: [
                     {
                         required: true,
@@ -216,6 +215,14 @@ export default {
                         required: true,
                         message: "课程状态不能为空",
                         trigger: "change"
+                    }
+                ],
+                hotSort:[
+                    {
+                        required: true,
+                        message: "课程热度不能为空",
+                        trigger: "blur",
+                        type:"number"
                     }
                 ],
                 description: [
@@ -243,19 +250,42 @@ export default {
                 ]
             },
             imgUploadLoading: false,
-            videoloading: false
+            videoloading: false,
+            courseId:""
         };
     },
     created() {
-        this.getType();
         this.getUserList();
+        // removeStore("smeditor");
+        this.courseId=this.$route.params.id;
+        setStore("courseId",this.$route.params.id);
+        this.getId(this.$route.params.id);
     },
     methods: {
+        // 根据id查询
+        getId(id) {
+            getCourseInfo(id).then(res => {
+                if (res.code == 0) {
+                    console.log(res.data);
+                    res.data.whetherPay = String(res.data.whetherPay);
+                    res.data.memberOnly = String(res.data.memberOnly);
+                    res.data.courseStatus = String(res.data.courseStatus);
+                    res.data.userCategorySet=res.data.userCategorySet.map(ele => {
+                        return ele.id
+                    });
+                    res.data.courseContentSet=res.data.courseContentSet.map(ele=>{
+                        return ele.id
+                    });
+                    this.getType(res.data.courseCategoryId);
+                    setStore("smeditor",res.data.description);
+                    this.addForm = res.data;
+                }
+            });
+        },
         showContent(val) {
             let list = [];
             console.log(this.typeList);
             this.typeList.forEach(ele => {
-                console.log(ele);
                 if (ele.id == val) {
                     return (list = ele);
                 }
@@ -287,18 +317,21 @@ export default {
             this.addValidate.video = "";
         },
         // 删除对应视频
-        delconfirm(index) {
+        delconfirm(index, id) {
+            console.log(id);
             this.$Modal.confirm({
                 title: "确认删除",
                 content: "<p>确定删除该课程视频？</p>",
                 loading: true,
                 onOk: () => {
-                    // 删除对应视频
-                    this.addForm.classHours.splice(index, 1);
-                    setTimeout(() => {
-                        this.$Modal.remove();
-                        this.$Message.success("删除成功！");
-                    }, 1000);
+                    delCourse(1,id).then(res=>{
+                        if(res.code==0){
+                            this.$Modal.remove();
+                            console.log(res);
+                            this.getId(this.courseId);
+                            this.$Message.success(res.message);
+                        }
+                    })
                 }
             });
         },
@@ -321,11 +354,12 @@ export default {
             });
         },
         //获取所有课程分类
-        getType() {
+        getType(id) {
             getCoursetypeList().then(res => {
                 if (res.code == 0) {
                     console.log(res);
                     this.typeList = res.data;
+                    this.showContent(id);
                     // 全部内容
                     // let allContent=[];
                     // res.data.forEach(item=>{
@@ -387,6 +421,7 @@ export default {
                             this.addForm.coursePrice = "";
                             this.addForm.description = "";
                             this.$Message.success(res.message);
+                            this.$router.push("/course_list");
                         }
                     });
                 }

@@ -108,9 +108,7 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            console.log(params.row);
-                                            setStore("info",params.row);
-                                            this.$router.push("/add_course");
+                                            this.$router.push(`/course/edit/${params.row.id}`);
                                         }
                                     }
                                 },

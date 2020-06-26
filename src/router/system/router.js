@@ -54,14 +54,14 @@ export const systemRouter = [
       require(['@/views/system//system-log.vue'], resolve)
     }
   },
-  // 参数配置
+    //参数配置
   {
-    id:228,
+    id:237,
     path: '/system_set',
     icon: 'clipboard',
     component: resolve => {
-      require(['@/views/system//system-set.vue'], resolve)
+      require(['@/views/system/system-set.vue'], resolve)
     }
-  }
+  },
 ];
 

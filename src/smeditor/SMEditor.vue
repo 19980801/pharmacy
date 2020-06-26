@@ -93,7 +93,6 @@ import InsertVideo from "./InsertVideo.vue";
 import Insert from "./Insert.vue";
 import FontSizePicker from "./FontSizePicker";
 import { getStore, removeStore, setStore } from "@/config/storage";
-import { helpManageDetail, announceDetail } from "@/service/getData";
 import { constants } from "os";
 
 // import tippy from '../../node_modules/tippy.js/dist/tippy.min.js'
@@ -546,28 +545,28 @@ export default {
     },
     mounted() {
         this.$nextTick(() => {
-            removeStore("smeditor");
-            let queryDetailId = getStore("manageID");
-            if (!!queryDetailId) {
-                let parentComp = this.config.parentName;
-                if (parentComp === "helpManage") {
-                    helpManageDetail({ id: queryDetailId }).then(res => {
-                        setStore("smeditor", res.data.content);
-                        document.getElementById("input-area").innerHTML =
-                            getStore("smeditor") || "";
-                    });
-                } else if (parentComp === "announce") {
-                    announceDetail(queryDetailId).then(res => {
-                        setStore("smeditor", res.data.content);
-                        document.getElementById("input-area").innerHTML =
-                            getStore("smeditor") || "";
-                    });
-                }
-            }
+            // removeStore("smeditor");
+            document.getElementById("input-area").innerHTML = getStore("smeditor") || "";
+            // if (!!queryDetailId) {
+            //     let parentComp = this.config.parentName;
+            //     console.log(parentComp)
+            //     if (parentComp === "helpManage") {
+            //         helpManageDetail({ id: queryDetailId }).then(res => {
+            //             setStore("smeditor", res.data.content);
+            //             document.getElementById("input-area").innerHTML =
+            //                 getStore("smeditor") || "";
+            //         });
+            //     } else if (parentComp === "announce") {
+            //         announceDetail(queryDetailId).then(res => {
+            //             setStore("smeditor", res.data.content);
+            //             document.getElementById("input-area").innerHTML =
+            //                 getStore("smeditor") || "";
+            //         });
+            //     }
+            // }
         });
         setTimeout(() => {
             editorElement().focus();
-
             this.insertEmptyP();
             window.addEventListener("scroll", () => {
                 if (this.config.onScroll) {
