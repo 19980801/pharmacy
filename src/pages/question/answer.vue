@@ -8,32 +8,39 @@
 				</div>
 				<div class="content flex-btween">
 					<div class="leftQuestion">
-						<div class="questionList" v-if="questionCur==index" v-for="(item,index) in questionList" :key="index">
-							<div class="questionTitle"><span>{{index+1}}</span>.（{{item.type==1?'单选题':'多选题'}}）具有中枢抑制作用的抗胆碱药是    <span> 1分</span></div>
-							<div class="optionsList">
-								<div class="optionsItem flex" v-for="(answerItem,answerIndex) in item.list" :key="answerIndex">
-									<div >
-										<Icon type="ios-checkmark-circle" v-if="answerItem.isChecked" class="btns checked" />
-										<Icon type="ios-checkmark-circle-outline" v-if="!answerItem.isChecked" class="btns" />
-									</div>
-									<div>{{answerItem.answer}}</div>
-								</div>
-							</div>
-                            <div class="answer">
+						<div v-for="(item,index) in questionList" :key="index">
+                            <div class="questionList" v-if="questionCur==index">
+                                <div class="questionTitle">
+                                    <span>{{index+1}}</span>.（{{item.questionType==0?'单选题':'多选题'}}）{{item.questionTitle}}<span>
+                                        {{item.questionValue}}分</span></div>
+                                <div class="optionsList">
+                                    <div class="optionsItem flex"
+                                        v-for="(answerItem,answerIndex) in item.questionOptionList" :key="answerIndex">
+                                        <div>
+                                            <Icon type="ios-checkmark-circle" v-if="answerItem.isChecked"
+                                                class="btns checked" />
+                                            <Icon type="ios-checkmark-circle-outline" v-if="!answerItem.isChecked"
+                                                class="btns" />
+                                        </div>
+                                        <div>{{answerItem.optionContent}}</div>
+                                    </div>
+                                </div>
+								<div class="answer">
                                 <div class='flex Atitle'>
                                     <p>正确答案：<b>A</b></p>
-                                    <p>你的答案：<b>B</b></p>
+                                    <p>你的答案：<b>{{myAnswer[index].answer}}</b></p>
                                 </div>
                                 <div class="flex analysis">
                                     <p>答案解析：</p>
-                                    <div>阿片类药物常见的不良反应有：便秘，恶心、呕吐，嗜睡及过度镇静，尿储留，瘙痒，眩晕，精神错乱及中枢神经毒性反应，呼吸抑制等。(<麻醉药品临床应用指导原则》）</div>
+                                    <div>{{item.answerExplain}}</div>
                                 </div>
                                 <div class="flex typeBox">
-                                    <div>
-                                        <Icon type="md-heart-outline" />
+                                    <div @click="collect(item)">
+                                        <Icon v-if="!isCollect" type="md-heart-outline" />
+										<Icon v-if="isCollect" type="md-heart" />
                                         <span>收藏</span>
                                     </div>
-                                    <div>
+                                    <div @click="feedback(item)">
                                         <Icon type="ios-create-outline" />
                                         <span>反馈</span>
                                     </div>
@@ -46,21 +53,35 @@
                                     </div>
                                 </div>
                             </div>
-							<div class="btnBox flex-center">
-								<div @click="previous(index)">上一题</div>
-								<div @click="next(index)">下一题</div>
-							</div>
-						</div>
+                                <div class="btnBox flex-center">
+                                    <div :class="{noPre:questionCur==0}" @click="previous(item,index)">上一题</div>
+                                    <div :class="{noPre:questionCur+1==questionList.length}" @click="next(item,index)">下一题</div>
+                                </div>
+                            </div>
+                        </div>
+						
 					</div>
 					<div class="rightAnswer">
 						<div class="answerTitle">答题卡</div>
 						<div class="answerList">
-							<div class="answerItem" v-for="(item,index) in 2" :key="index">
-								<div class="listTitle">{{index==0?'单选题':'多选题'}}</div>
-								<div class="listBox flex">
-									<div class="item" :class="{acive:index%2==0}" v-for="(item,index) in 11" :key="index">{{index+1}}</div>
-								</div>
-							</div>
+							<div class="answerItem">
+                                <div class="listTitle">单选题</div>
+                                <div class="listBox flex">
+                                    <div v-for="(item,index) in questionList" :key="index">
+                                        <div @click="choiceQuestion(index)" class="item" v-if="item.questionType==0" :class="{none:!item.isDone,error:item.isRight==0,acive:item.isRight==1}">
+                                            {{index+1}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answerItem">
+                                <div class="listTitle">多选题</div>
+                                <div class="listBox flex">
+                                    <div v-for="(item,index) in questionList" :key="index">
+                                        <div @click="choiceQuestion(index)" class="item" :class="{none:!item.isDone,error:item.isRight==0,acive:item.isRight==1}" v-if="item.questionType==1">
+                                            {{index+1}}</div>
+                                    </div>
+                                </div>
+                            </div>
 						</div>
 						<div class="typeBox flex">
 							<div class="type mistake flex">
@@ -69,10 +90,6 @@
 							</div>
 							<div class="type correct flex">
 								<span>错误</span>
-								<div></div>
-							</div>
-                            <div class="type flex">
-								<span>待批</span>
 								<div></div>
 							</div>
                             <div class="type unfinished flex">
@@ -84,6 +101,24 @@
 				</div>
 			</div>
 		</div>
+		<div class="model" v-show="alert">
+			<div class="alert">
+                <div class="alertTitle">
+                    <p>添加反馈</p>
+                    <Icon type="md-close" @click="close()" />
+                </div>
+                <div class="alertCon">
+					<Select v-model="model1" style="width:400px;margin-bottom:10px;">
+						<Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+					</Select>
+                    <Input v-model="feedContent" type="textarea" :rows="8" placeholder="输入反馈内容" />
+                </div>
+                <div class="butBox">
+                    <div class="button sure" @click="addCallInfo">确定</div>
+                    <div class="button cancel" @click="close()">取消</div>
+                </div>
+            </div>
+		</div>
 	</div>
 </template>
 
@@ -92,31 +127,108 @@
 		data(){
 			return {
 				questionCur:0,
-				questionList:[
-					{
-						title:"1.（单选题）具有中枢抑制作用的抗胆碱药是",
-						type:1,
-						list:[
-							{answer:"资产保值，我不愿意承担任何投资风险",id:1,isChecked:false},
-							{answer:"尽可能保证本金安全，不在乎收益率比较低 ",id:2,isChecked:false},
-							{answer:"产生较多的收益，可以承担一定的投资风险",id:3,isChecked:true},
-							{answer:"实现资产大幅增长，愿意承担很大的投资风险",id:4,isChecked:false},
-						],
-					},
-					{
-						title:"（单选题）具有中枢抑制作用的抗胆碱药是    ",
-						type:2,
-						list:[
-							{answer:"资产保值，我不愿意承担任何投资风险",id:1,isChecked:false},
-							{answer:"尽可能保证本金安全，不在乎收益率比较低 ",id:2,isChecked:false},
-							{answer:"产生较多的收益，可以承担一定的投资风险",id:3,isChecked:true},
-							{answer:"实现资产大幅增长，愿意承担很大的投资风险",id:4,isChecked:false},
-						],
-					},
-				]
+				questionList:[],
+				myAnswer:[],
+				isCollect:false,
+				value:'',
+				feedContent:'',
+				cityList: [
+                    {
+                        value: '0',
+                        label: '错别字'
+                    },
+                    {
+                        value: '1',
+                        label: '答案错误'
+                    },
+                    {
+                        value: '2',
+                        label: '题目不完整2'
+                    },
+                    {
+                        value: '3',
+                        label: '图片不存在'
+                    },
+                    {
+                        value: '4',
+                        label: '解析错误'
+                    },
+                    {
+                        value: '5',
+                        label: '其他'
+                    }
+                ],
+				model1: '',
+				alert: false,
 			}
 		},
+		created(){
+			this.questionList=JSON.parse(localStorage.getItem('answerInfo'))
+			this.myAnswer=JSON.parse(localStorage.getItem("yourAnswer"))
+			console.log(this.questionList);
+			console.log(this.myAnswer);
+			this.findSubjectIsCollect();
+		},
 		methods:{
+			close(){
+				this.alert=false
+				this.feedContent=""
+			},
+			// 添加反馈
+			addCallInfo(){
+				let list=this.cityList;
+				let cause=0;
+				list.forEach(item=>{
+					if(item.label==this.model1){
+						cause=item.value
+					}
+				})
+				if(this.feedContent){
+					this.$http.post("feedback/add",{
+						feedbackContent:this.feedContent,
+						feedbackType:0,      //0-用户 1-题目
+						feedbackCause:cause
+					}).then(res=>{
+						console.log(res);
+						if(res.code==0){
+							this.feedContent="";
+							this.alert=false;
+							this.$Message.success("添加成功！");
+						}
+					})
+				}else{
+					this.$Message.error("请填写反馈内容！");
+				}
+			},
+			// 修改收藏
+			collect(item){
+				console.log(item)
+				let data={
+					subjectId:item.id,
+					status:!this.isCollect
+				}
+				this.$http.form("test/collect",data).then(res=>{
+					console.log(res);
+				})
+			},
+			// 添加反馈
+			addFeedback(){},
+			// 反馈
+			feedback(item){
+				console.log(item);
+				this.alert=true;
+			},
+			// 查询题目是否收藏
+			findSubjectIsCollect(){
+				let id=this.questionList[this.questionCur].id;
+				console.log(id);
+				this.$http.get('test/collect/'+id).then(res=>{
+					console.log(res);
+					if(res.code==0){
+						this.isCollect=res.data
+					}
+				})
+			},
 			choseAnswer(index,answerIndex,type){
 				console.log(index,type);
 				let list=this.questionList[index].list
@@ -133,12 +245,15 @@
 				}
 				this.questionList[index].list=list;
 			},
-			previous(index){
+			previous(item,index){
 				this.questionCur!=0?this.questionCur=index-1:this.questionCur
+				this.value=""
+				this.findSubjectIsCollect();
 			},
-			next(index){
-			
+			next(item,index){
 				this.questionCur+1<this.questionList.length?this.questionCur=index+1:this.questionCur
+				this.value=""
+				this.findSubjectIsCollect();
 			},
 		}
 	}
@@ -257,7 +372,7 @@
 						div{
 							width:240px;
 							height:50px;
-							background:rgba(220,220,220,1);
+							background:#29b28b;
 							border-radius:4px;
 							text-align: center;
 							line-height: 50px;
@@ -267,9 +382,9 @@
 							margin-top:60px;
 							cursor: default;
 						}
-						div:last-child{
-							background:#29B28B;
-						}
+						.noPre {
+                     	   background: rgba(220, 220, 220, 1);
+                   		}
 					}
 				}
 				.rightAnswer{
@@ -305,8 +420,11 @@
 									font-size:14px;
 									margin-top:10px;
                                     margin-right:8px;
-                                    background:#FF2486;
+                                    
                                     color:#fff;
+								}
+								.item.error{
+									background:#FF2486;
 								}
 								.item.acive{
 									background:#1CBBFF;
@@ -359,5 +477,57 @@
 				}
 			}
 		}
+		.alert {
+            width: 500px;
+            padding: 20px;
+            background: #fff;
+            border-top: 3px solid #29b28b;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            min-height: 392px;
+            margin-top: -181px;
+            margin-left: -250px;
+            .alertTitle {
+                font-size: 16px;
+                font-family: MicrosoftYaHei;
+                color: rgba(0, 0, 0, 1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #f5f5f5;
+                padding-bottom: 10px;
+            }
+            .alertCon {
+				margin: 20px 0;
+				display: flex;
+				flex-direction: column;
+            }
+            .butBox {
+                width: 80%;
+                margin: 40px auto 0;
+                display: flex;
+                justify-content: space-around;
+                cursor: default;
+                .button {
+                    width: 140px;
+                    height: 40px;
+                    line-height: 40px;
+                    text-align: center;
+                    font-size: 15px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    border-radius: 2px;
+                }
+                .sure {
+                    background: rgba(41, 178, 139, 1);
+                    color: #fff;
+                }
+                .cancel {
+                    border: 1px solid rgba(41, 178, 139, 1);
+                    color: #29b28b;
+                }
+            }
+        }
 	}
 </style>

@@ -3,8 +3,7 @@
         <div class="exerciseBox">
             <div class="exerciseTitle">
                 <div class="title flex-btween">
-                    <div class="leftTitle">{{bank.bankTitle}}<span><span
-                                class="num">{{questionCur+1}}</span>/{{questionList.length}}</span></div>
+                    <div class="leftTitle">{{bank.bankTitle}}<span><span class="num">{{questionCur+1}}</span>/{{questionList.length}}</span></div>
                     <div class="rightTime">{{timeStr}}</div>
                 </div>
                 <div class="content flex-btween">
@@ -34,7 +33,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="rightAnswer">
                         <div class="answerTitle">答题卡</div>
@@ -91,7 +89,6 @@ export default {
         };
     },
     created() {
-        console.log(JSON.parse(localStorage.getItem("bank")));
         this.findQuestion();
         this.start();
     },
@@ -143,35 +140,89 @@ export default {
             questionList.forEach(item => {
                 item.isDone = false;
                 item.isRight = 0;
-                item.questionOptionList.forEach(i => {
+                item.questionOptionList.forEach((i,l) => {
                     i.isChecked = false;
+                    i.option=String.fromCharCode(64 + parseInt(l+1));
                 });
             });
             this.questionList = questionList;
-            console.log(this.questionList);
         },
         // 提交答案
         submit() {
-            this.$Modal.confirm({
-                title: "提示",
-                content: "确认提交答案吗",
-                onOk: () => {
-                    this.$Message.info("提交成功");
-                    this.$router.push("/answer");
-                },
-                onCancel: () => {
-                    this.$Message.info("取消提交");
+            let list=this.questionList;
+            let doneList=[];
+            list.forEach(item=>{
+                if(item.isDone){
+                    doneList.push(item)
                 }
+            })
+            if(doneList.length==list.length){
+                this.$Modal.confirm({
+                    title: "提示",
+                    content: "确认提交答案吗",
+                    onOk: () => {
+                        this.submitAnswer();
+                    },
+                    onCancel: () => {
+                        this.$Message.info("取消提交");
+                    }
+                });
+            }else{
+                this.$Modal.confirm({
+                    title: "提示",
+                    content: "答题未做完，是否继续提交",
+                    onOk: () => {
+                        this.submitAnswer();
+                    },
+                    onCancel: () => {
+                        this.$Message.info("取消提交");
+                    }
+                });
+            }
+            
+        },
+        // 提交答案
+        submitAnswer(){
+            let answerList=[];
+            let list=this.questionList;
+            list.forEach(item=>{
+                let answerObj={
+                    userId:JSON.parse(localStorage.getItem("userInfo")).id,
+                    bankId:this.bank.id,
+                    subjectId:item.id,
+                    answer:'',
+                    caseResult:item.isRight,
+                    collectStatus:0
+                };
+                let checkedList=[];
+                item.questionOptionList.forEach(i=>{
+                    if(i.isChecked){
+                        checkedList.push(i.option)
+                    }
+                    answerObj.answer=checkedList.join(',');
+                })
+                answerList.push(answerObj)
             });
+            this.saveAnswer(answerList)
+        },
+        // 提交答案
+        saveAnswer(answerList){
+            this.$http.post('test/saveTestRecord',answerList).then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    this.$Message.info("提交成功");
+                    localStorage.setItem('answerInfo',JSON.stringify(this.questionList));
+                    localStorage.setItem("yourAnswer",JSON.stringify(answerList))
+                    this.$router.push("/answer");
+                }
+            })
         },
         choseAnswer(index, answerIndex, type) {
-            console.log(index, type);
             let list = this.questionList[index].questionOptionList;
             if (type == 0) {
                 //单选
                 list.map((item, i) => {
                     if (i == answerIndex) {
-                        console.log(item);
                         item.isChecked = true;
                         this.questionList[index].isDone = true;
                         if (item.isTrue == 1) {
@@ -186,7 +237,6 @@ export default {
                 });
             } else if (type == 1) {
                 list[answerIndex].isChecked = !list[answerIndex].isChecked;
-                console.log(list);
                 let checkedList=[];
                 let trueList=[];
                 list.forEach(item => {
@@ -218,7 +268,6 @@ export default {
                 }else{
                     this.questionList[index].isRight=0;
                 }
-                console.log(this.questionList[index].isRight);
             }
             this.questionList[index].questionOptionList = list;
         },
@@ -311,7 +360,7 @@ body {
                         color: #fff;
                         margin: 0 44px;
                         margin-top: 60px;
-                        cursor: default;
+                        cursor: pointer;
                     }
                     .noPre {
                         background: rgba(220, 220, 220, 1);
