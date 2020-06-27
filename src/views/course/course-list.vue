@@ -188,6 +188,7 @@ export default {
                 status:status
             }).then(res => {
                 if (res.code == 0) {
+                    this.$Modal.remove();
                     this.$Message.success(res.message);
                     this.getTableData();
                 } else {

@@ -71,6 +71,9 @@
                             <Radio label="1">下架</Radio>
                         </RadioGroup>
                     </FormItem>
+                    <FormItem label="热度：" prop="hotSort" >
+                         <InputNumber style="width:300px" :min="1" v-model="addForm.hotSort" placeholder="数字越大热度排序越靠前"></InputNumber>
+                    </FormItem>
                     <FormItem label="课程信息：" prop="description">
                         <smeditor :config="config" ref="smeditor" @isUploading="ifUploading"></smeditor>
                     </FormItem>
@@ -137,6 +140,7 @@ export default {
             addForm: {
                 courseTitle: "",
                 imgUrl: "",
+                hotSort:1,
                 courseCategoryId: null,
                 courseContentSet: [],
                 userCategorySet: [],
@@ -189,14 +193,14 @@ export default {
                         type: "array"
                     }
                 ],
-                // classHours: [
-                //     {
-                //         required: true,
-                //         message: "课程视频不能为空",
-                //         trigger: "change",
-                //         type: "array"
-                //     }
-                // ],
+                hotSort:[
+                    {
+                        required: true,
+                        message: "课程热度不能为空",
+                        trigger: "blur",
+                        type:"number"
+                    }
+                ],
                 whetherPay: [
                     {
                         required: true,
@@ -247,6 +251,7 @@ export default {
         };
     },
     created() {
+        removeStore("smeditor");
         this.getType();
         this.getUserList();
     },
@@ -387,6 +392,7 @@ export default {
                             this.addForm.coursePrice = "";
                             this.addForm.description = "";
                             this.$Message.success(res.message);
+                            this.$router.push("/course_list");
                         }
                     });
                 }

@@ -545,6 +545,7 @@ export default {
     },
     mounted() {
         this.$nextTick(() => {
+            console.log(getStore("smeditor"));
             // removeStore("smeditor");
             document.getElementById("input-area").innerHTML = getStore("smeditor") || "";
             // if (!!queryDetailId) {

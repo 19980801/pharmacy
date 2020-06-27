@@ -330,6 +330,8 @@ export default {
                         if (res.code == 0) {
                             this.sendModal = false;
                             this.selectedArr.length=0;
+                            console.log(this.selectedArr);
+                            this.getTableData();
                             this.$Message.success(res.message);
                         }
                     });

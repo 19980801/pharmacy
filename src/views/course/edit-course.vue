@@ -71,7 +71,7 @@
                             <Radio label="1">下架</Radio>
                         </RadioGroup>
                     </FormItem>
-                    <FormItem label="价格：" prop="hotSort" >
+                    <FormItem label="热度：" prop="hotSort" >
                          <InputNumber style="width:300px" :min="1" v-model="addForm.hotSort" placeholder="数字越大热度排序越靠前"></InputNumber>
                     </FormItem>
                     <FormItem label="课程信息：" prop="description">
