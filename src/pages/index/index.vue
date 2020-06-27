@@ -14,7 +14,7 @@
                     <div class="userStateBox userInfoBox" v-if="isLogin">
                         <div class="userTitle flex">
                             <img class="userImg" src="../../assets/imgs/index/userImg.png" alt="">
-                            <div>小酒窝~</div>
+                            <div>{{userInfo.userName}}</div>
                             <!-- <img class="vipImg" src="../../assets/imgs/index/vip1.png" alt=""> -->
                         </div>
                         <div class="collectBox flex-btween">
@@ -151,7 +151,8 @@ export default {
             isLogin: false,
             mySubjectTotal:"",
             myCollectTotal:"",
-            bannerList:[]
+            bannerList:[],
+            userInfo:{}
         };
     },
     mounted() {
@@ -161,6 +162,7 @@ export default {
         if(localStorage.getItem("isLogin")){
             this.myCollect();
             this.mySubject();
+            this.userInfo=JSON.parse(localStorage.getItem("userInfo"))
         }
         
     },
