@@ -5,11 +5,11 @@
             <div class="userBox flex-center">
                 <div class="userCenter flex-end">
                     <!-- 未登录状态显示 -->
-                    <!-- <div class="userStateBox loginBox" v-if="!isLogin">
+                    <div class="userStateBox loginBox" v-if="!isLogin">
                         <div class="loginTitle">记录你的学习进度</div>
                         <img src="../../assets/imgs/index/loginPic.png" alt="">
                         <div class="loginBtn" @click="login">登录</div>
-                    </div> -->
+                    </div>
                     <!-- 已登录状态显示 -->
                     <div class="userStateBox userInfoBox" v-if="isLogin">
                         <div class="userTitle flex">
@@ -191,7 +191,6 @@ export default {
         },
         // 我收藏的题库总数
         mySubject(){
-            
             this.$http
                 .post("/user/findCollect", {
                     pageNum: 1,
