@@ -280,7 +280,7 @@
 					item.hour=Math.floor(item.videoDuration/3600);
 					item.minute=Math.floor(item.videoDuration/60%60);
 					item.second=Math.floor(item.videoDuration%60);
-					if(item.id==this.timeInfo.lastWatch){
+					if(item.id==this.timeInfo && this.timeInfo.lastWatch){
 						console.log(item,"id");
 						this.videoUrl=item.classUrl;
 						this.components=item.classTitle
@@ -372,17 +372,17 @@
 			window.removeEventListener("beforeunload", e => {
                 this.beforeunloadHandler(e);
 			});
-			let data={
-				courseClassId:this.videoList[this.videoCur].id,//视频id
-				courseId:this.videoDetail.id,
-				position:this.playTime,//播放时间保存
-			}
-			if(this.isInStudy){
-				// 保存请求
-				this.$http.post('course/record',data).then(res => {
-					console.log(res);
-				})
-			}
+			// let data={
+			// 	courseClassId:this.videoList[this.videoCur].id,//视频id
+			// 	courseId:this.videoDetail.id,
+			// 	position:this.playTime,//播放时间保存
+			// }
+			// if(this.isInStudy){
+			// 	// 保存请求
+			// 	this.$http.post('course/record',data).then(res => {
+			// 		console.log(res);
+			// 	})
+			// }
 			
 		},
 		computed:{
