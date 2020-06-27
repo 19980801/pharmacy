@@ -11,6 +11,7 @@ import { courseRouter } from "./course/router";
 import { questionRouter } from "./question/router";
 import { userRouter } from "./user/router";
 import { systemRouter } from "./system/router";
+import { bannerRouter } from "./banner/router";
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
 let findSlideArr = [
   //用户管理
@@ -53,7 +54,15 @@ let findSlideArr = [
     icon: 'settings',
     component: Main
   },
-  ...systemRouter
+  ...systemRouter,
+    //轮播
+  {
+    id:239,
+    path:"/banner",
+    icon:"images",
+    component: Main
+  },
+  ...bannerRouter
 ]
 
 // 不作为Main组件的子页面展示的页面单独写，如下

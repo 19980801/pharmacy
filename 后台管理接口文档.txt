@@ -59,11 +59,11 @@ URL = inform/send
 参数类型：JSON
 请求参数：
 {
-	"userId":[1],
-	"isAll":"0",
-	"informTitle":"今天天气不错1133331",
-	"informContent":"今天天气很111333好",
-	"informType":"0"
+	"userId":[1],(用户id数组)
+	"isAll":"0",(是否是全体通知 0-否 1-是)
+	"informTitle":"今天天气不错1133331",(通知标题)
+	"informContent":"今天天气很111333好",(通知内容)
+	"informType":"0"(通知内容 0-系统通知 1-考核通知 2-批阅通知 3-成绩通知)
 }
 返回参数：
 {
@@ -2996,3 +2996,756 @@ URL = course/delete/{type}/{id}
 
 
 18. 编辑修改课程(同上传课程，只是把课程id和课时id传过来，编辑得时候可以删除课时，用上面的接口)
+
+
+19. 数据查询
+URL = data/pageQuery
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",(页码)
+    "pageSize":"10",(每页记录数)
+    "type":"0"(查询内容 0-用户分类 1-题目分类 2-课程分类 3-课程内容)
+}
+返回参数：
+用户分类返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 1,
+                "categoryName": "自选",(分类名称)
+                "createTime": "2020-06-16 04:10:13"(创建时间)
+            },
+            {
+                "id": 4,
+                "categoryName": "进修生",
+                "createTime": "2020-06-03 14:31:58"
+            },
+            {
+                "id": 3,
+                "categoryName": "实习生",
+                "createTime": "2020-06-03 14:31:52"
+            },
+            {
+                "id": 2,
+                "categoryName": "院内职工",
+                "createTime": "2020-06-03 14:31:47"
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 4,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "first": true,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 4,
+        "empty": false
+    }
+}
+题目分类返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 11,
+                "categoryName": "内科用药",(分类名称)
+                "createTime": 1593074345000
+            },
+            {
+                "id": 10,
+                "categoryName": "外科用药",
+                "createTime": 1593074340000
+            },
+            {
+                "id": 9,
+                "categoryName": "皮肤科用药",
+                "createTime": 1593074331000
+            },
+            {
+                "id": 8,
+                "categoryName": "生物制品",
+                "createTime": 1593074317000
+            },
+            {
+                "id": 7,
+                "categoryName": "免疫调节药",
+                "createTime": 1593074302000
+            },
+            {
+                "id": 6,
+                "categoryName": "给药方式",
+                "createTime": 1593074282000
+            },
+            {
+                "id": 5,
+                "categoryName": "儿科用药",
+                "createTime": 1593074274000
+            },
+            {
+                "id": 4,
+                "categoryName": "用药方式",
+                "createTime": 1593074263000
+            },
+            {
+                "id": 3,
+                "categoryName": "人文医学",
+                "createTime": 1592631167000
+            },
+            {
+                "id": 2,
+                "categoryName": "药学技能",
+                "createTime": 1592631156000
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 11,
+        "totalPages": 2,
+        "last": false,
+        "number": 0,
+        "size": 10,
+        "first": true,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 10,
+        "empty": false
+    }
+}
+
+课程分类返回：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 4,
+                "categoryName": "人文医学",(分类名称)
+                "createTime": "2020-05-30 12:14:33",
+                "courseContentList": []
+            },
+            {
+                "id": 3,
+                "categoryName": "药学管理",
+                "createTime": "2020-05-30 12:14:23",
+                "courseContentList": []
+            },
+            {
+                "id": 2,
+                "categoryName": "药学技能",
+                "createTime": "2020-05-30 12:14:13",
+                "courseContentList": []
+            },
+            {
+                "id": 1,
+                "categoryName": "药学知识",
+                "createTime": "2020-05-30 12:14:03",
+                "courseContentList": [(分类关联内容)
+                    {
+                        "id": 1,
+                        "contentName": "高血压",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:14:59"
+                    },
+                    {
+                        "id": 2,
+                        "contentName": "麻醉用药",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:12"
+                    },
+                    {
+                        "id": 3,
+                        "contentName": "糖尿病",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:26"
+                    },
+                    {
+                        "id": 4,
+                        "contentName": "特殊人群用药",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:35"
+                    },
+                    {
+                        "id": 5,
+                        "contentName": "心血管系统",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:15:46"
+                    },
+                    {
+                        "id": 6,
+                        "contentName": "中药",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:01"
+                    },
+                    {
+                        "id": 7,
+                        "contentName": "肿瘤",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:10"
+                    },
+                    {
+                        "id": 8,
+                        "contentName": "注射剂",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:27"
+                    },
+                    {
+                        "id": 9,
+                        "contentName": "处方审核",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:38"
+                    },
+                    {
+                        "id": 10,
+                        "contentName": "药学监护",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:16:49"
+                    },
+                    {
+                        "id": 11,
+                        "contentName": "药物经济学",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:02"
+                    },
+                    {
+                        "id": 12,
+                        "contentName": "药学教育",
+                        "categoryId": 1,
+                        "createTime": "2020-05-30 12:17:10"
+                    }
+                ]
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 12,
+        "totalPages": 2,
+        "last": false,
+        "number": 0,
+        "size": 10,
+        "first": true,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 10,
+        "empty": false
+    }
+}
+
+20 修改分类
+20.1 修改用户分类
+URL = data/update/user
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "id":"1",
+    "categoryName":"自选分类"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "修改成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+20.2 修改题目分类
+URL = data/update/question
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "id":"1",
+    "categoryName":"医学知识"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "修改成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+20.3 修改课程分类
+URL = data/update/course
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "id":"1",
+    "categoryName":"医学知识"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "修改成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+20.4 修改课程内容
+URL = data/update/content
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "id":"1",(内容id)
+    "contentName":"高血压"(内容名称)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "修改成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+
+21. 新增参数
+21.1 新增用户分类
+URL = data/save/user
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "categoryName":"新增分类"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "新增成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+21.2 新增题目分类
+URL = data/save/question
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "categoryName":"新增分类"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "新增成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+21.3 新增课程分类
+URL = data/save/course
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "categoryName":"新增分类1"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "新增成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+21.4 新增课程内容
+URL = data/save/content
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "contentName":"新增分类",
+    "categoryId":"1"(所关联得分类id)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "新增成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+21.5 删除课程内容
+URL = data/delete/courseContent/{id}
+请求方式：GET
+参数类型：路径参数
+请求参数：
+	id:内容id
+返回参数：
+{
+    "code": 0,
+    "message": "删除成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+
+22. 意见反馈查询
+URL = feedback/pageQuery
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",
+    "pageSize":"10",
+    "feedbackType":"",(反馈类型 0-用户 1-题目)
+    "userId":""(用户id)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 7,
+                "userId": 13,(用户id)
+                "subjectId": null,(题目id)
+                "feedbackContent": "测试反馈",(反馈内容)
+                "feedbackAnswer": null,(反馈回答)
+                "feedbackCause": null,(反馈原因 0-错别字 1-答案错误 2-题目不完整 3-图片不存在 4-解析错误 5-其他)
+                "feedbackType": 0,(反馈类型 0-用户 1-题目)
+                "createTime": 1592789982000,(创建时间)
+                "answerTime": null(回答时间)
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 7,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "first": true,
+        "numberOfElements": 7,
+        "empty": false
+    }
+}
+
+23. 反馈回复
+URL = feedback/answer
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "id":"6",(记录id)
+    "answer":"111111"(回复内容)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "回答成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+
+24. 首页轮播
+24.1 轮播图查询
+URL = banner/pageQuery
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",(页码)
+    "pageSize":"10"(每页记录数)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 2,
+                "title": "测试标题2",
+                "imgUrl": "http://www.heye.fun/2020/06/25/ed24665c-c8d3-49d9-a048-d0b115b345c6.jpg",
+                "status": 0,
+                "sort": 2,
+                "createTime": "2020-06-27 08:20:41",
+                "updateTime": null
+            },
+            {
+                "id": 1,
+                "title": "测试标题",
+                "imgUrl": "http://www.heye.fun/2020/06/25/ed24665c-c8d3-49d9-a048-d0b115b345c6.jpg",
+                "status": 0,
+                "sort": 1,
+                "createTime": "2020-06-27 08:20:26",
+                "updateTime": null
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 2,
+        "totalPages": 1,
+        "last": true,
+        "number": 0,
+        "size": 10,
+        "first": true,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 2,
+        "empty": false
+    }
+}
+
+24.2 新增轮播图
+URL = banner/add
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "title":"测试标题3",(标题)
+    "imgUrl":"http://www.heye.fun/2020/06/25/ed24665c-c8d3-49d9-a048-d0b115b345c6.jpg",(图片url)
+    "sort":"3"(排序)
+}
+返回参数：
+{
+    "code": 0,
+    "message": "新增成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+24.3 修改轮播图
+URL = banner/update
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "id":"3",(id)
+    "title":"测试标题4",
+    "imgUrl":"http://www.heye.fun/2020/06/25/ed24665c-c8d3-49d9-a048-d0b115b345c6.jpg",
+    "sort":"4"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "修改成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+24.4 删除轮播图
+URL = banner/delete/{id}
+请求方式：GET
+参数类型：路径参数
+请求参数：
+	id：记录id
+返回参数：
+{
+    "code": 0,
+    "message": "删除成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}
+
+25. 根据课程分类id查询课程内容
+URL = data/queryCourseContent
+请求方式：POST
+参数类型：JSON
+请求参数：
+{
+    "pageNum":"1",
+    "pageSize":"10",
+    "courseCategoryId":"1"
+}
+返回参数：
+{
+    "code": 0,
+    "message": "SUCCESS",
+    "totalPage": null,
+    "totalElement": null,
+    "data": {
+        "content": [
+            {
+                "id": 14,(id)
+                "contentName": "测试添加内容",(内容)
+                "categoryId": 1,(分类id)
+                "createTime": "2020-06-26 10:19:56"(创建时间)
+            },
+            {
+                "id": 12,
+                "contentName": "药学教育1",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:17:10"
+            },
+            {
+                "id": 11,
+                "contentName": "药物经济学",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:17:02"
+            },
+            {
+                "id": 10,
+                "contentName": "药学监护",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:16:49"
+            },
+            {
+                "id": 9,
+                "contentName": "处方审核",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:16:38"
+            },
+            {
+                "id": 8,
+                "contentName": "注射剂",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:16:27"
+            },
+            {
+                "id": 7,
+                "contentName": "肿瘤",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:16:10"
+            },
+            {
+                "id": 6,
+                "contentName": "中药",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:16:01"
+            },
+            {
+                "id": 5,
+                "contentName": "心血管系统",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:15:46"
+            },
+            {
+                "id": 4,
+                "contentName": "特殊人群用药",
+                "categoryId": 1,
+                "createTime": "2020-05-30 12:15:35"
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": true,
+                "unsorted": false,
+                "empty": false
+            },
+            "offset": 0,
+            "pageSize": 10,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 13,
+        "totalPages": 2,
+        "last": false,
+        "number": 0,
+        "size": 10,
+        "sort": {
+            "sorted": true,
+            "unsorted": false,
+            "empty": false
+        },
+        "numberOfElements": 10,
+        "first": true,
+        "empty": false
+    }
+}

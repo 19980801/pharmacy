@@ -67,66 +67,6 @@ export default {
                 {
                     title: "创建时间",
                     key: "createTime"
-                },
-                {
-                    title: "操作",
-                    render: (h, params) => {
-                        return [
-                            h(
-                                "Button",
-                                {
-                                    props: {
-                                        type: "primary"
-                                    },
-                                    style: {
-                                        marginRight: "10px"
-                                    },
-                                    on: {
-                                        click: () => {
-                                            console.log(params.row);
-                                            const {
-                                                id,
-                                                value,
-                                                name
-                                            } = params.row;
-                                            this.formValidate = { id, value };
-                                            this.modalTitle = name;
-                                            this.addModal = true;
-                                        }
-                                    }
-                                },
-                                "编辑"
-                            ),
-                            h(
-                                "Button",
-                                {
-                                    props: {
-                                        type: "primary"
-                                    },
-                                    on: {
-                                        click: () => {
-                                            console.log(params.row);
-                                            const {
-                                                name,
-                                                phone,
-                                                sex,
-                                                type
-                                            } = params.row;
-                                            this.formValidate = {
-                                                name,
-                                                phone,
-                                                sex,
-                                                type
-                                            };
-                                            this.modalTitle = "编辑";
-                                            this.addModal = true;
-                                        }
-                                    }
-                                },
-                                "下架"
-                            )
-                        ];
-                    }
                 }
             ]
         };
