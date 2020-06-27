@@ -21,13 +21,15 @@
                         </FormItem>
                         <FormItem prop="verImgCode" class="inpItem verifyByPhone" v-if="loginP.loginCur==1">
                             <div class="verifyBox flex">
-                                <Input type="text" style="width:70%;" class="verCodeInp" v-model="formInline.verImgCode" placeholder="请输入图片验证码"></Input>
+                                <Input type="text" style="width:70%;" class="verCodeInp" v-model="formInline.verImgCode"
+                                    placeholder="请输入图片验证码"></Input>
                                 <img :src="captchaPath" alt="" class="codeImg" @click="getCaptcha">
                             </div>
                         </FormItem>
-                         <FormItem prop="verCode" class="inpItem verifyByPhone" v-if="loginP.loginCur==1">
+                        <FormItem prop="verCode" class="inpItem verifyByPhone" v-if="loginP.loginCur==1">
                             <div class="verifyBox flex">
-                                <Input type="text" style="width:70%;border:none" class="verCodeInp" v-model="formInline.verCode" placeholder="请输入验证码"></Input>
+                                <Input type="text" style="width:70%;border:none" class="verCodeInp"
+                                    v-model="formInline.verCode" placeholder="请输入验证码"></Input>
                                 <div @click="getVerCode">
                                     <p>{{getMobileCodeText()}}</p>
                                 </div>
@@ -64,30 +66,30 @@
                     <div>找回密码</div>
                 </div>
                 <div class="inpList">
-                    <div class="inpItem">
-                        <input type="text" value placeholder="请输入手机号" />
-                        <p>手机号格式不正确</p>
-                    </div>
-                    <div class="inpItem">
-                        <div class="verifyBox flex">
-                            <input type="text" value placeholder="请输入图片验证码" />
-                            <div class>5678</div>
-                        </div>
-                        <p>手机号格式不正确</p>
-                    </div>
-                    <div class="inpItem verifyByPhone">
-                        <div class="verifyBox flex">
-                            <input type="text" value placeholder="请输入验证码" />
-                            <div class>
-                                <p>请输入验证码</p>
+                    <Form ref="formForget" :model="formForget" :rules="ruleForget">
+                        <FormItem prop="mobilePhone" class="inpItem">
+                            <Input type="text" v-model="formForget.mobilePhone" placeholder="请输入手机号"></Input>
+                        </FormItem>
+                        <FormItem prop="code" class="inpItem verifyByPhone">
+                            <div class="verifyBox flex">
+                                <Input type="text" style="width:70%;" class="verCodeInp" v-model="formForget.code"
+                                    placeholder="请输入图片验证码"></Input>
+                                <img :src="captchaPath" alt="" class="codeImg" @click="getCaptcha">
                             </div>
-                        </div>
-                        <p>手机号格式不正确</p>
-                    </div>
-                    <div class="inpItem">
-                        <input type="text" value placeholder="请输入密码" />
-                        <p>手机号格式不正确</p>
-                    </div>
+                        </FormItem>
+                        <FormItem prop="msgCode" class="inpItem verifyByPhone">
+                            <div class="verifyBox flex">
+                                <Input type="text" style="width:70%;border:none" class="verCodeInp"
+                                    v-model="formForget.msgCode" placeholder="请输入验证码"></Input>
+                                <div @click="getForgetVerCode">
+                                    <p>{{getMobileCodeText()}}</p>
+                                </div>
+                            </div>
+                        </FormItem>
+                        <FormItem prop="password" class="inpItem">
+                            <Input type="password" v-model="formForget.password" placeholder="请输入新密码"></Input>
+                        </FormItem>
+                    </Form>
                     <div class="saveLogin">
                         <div class="flex">
                             <img :src="checked?checkAUrl:checkUrl" alt @click="choseType" />
@@ -97,7 +99,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="btn">确定</div>
+                    <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==0" @click="updatePsd">确定</div>
                 </div>
             </div>
         </div>
@@ -108,44 +110,103 @@
 import storage from "../config/storage";
 // 图片验证码方法
 export function getUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        return (c === 'x' ? (Math.random() * 16 | 0) : ('r&0x3' | '0x8')).toString(16)
-    })
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+        return (c === "x"
+            ? (Math.random() * 16) | 0
+            : "r&0x3" | "0x8"
+        ).toString(16);
+    });
 }
 export default {
-    inject:['reload'],
+    inject: ["reload"],
     name: "loginModel",
-    props:{
-        loginInfo:{
-            type:Object
+    props: {
+        loginInfo: {
+            type: Object
         }
     },
     data() {
         return {
-            loginP:{
-                loginCur:0,
-                showModel:false
+            formForget:{
+                mobilePhone:"",
+                msgCode:"",
+                password:"",
+                code:""
+            },
+            ruleForget:{
+                mobilePhone: [
+                    {
+                        required: true,
+                        message: "请输入手机号",
+                        trigger: "blur"
+                    },
+                    {
+                        pattern: /^1[3456789]\d{9}$/,
+                        message: "手机号码格式不正确",
+                        trigger: "blur"
+                    }
+                ],
+                password: [
+                    { required: true, message: "请输入新密码", trigger: "blur" },
+                    {
+                        type: "string",
+                        min: 6,
+                        message: "密码格式为6位以上",
+                        trigger: "blur"
+                    }
+                ],
+                code: [
+                    { required: true, message: "请输入验证码", trigger: "blur" }
+                ],
+                msgCode: [
+                    {
+                        required: true,
+                        message: "请输入图片验证码",
+                        trigger: "blur"
+                    }
+                ]
+            },
+            loginP: {
+                loginCur: 0,
+                showModel: false
             },
             formInline: {
-                phone: '',
-                password: '',
-                verCode:'',
-                verImgCode:''
+                phone: "",
+                password: "",
+                verCode: "",
+                verImgCode: ""
             },
             ruleInline: {
                 phone: [
-                    { required: true, message: '请输入手机号', trigger: 'blur' },
-                    { pattern: /^1[3456789]\d{9}$/, message: "手机号码格式不正确", trigger: "blur"}
+                    {
+                        required: true,
+                        message: "请输入手机号",
+                        trigger: "blur"
+                    },
+                    {
+                        pattern: /^1[3456789]\d{9}$/,
+                        message: "手机号码格式不正确",
+                        trigger: "blur"
+                    }
                 ],
                 password: [
-                    { required: true, message: '请输入密码', trigger: 'blur' },
-                    { type: 'string', min: 6, message: '密码格式为6位以上', trigger: 'blur' }
+                    { required: true, message: "请输入密码", trigger: "blur" },
+                    {
+                        type: "string",
+                        min: 6,
+                        message: "密码格式为6位以上",
+                        trigger: "blur"
+                    }
                 ],
-                verCode:[
-                    {required:true,message:"请输入验证码",trigger:"blur"}
+                verCode: [
+                    { required: true, message: "请输入验证码", trigger: "blur" }
                 ],
-                verImgCode:[
-                    {required:true,message:"请输入图片验证码",trigger:'blur'}
+                verImgCode: [
+                    {
+                        required: true,
+                        message: "请输入图片验证码",
+                        trigger: "blur"
+                    }
                 ]
             },
             isRouterAlive: true,
@@ -161,123 +222,177 @@ export default {
             checkUrl: require("@/assets/imgs/index/loginCheck.png"),
             checkAUrl: require("@/assets/imgs/index/loginCheckA.png"),
             login: true,
-            wait_timer:false,
-            verContent:'',
-            uuid:"",
-            captchaPath:"",         //图片验证码
-            isLogin:false
+            wait_timer: false,
+            verContent: "",
+            uuid: "",
+            captchaPath: "", //图片验证码
+            isLogin: false
         };
     },
     created() {
-        this.getCaptcha();      //获取图片验证码
+        this.getCaptcha(); //获取图片验证码
     },
     methods: {
-        isShow(){
-            this.showModel=true;
-            this.$emit("showLogin")
+        isShow() {
+            this.showModel = true;
+            this.$emit("showLogin");
         },
         // 注册
-        register(){
-            let data={
-                mobilePhone:this.formInline.phone,
-                password:this.formInline.password,
-                msgCode:this.formInline.verCode,
-                uuid:this.uuid,
-                code:this.formInline.verImgCode
-            }
-            this.$http.post('/register/user/phone',data).then(res=>{
+        register() {
+            let data = {
+                mobilePhone: this.formInline.phone,
+                password: this.formInline.password,
+                msgCode: this.formInline.verCode,
+                uuid: this.uuid,
+                code: this.formInline.verImgCode
+            };
+            this.$http.post("/register/user/phone", data).then(res => {
                 console.log(res);
-                if(res.code==0){
+                if (res.code == 0) {
                     this.$Message.success(res.message);
-                    this.formInline.phone="";
-                    this.formInline.password="";
-                    this.formInline.verCode="";
-                    this.formInline.verImgCode="";
-                    this.loginP.loginCur=0;     //转为登录
+                    this.formInline.phone = "";
+                    this.formInline.password = "";
+                    this.formInline.verCode = "";
+                    this.formInline.verImgCode = "";
+                    this.loginP.loginCur = 0; //转为登录
                 }
-            })
+            });
         },
         // 登录
-        userLogin(){
-            if(!this.formInline.phone){
+        userLogin() {
+            if (!this.formInline.phone) {
                 this.$Message.error("请输入手机号!");
                 return;
             }
-            if(!this.formInline.password){
+            if (!this.formInline.password) {
                 this.$Message.error("请输入密码!");
                 return;
             }
-            this.$http.form("/login/user/phone",{
-                mobilePhone:this.formInline.phone,
-                password:this.formInline.password
-            }).then(res=>{
-                if(res.code==0){
-                    console.log(res.data.user);
-                    this.$Message.success("登录成功!");
-                    storage.set("User_Id",res.data.user.id);
-                    storage.set("userInfo",JSON.stringify(res.data.user));
-                    storage.set("token",res.data.token);
-                    storage.set("isLogin",true)
-                    this.isLogin=true;
-                    this.loginP.showModel=false;
-                    let obj={
-                        isLogin:this.isLogin,
-                        userInfo:res.data.user
+            this.$http.form("/login/user/phone", {
+                    mobilePhone: this.formInline.phone,
+                    password: this.formInline.password
+                })
+                .then(res => {
+                    if (res.code == 0) {
+                        console.log(res.data.user);
+                        this.$Message.success("登录成功!");
+                        storage.set("User_Id", res.data.user.id);
+                        storage.set("userInfo", JSON.stringify(res.data.user));
+                        storage.set("token", res.data.token);
+                        storage.set("isLogin", true);
+                        this.isLogin = true;
+                        this.loginP.showModel = false;
+                        let obj = {
+                            isLogin: this.isLogin,
+                            userInfo: res.data.user
+                        };
+                        // this.reload();
+                        location.reload();
+                        this.$emit("isLogin", obj);
                     }
-                    // this.reload();
-                    location.reload();
-                    this.$emit("isLogin",obj)
+                });
+        },
+        // 修改密码
+        updatePsd(){
+            this.$refs["formForget"].validate(valid => {
+                if (valid) {
+                    this.$http.post("/register/forget/phone", {
+                        ...this.formForget,
+                        uuid:this.uuid
+                    }).then(res => {
+                        if (res.code == 0) {
+                            console.log(res);
+                            this.$Message.success(res.message);
+                            this.login = true;
+                        }else{
+                            this.$Message.error(res.message);
+                        }
+                    });
                 }
-            })
+            });
         },
         // 短信验证码
-        getMobileCodeText(){
-            if(this.wait_timer > 0){
-                return this.wait_timer+'s后获取';
+        getMobileCodeText() {
+            if (this.wait_timer > 0) {
+                return this.wait_timer + "s后获取";
             }
 
-            if(this.wait_timer === 0){
-                return '重新获取';
+            if (this.wait_timer === 0) {
+                return "重新获取";
             }
 
-            if(this.wait_timer === false){
-                return '获取验证码';
+            if (this.wait_timer === false) {
+                return "获取验证码";
             }
-
         },
         // 获取短信验证码
-        getVerCode(){
-            if(this.formInline.phone){
+        getVerCode() {
+            if (this.formInline.phone) {
                 if (this.wait_timer > 0) {
                     return false;
                 }
                 this.wait_timer = 59;
                 var that = this;
-                var timer_interval = setInterval(function(){
-                    if(that.wait_timer > 0){
-                        that.wait_timer -- ;
-                    }else{
+                var timer_interval = setInterval(function() {
+                    if (that.wait_timer > 0) {
+                        that.wait_timer--;
+                    } else {
                         clearInterval(timer_interval);
                     }
-                },1000);
-                this.verContent=this.getMobileCodeText();
-                this.$http.form("sms/register/code",{
-                    mobilePhone:this.formInline.phone
-                }).then(res=>{
-                    if(res.code==0){
-                        this.$Message.success(res.message);
+                }, 1000);
+                this.verContent = this.getMobileCodeText();
+                this.$http
+                    .form("sms/register/code", {
+                        mobilePhone: this.formInline.phone
+                    })
+                    .then(res => {
+                        if (res.code == 0) {
+                            this.$Message.success(res.message);
+                        }
+                    });
+            }else{
+                this.$Message.error("请输入手机号码！");
+            }
+        },
+        // 忘记密码的验证码
+        getForgetVerCode(){
+            console.log(this.formForget.mobilePhone)
+            if (this.formForget.mobilePhone) {
+                if (this.wait_timer > 0) {
+                    return false;
+                }
+                this.wait_timer = 59;
+                var that = this;
+                var timer_interval = setInterval(function() {
+                    if (that.wait_timer > 0) {
+                        that.wait_timer--;
+                    } else {
+                        clearInterval(timer_interval);
                     }
-                })
+                }, 1000);
+                this.verContent = this.getMobileCodeText();
+                this.$http.form("/sms/forget/password/code", {
+                        mobilePhone: this.formForget.mobilePhone
+                    })
+                    .then(res => {
+                        if (res.code == 0) {
+                            this.$Message.success(res.message);
+                        }
+                    });
+            }else{
+                this.$Message.error("请输入手机号码！");
             }
         },
         // 获取图片验证码
         getCaptcha() {
             this.uuid = getUUID();
-            this.$http.getImg("/register/captcha.jpg",{
-                uuid:this.uuid
-            }).then(res=>{
-                this.captchaPath=res;
-            })
+            this.$http
+                .getImg("/register/captcha.jpg", {
+                    uuid: this.uuid
+                })
+                .then(res => {
+                    this.captchaPath = res;
+                });
         },
         closeLoginList() {
             this.showLoginList = false;
@@ -311,9 +426,9 @@ export default {
     },
     // 监听当前路由
     watch: {
-        "loginInfo"(e){
-            this.loginP=e;
-        },
+        loginInfo(e) {
+            this.loginP = e;
+        }
     }
 };
 </script>
@@ -387,7 +502,7 @@ input {
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index:222;
+        z-index: 222;
         .login {
             width: 380px;
             padding: 20px 30px;
@@ -430,16 +545,17 @@ input {
             .inpList {
                 width: 100%;
                 margin-top: 30px;
-                .codeImg{
-                    width:150px;
-                    height:48px;
+                .codeImg {
+                    width: 150px;
+                    height: 48px;
                 }
                 .inpItem,
                 .verifyByPhone {
                     width: 100%;
                     height: 50px;
                     // margin-top: 25px;
-                    input,.verCodeInp {
+                    input,
+                    .verCodeInp {
                         width: 100%;
                         height: 48px;
                         background: #f2f2f2;
@@ -449,7 +565,8 @@ input {
                         border-radius: 2px;
                         outline: none;
                     }
-                    input,input:active{
+                    input,
+                    input:active {
                         border: none !important;
                         // border-bottom: 1px solid #d2d2d2 !important;
                         outline: none;
@@ -519,8 +636,8 @@ input {
                     border-radius: 6px;
                     cursor: default;
                 }
-                .btn.active{
-                    background:#29B28B;
+                .btn.active {
+                    background: #29b28b;
                 }
             }
         }
