@@ -32,12 +32,12 @@
                 </div>
             </div>
             <Carousel autoplay class="banner">
-                <Carousel-item>
+                <Carousel-item v-for="(item,index) in bannerList" :key="index">
                     <div class="demo-carousel">
-                        <img src="../../assets/imgs/index/banner1.png" alt="">
+                        <img :src="item.imgUrl" alt="">
                     </div>
                 </Carousel-item>
-                <Carousel-item>
+                <!-- <Carousel-item>
                     <div class="demo-carousel">
                         <img src="../../assets/imgs/index/banner2.png" alt="">
                     </div>
@@ -46,7 +46,7 @@
                     <div class="demo-carousel">
                         <img src="../../assets/imgs/index/banner3.png" alt="">
                     </div>
-                </Carousel-item>
+                </Carousel-item> -->
             </Carousel>
         </div>
         <!-- 最新课程 -->
@@ -150,12 +150,14 @@ export default {
             type: {},
             isLogin: false,
             mySubjectTotal:"",
-            myCollectTotal:""
+            myCollectTotal:"",
+            bannerList:[]
         };
     },
     mounted() {
         this.isLogin = localStorage.getItem("isLogin");
         this.findList();
+        this.findBanner();
         if(localStorage.getItem("isLogin")){
             this.myCollect();
             this.mySubject();
@@ -163,6 +165,15 @@ export default {
         
     },
     methods: {
+        // 查询轮播图
+        findBanner(){
+            this.$http.get('banner/query').then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    this.bannerList=res.data
+                }
+            })
+        },
         // 我收藏的课程总数
         myCollect() {
             this.$http

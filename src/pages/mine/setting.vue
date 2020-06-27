@@ -3,24 +3,29 @@
         <div class="rightContent">
             <div class="title">
                 <p>基本信息</p>
-                <div class="save">保存</div>
+                <div class="save" @click="save()">保存</div>
             </div>
             <div class="conBox">
                 <div class="line">
                     <span class="titleMsg">头像</span>
                     <div id="upload">
                         <div class="item_bock">
-                            <div class="head_img" @click.stop="uploadHeadImg">
+                            <Upload class="head_img" :action="uploadImgUrl" :format="['jpg','jpeg','png']" :data="uploadData"
+                                :show-upload-list="false" :headers="headers" :before-upload="onBeforeImgUploading"
+                                :on-success="onImgUploadInforSuccess" :on-format-error="handleImgFormatError">
                                 <img :src="avatar" />
                                 <div class="update">修改</div>
-                            </div>
+                            </Upload>
+                            <!-- <div  @click.stop="uploadHeadImg">
+                                
+                            </div> -->
                             <input type="file" accept="image/*" @change="handleFile" class="hiddenInput" />
                         </div>
                     </div>
                 </div>
                 <div class="line">
                     <span class="titleMsg">昵称</span>
-                    <input type="text">
+                    <input style="padding:0 10px;box-sizing:border-box" type="text" v-model="userName">
                 </div>
             </div>
             <div class="title">
@@ -29,12 +34,12 @@
             <div class="conBox">
                 <div class="line">
                     <span class="titleMsg">手机号</span>
-                    <span>12345678</span>
+                    <span>{{userInfo.mobilePhone}}</span>
                     <p class="button" @click="updatePhone">更换</p>
                 </div>
                 <div class="line">
                     <span class="titleMsg">密码</span>
-                    <span>12345678</span>
+                    <span>******</span>
                     <p class="button" @click="updatePsd">修改</p>
                 </div>
             </div>
@@ -50,25 +55,25 @@
                     <div v-if="first">
                         <div class="conTit">
                             <p>验证旧手机号</p>
-                            <p>1234567</p>
+                            <p>{{userInfo.mobilePhone}}</p>
                         </div>
                         <div class="inputBox">
-                            <input type="text" placeholder="输入验证码">
-                            <div class="code">获取验证码</div>
+                            <input type="text" v-model="oldPhoneVer" placeholder="输入验证码">
+                            <div class="code" @click="getVerCode">{{getMobileCodeText()}}</div>
                         </div>
-                        <div class="button">下一步</div>
+                        <div class="button"  @click="next">下一步</div>
                     </div>
                     <div v-else>
                         <div class="phoneBox">
                             <div class="inputBox">
                                 <div class="msg">+86</div>
-                                <input type="text" placeholder="输入新手机">
+                                <input type="text" v-model="phone" placeholder="输入新手机">
                             </div>
                             <div class="inputBox">
-                                <input type="text" placeholder="输入验证码">
-                                <div class="code">获取验证码</div>
+                                <input type="text" v-model="newPhoneVer" placeholder="输入验证码">
+                                <div class="code" @click="getVerCode">{{getMobileCodeText()}}</div>
                             </div>
-                            <div class="button">绑定</div>
+                            <div class="button" @click="boundPhone()">绑定</div>
                         </div>
                     </div>
                 </div>
@@ -85,16 +90,16 @@
                     <div >
                         <div class="inputBox">
                             <div class="msg">+86</div>
-                            <input type="text" placeholder="输入新手机">
+                            <input type="text" v-model="userInfo.mobilePhone" disabled placeholder="输入新手机">
                         </div>
                         <div class="inputBox">
-                            <input type="text" placeholder="输入验证码">
-                            <div class="code">获取验证码</div>
+                            <input type="text" placeholder="输入验证码" v-model="passwordVer">
+                            <div class="code" @click="getVerCode">{{getMobileCodeText()}}</div>
                         </div>
                         <div class="inputBox">
-                            <input type="text" placeholder="输入新密码" class="newInput">
+                            <input type="text" placeholder="输入新密码" v-model="newPassword" class="newInput">
                         </div>
-                        <div class="button">绑定更改</div>
+                        <div class="button" @click="boundPassword()">绑定更改</div>
                     </div>
                 </div>
             </div>
@@ -106,24 +111,228 @@
 export default {
     data() {
         return {
-            avatar: require("../../assets/imgs/index/userImg.png"),
-            first: false,
+            avatar:require('../../assets/imgs/index/userImg.png'),
+            first: true,
             phoneAlert: false,
-            psdAlert: false
+            psdAlert: false,
+            userName:'',
+            userInfo:'',
+            uploadImgUrl: `${this.host}/uc/upload/oss/image`,
+            imgUploadLoading: false,
+            uploadData: {},
+            headers:{},
+            modelType:'',
+            phone:'',
+            wait_timer:false,
+            verContent:'',
+            oldPhoneVer:'',
+            newPhoneVer:'',
+            passwordPhone:'',
+            passwordVer:'',
+            newPassword:''
         };
     },
+    mounted(){
+        this.userInfo=JSON.parse(localStorage.getItem("userInfo"))
+        this.userName=this.userInfo.userName
+        if(this.userInfo.headUrl!=null){
+            this.avatar=this.userInfo.headUrl
+        }
+        this.headers={
+            ['ACCESS-TOKEN']:localStorage.getItem("token"),
+            ['User_Id']:localStorage.getItem("User_Id")
+        }
+    },
     methods: {
+        boundPassword(){
+            if(this.passwordPhone){
+                this.$Message.warning("请输入手机号")
+            }else if(this.passwordVer==""){
+                this.$Message.warning("请输入验证码")
+            }else if(this.newPassword==""){
+                this.$Message.warning("请输入新密码")
+            }else{
+                this.upPassword()
+            }
+        },
+        // 修改密码
+        upPassword(){
+            let data={
+                mobilePhone:this.userInfo.mobilePhone,
+                msgCode:this.passwordVer,
+                password:this.newPassword
+            }
+            this.$http.form("user/update/password",data).then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    this.$Message.success('修改成功');
+                    this.psdAlert=false;
+                    this.wait_timer=false;
+                }
+            })
+
+        },
+        boundPhone(){
+            if(this.phone==""){
+                this.$Message.warning("请输入手机号")
+            }else if(this.newPhoneVer==""){
+                this.$Message.warning("请输入验证码")
+            }else{
+                this.updataNewPhone();
+            }
+        },
+        next(){
+            this.verifyPhone();
+        },
+        // 短信验证码
+        getMobileCodeText(){
+            if(this.wait_timer > 0){
+                return this.wait_timer+'s后获取';
+            }
+
+            if(this.wait_timer === 0){
+                return '重新获取';
+            }
+
+            if(this.wait_timer === false){
+                return '获取验证码';
+            }
+
+        },
+        // 获取短信验证码
+        getVerCode(){
+            console.log(this.modelType);
+            let phone=""
+            if(this.modelType=="phone"){
+                if(this.first){
+                    phone=this.userInfo.mobilePhone
+                }else{
+                    phone=this.phone
+                }
+            }else if(this.modelType=="password"){
+                phone=this.userInfo.mobilePhone
+            }
+            
+            if(phone){
+                if (this.wait_timer > 0) {
+                    return false;
+                }
+                console.log(1111);
+                this.wait_timer = 59;
+                var that = this;
+                var timer_interval = setInterval(function(){
+                    if(that.wait_timer > 0){
+                        that.wait_timer -- ;
+                    }else{
+                        clearInterval(timer_interval);
+                    }
+                },1000);
+                this.verContent=this.getMobileCodeText();
+                console.log(this.verContent);
+                if(this.modelType=="phone"){
+                    this.updateByPhone();
+                }else if(this.modelType=="password"){
+                    this.uppdateByPassword();
+                }
+            }
+        },
+        // 修改手机号
+        updataNewPhone(){
+            let data={
+                mobilePhone:this.phone,
+                msgCode:this.newPhoneVer
+            }
+            this.$http.form("user/update/phone",data).then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    this.$Message.success('修改成功');
+                    localStorage.setItem('userInfo',JSON.parse(res.data))
+                    this.userInfo=res.data
+                    this.phoneAlert=false;
+                    this.first=true;
+                    this.wait_timer=false;
+                }
+            })
+        },
+        // 修改密码验证码
+        uppdateByPassword(){
+            this.$http.form("sms/update/password/code",{
+                mobilePhone:this.userInfo.mobilePhone
+            }).then(res=>{
+                if(res.code==0){
+                    this.$Message.success(res.message);
+                }
+            })
+        },
+        // 获取手机号验证码
+        updateByPhone(){
+            this.$http.form("sms/update/phone/code",{
+                mobilePhone:this.first?this.userInfo.mobilePhone:this.phone
+            }).then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    this.$Message.success(res.message);
+                }
+            })
+        },
+        // 验证是否修改手机号
+        verifyPhone(){
+            let data={
+                mobilePhone:this.userInfo.mobilePhone,
+                msgCode:this.oldPhoneVer
+            }
+            this.$http.form("user/verify/code",data).then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    this.first=false;
+                    this.wait_timer=false;
+                    // this.$Message.success(res.message);
+                }
+            })
+        },
+        onBeforeImgUploading() {
+            this.imgUploadLoading = true;
+        },
+        onImgUploadInforSuccess(res) {
+            console.log(res);
+            this.imgUploadLoading = false;
+            this.avatar = res.data || "";
+        },
+        handleImgFormatError(file) {
+            this.$Notice.error({
+                title: "文件格式错误",
+                desc: "上传的文件格式是错误的，请选择jpg或者png格式的图片"
+            });
+        },
+        // 保存个人资料
+        save(){
+            let data={
+                imgUrl:this.avatar==require('../../assets/imgs/index/userImg.png')?'':this.avatar,
+                nickName:this.userName
+            }
+            this.$http.post("user/update/resource",data).then(res=>{
+                if(res.code==0){
+                    this.$Message.success("修改成功")
+                    localStorage.setItem('userInfo',JSON.stringify(res.data))
+                }
+            })
+        },
         closePhoneAlert() {
             this.phoneAlert = false;
+            this.first=true;
+            this.wait_timer=false;
         },
         updatePhone() {
             this.phoneAlert = true;
+            this.modelType="phone"
         },
         closePsdAlert(){
             this.psdAlert=false;
+            this.wait_timer=false;
         },
         updatePsd(){
             this.psdAlert=true;
+            this.modelType="password"
         },
         // 打开图片上传
         uploadHeadImg: function() {

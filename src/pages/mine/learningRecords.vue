@@ -33,7 +33,7 @@
                             <span v-if="item.questionSubject && item.questionSubject.questionType==1">（多选题）</span>
                             <p>{{item.questionSubject && item.questionSubject.questionTitle}} </p>
                         </div>
-                        <div class="errorsBtn" @click="showDetail(index)">查看</div>
+                        <div class="errorsBtn" @click="showDetail(index,item)">查看</div>
                     </div>
                 </div>
                 <div class="pageBox" v-if="total>0">
@@ -46,6 +46,24 @@
                 </div>
             </div>
         </div>
+        <div class="model" v-show="alert1">
+			<div class="alert">
+                <div class="alertTitle">
+                    <p>添加反馈</p>
+                    <Icon type="md-close" @click="close()" />
+                </div>
+                <div class="alertCon">
+					<Select v-model="model1" style="width:400px;margin-bottom:10px;">
+						<Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+					</Select>
+                    <Input v-model="feedContent" type="textarea" :rows="8" placeholder="输入反馈内容" />
+                </div>
+                <div class="butBox">
+                    <div class="button sure" @click="addCallInfo">确定</div>
+                    <div class="button cancel" @click="close()">取消</div>
+                </div>
+            </div>
+		</div>
         <!-- 错题详情弹框 -->
         <div class="alertMask" v-if="alert">
             <div class="alert">
@@ -87,23 +105,17 @@
                                 </p>
                             </div>
                             <div class="collectionBox">
-                                <div>
-                                    <img src="../../assets/imgs/collection.png" alt="" v-if="detail.collectStatus==0">
-                                    <Icon type="md-heart" v-else class="hearted"/>
+                                <div @click="collectSub()">
+                                    <img src="../../assets/imgs/collection.png" alt="" v-if="!isCollect">
+                                    <Icon type="md-heart"  v-if="isCollect" class="hearted"/>
                                     <span>收藏</span>
                                 </div>
-                                <div>
+                                <div @click="feedback">
                                     <img src="../../assets/imgs/feedback.png" alt="">
                                     <span>反馈</span>
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="line middle">
-                            <p>
-                                <span class="answerTit">相关课程：</span>
-                                <p>暂无相关课程</p>
-                            </p>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -129,13 +141,106 @@ export default {
             limit: 10,
             detail: {},
             rightOption:[],     //用户选项
-            totalPages:0
+            totalPages:0,
+            isCollect:false,
+            id:'',
+            cityList: [
+                    {
+                        value: '0',
+                        label: '错别字'
+                    },
+                    {
+                        value: '1',
+                        label: '答案错误'
+                    },
+                    {
+                        value: '2',
+                        label: '题目不完整2'
+                    },
+                    {
+                        value: '3',
+                        label: '图片不存在'
+                    },
+                    {
+                        value: '4',
+                        label: '解析错误'
+                    },
+                    {
+                        value: '5',
+                        label: '其他'
+                    }
+                ],
+				model1: '',
+                alert1: false,
+                feedContent:'',
         };
     },
     created() {
         this.getList(0);
     },
     methods: {
+        close(){
+            this.alert1=false
+            this.feedContent=""
+        },
+        
+        // 反馈
+			feedback(item){
+				console.log(item);
+				this.alert1=true;
+			},
+        // 添加反馈
+			addCallInfo(){
+				let list=this.cityList;
+				let cause=0;
+				list.forEach(item=>{
+					if(item.label==this.model1){
+						cause=item.value
+					}
+				})
+				if(this.feedContent){
+					this.$http.post("feedback/add",{
+						feedbackContent:this.feedContent,
+						feedbackType:1,      //0-用户 1-题目
+						feedbackCause:cause,
+						subjectId:this.id
+					}).then(res=>{
+						console.log(res);
+						if(res.code==0){
+							this.feedContent="";
+							this.alert1=false;
+							this.$Message.success("添加成功！");
+						}
+					})
+				}else{
+					this.$Message.error("请填写反馈内容！");
+				}
+			},
+        // 修改收藏
+			collectSub(){
+				let data={
+					subjectId:this.id,
+					status:!this.isCollect
+				}
+				this.$http.form("test/collect",data).then(res=>{
+					if(res.code==0){
+                        this.$Message.success("修改成功");
+						this.findSubjectIsCollect(this.id);
+					}
+				})
+			},
+        // 查询题目是否收藏
+			findSubjectIsCollect(id){
+                this.id=id
+				// let id=this.questionList[this.questionCur].id;
+				console.log(id);
+				this.$http.get('test/collect/'+id).then(res=>{
+					console.log(res);
+					if(res.code==0){
+						this.isCollect=res.data
+					}
+				})
+			},
         // 查询学习记录
         getList(type) {
             this.$http
@@ -170,7 +275,7 @@ export default {
             this.getList(this.learningCur);
         },
         // 查看错题详情
-        showDetail(index) {
+        showDetail(index,item) {
             this.alert = true;
             this.detail=this.list[index];
             // 判断是否是正确答案
@@ -183,6 +288,7 @@ export default {
             this.rightOption=this.rightOption.map(ele=>{
                 return String.fromCharCode(64 + parseInt(ele));
             });
+            this.findSubjectIsCollect(item.subjectId)
         },
         // 学习记录选项卡
         choseLearningTab(i) {
@@ -531,6 +637,60 @@ export default {
                             margin: 0 10px;
                         }
                     }
+                }
+            }
+        }
+    }
+    .model{
+        .alert {
+            width: 500px;
+            padding: 20px;
+            background: #fff;
+            border-top: 3px solid #29b28b;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            min-height: 392px;
+            margin-top: -181px;
+            margin-left: -250px;
+            .alertTitle {
+                font-size: 16px;
+                font-family: MicrosoftYaHei;
+                color: rgba(0, 0, 0, 1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #f5f5f5;
+                padding-bottom: 10px;
+            }
+            .alertCon {
+				margin: 20px 0;
+				display: flex;
+				flex-direction: column;
+            }
+            .butBox {
+                width: 80%;
+                margin: 40px auto 0;
+                display: flex;
+                justify-content: space-around;
+                cursor: default;
+                .button {
+                    width: 140px;
+                    height: 40px;
+                    line-height: 40px;
+                    text-align: center;
+                    font-size: 15px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    border-radius: 2px;
+                }
+                .sure {
+                    background: rgba(41, 178, 139, 1);
+                    color: #fff;
+                }
+                .cancel {
+                    border: 1px solid rgba(41, 178, 139, 1);
+                    color: #29b28b;
                 }
             }
         }

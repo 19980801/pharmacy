@@ -162,12 +162,15 @@
 				alert: false,
 			}
 		},
-		created(){
+		mounted(){
 			this.questionList=JSON.parse(localStorage.getItem('answerInfo'))
 			this.myAnswer=JSON.parse(localStorage.getItem("yourAnswer"))
 			console.log(this.questionList);
 			console.log(this.myAnswer);
 			this.findSubjectIsCollect();
+		},
+		created(){
+			
 		},
 		methods:{
 			close(){
@@ -186,8 +189,9 @@
 				if(this.feedContent){
 					this.$http.post("feedback/add",{
 						feedbackContent:this.feedContent,
-						feedbackType:0,      //0-用户 1-题目
-						feedbackCause:cause
+						feedbackType:1,      //0-用户 1-题目
+						feedbackCause:cause,
+						subjectId:this.questionList[this.questionCur].id
 					}).then(res=>{
 						console.log(res);
 						if(res.code==0){
@@ -208,7 +212,9 @@
 					status:!this.isCollect
 				}
 				this.$http.form("test/collect",data).then(res=>{
-					console.log(res);
+					if(res.code==0){
+						this.findSubjectIsCollect();
+					}
 				})
 			},
 			// 添加反馈
@@ -225,6 +231,11 @@
 				this.$http.get('test/collect/'+id).then(res=>{
 					console.log(res);
 					if(res.code==0){
+						if(res.data){
+							this.$Message.success("收藏成功！");
+						}else{
+							this.$Message.success("取消收藏");
+						}
 						this.isCollect=res.data
 					}
 				})

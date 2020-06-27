@@ -88,9 +88,12 @@ export default {
             time: 0,
         };
     },
-    created() {
+    mounted(){
         this.findQuestion();
         this.start();
+    },
+    created() {
+        
     },
     methods: {
         // 选择对于题目

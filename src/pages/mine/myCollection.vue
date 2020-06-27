@@ -27,10 +27,10 @@
                     </div>
                 </div>
                 <div class="errorsList" v-if="learningCur==1">
-                    <ul class="tab">
+                    <!-- <ul class="tab">
                         <li class="tabItem" :class="{acitve:itemId==i}" v-for="{item,i} in 4" :key="i"
                             @click="clickList(i)">选择题</li>
-                    </ul>
+                    </ul> -->
                     <div class="errorsItem flex-btween" v-for="(item,index) in list" :key="index">
                         <div class="errorsTitleBox flex">
                             <span v-if="item.questionSubject && item.questionSubject.questionType==0">（单选题）</span>

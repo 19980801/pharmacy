@@ -64,7 +64,7 @@
                         <div class="userBox">
                             <div @click="showLogin">
                                 <img src="./assets/imgs/index/userImg.png" alt class="userImg" />
-                                <span>{{userInfo.mobilePhone}}</span>
+                                <span>{{userInfo.userName==null?useInfo.mobilePhone:userInfo.userName}}</span>
                             </div>
                             <div class="loginList" v-show="showLoginList">
                                 <ul>
