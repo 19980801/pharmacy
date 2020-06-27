@@ -13,7 +13,7 @@ http.ajax.interceptors.request.use(config => {
     // token
     config.headers['ACCESS-TOKEN'] = storage.get("token")
     // 增加用户id请求头
-    config.headers['User_Id'] = userId;
+    config.headers['User-Id'] = userId;
     return config
 }, function(error) {
     return Promise.reject(error);

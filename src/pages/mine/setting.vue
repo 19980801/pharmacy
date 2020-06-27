@@ -140,7 +140,7 @@ export default {
         }
         this.headers={
             ['ACCESS-TOKEN']:localStorage.getItem("token"),
-            ['User_Id']:localStorage.getItem("User_Id")
+            ['User-Id']:localStorage.getItem("User_Id")
         }
     },
     methods: {
