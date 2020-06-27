@@ -287,7 +287,7 @@ export default {
                             userInfo: res.data.user
                         };
                         // this.reload();
-                        location.reload();
+                        // location.reload();
                         this.$emit("isLogin", obj);
                     }
                 });

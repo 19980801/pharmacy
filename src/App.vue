@@ -93,7 +93,7 @@
                                     <li class="line" :class="{active:routeName=='feedback'}" @click="closeLoginList">
                                         <router-link to="/feedback">我的反馈</router-link>
                                     </li>
-                                    <li>
+                                    <li @click="loginOut">
                                         <router-link to="/">退出登录</router-link>
                                     </li>
                                 </ul>
@@ -212,6 +212,10 @@ export default {
         }
     },
     methods: {
+        loginOut(){
+            localStorage.clear();
+            location.reload();
+        },
         // 搜索
         searchList(){
             console.log(this.searchKey);
