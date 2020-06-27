@@ -122,8 +122,12 @@
 			}
 		},
 		mounted() {
+			if(localStorage.getItem('isLogin')){
+				this.findLastTime();
+			}else{
+				this.detail();
+			}
 			
-			this.findLastTime();
 			window.addEventListener("beforeunload", e => {
                 this.beforeunloadHandler(e);
 			});
@@ -224,17 +228,22 @@
 			},
 			// 加入学习
 			addStudy(id){
-				if(this.isInStudy){
-					this.$Message.warning("您已加入学习列表，无需再次加入")
+				if(localStorage.getItem("isLogin")){
+					if(this.isInStudy){
+						this.$Message.warning("您已加入学习列表，无需再次加入")
+					}else{
+						this.$http.get('course/addStudyRecord/'+id).then(res=>{
+							console.log(res);
+							if(res.code==0){
+								this.$Message.success('加入成功！');
+								this.isInStudy=true
+							}
+						})
+					}
 				}else{
-					this.$http.get('course/addStudyRecord/'+id).then(res=>{
-						console.log(res);
-						if(res.code==0){
-							this.$Message.success('加入成功！');
-							this.isInStudy=true
-						}
-					})
+					this.$Message.warning("请先登录")
 				}
+				
 				
 			},
 			// 选择视频
