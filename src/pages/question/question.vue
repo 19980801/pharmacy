@@ -241,7 +241,7 @@ export default {
             }else{
                 this.$Message.warning("请先登录")
             }
-           
+
         },
         // 关闭弹框
         closeAlert() {
