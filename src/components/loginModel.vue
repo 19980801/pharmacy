@@ -286,8 +286,8 @@ export default {
                             isLogin: this.isLogin,
                             userInfo: res.data.user
                         };
-                        // this.reload();
-                        // location.reload();
+                        this.reload();
+                        location.reload();
                         this.$emit("isLogin", obj);
                     }
                 });
