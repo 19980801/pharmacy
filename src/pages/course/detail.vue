@@ -112,7 +112,7 @@
 				isJoinStudy:false,
 				components:'',
 				isInStudy:false,
-				isCollect:true,
+				isCollect:false,
                 playTime: '0',
 				paused: true,
 				isShow:true,
@@ -177,6 +177,7 @@
 						this.isCollect=res.data;
 					}
 				})
+				
 			},
 			// 取消收藏
 			cancelCollect(){
@@ -195,11 +196,16 @@
 			},
 			// 收藏按钮点击
 			collect(){
-				if(this.isCollect==true){
-					this.cancelCollect()
+				if(localStorage.getItem("isLogin")){
+					if(this.isCollect==true){
+						this.cancelCollect()
+					}else{
+						this.addCollect();
+					}
 				}else{
-					this.addCollect();
+					this.$Message.warning("请先登录")
 				}
+				
 			},
 			// 添加收藏
 			addCollect(){

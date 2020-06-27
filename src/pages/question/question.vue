@@ -169,9 +169,7 @@ export default {
         },
         // 跳转练习
         goExercise() {
-            console.log(this.countCount)
             let count=this.countCount
-            console.log(this.questionCount);
             let subjectNum=this.questionCount.subjectNumList;//全部
             let subjectHaveFinish=this.questionCount.subjectHaveFinishList;//已做
             let subjectNotDone=this.questionCount.subjectNotDoneList;//未做
@@ -236,9 +234,14 @@ export default {
         },
         // 显示弹框
         showAlert(item) {
-            this.alert = true;
-            this.bank=item;
-            this.findQuestionBankClass(item.id)
+            if(localStorage.getItem('isLogin')){
+                this.alert = true;
+                this.bank=item;
+                this.findQuestionBankClass(item.id)
+            }else{
+                this.$Message.warning("请先登录")
+            }
+           
         },
         // 关闭弹框
         closeAlert() {
