@@ -213,6 +213,7 @@
 				}
 				this.$http.form("test/collect",data).then(res=>{
 					if(res.code==0){
+						this.$Message.success("修改成功！");
 						this.findSubjectIsCollect();
 					}
 				})
@@ -231,11 +232,11 @@
 				this.$http.get('test/collect/'+id).then(res=>{
 					console.log(res);
 					if(res.code==0){
-						if(res.data){
-							this.$Message.success("收藏成功！");
-						}else{
-							this.$Message.success("取消收藏");
-						}
+						// if(res.data){
+						// 	this.$Message.success("收藏成功！");
+						// }else{
+						// 	this.$Message.success("取消收藏");
+						// }
 						this.isCollect=res.data
 					}
 				})

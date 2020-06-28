@@ -510,6 +510,11 @@
 							.rightTitle{
 								div{
 									color:rgba(41,178,139,1);
+									width:230px;
+									// border:1px solid #fff;
+									overflow: hidden;
+									white-space: nowrap;
+									text-overflow: ellipsis;
 								}
 							}
 							.videoType{
