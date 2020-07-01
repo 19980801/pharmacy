@@ -214,7 +214,8 @@ export default {
     methods: {
         loginOut(){
             localStorage.clear();
-            location.reload();
+            // location.reload();
+            this.$router.push("/");
         },
         // 搜索
         searchList(){

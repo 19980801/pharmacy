@@ -9,14 +9,14 @@
                 </div>
                 <div class="classList" v-if="learningCur==0">
                     <div class="classItem flex" v-for="(item,index) in list" :key="index">
-                        <img class="leftImg" src="../../assets/imgs/index/loginPic.png" alt="">
+                        <img class="leftImg" :src="item.courseImg" alt="">
                         <div class="rightClassTitle">
                             <div class="studyBtn">继续学习</div>
-                            <div class="topTitle">{{item.classTitle}}</div>
+                            <div class="topTitle">{{item.courseTitle}}</div>
                             <div class="validityTime flex">
                                 <div class="validityTimeBox">
                                     <p>学习有效期（倒计时）</p>
-                                    <p>有效期至：{{item.classTime}}</p>
+                                    <p>有效期至：{{item.courseTime}}</p>
                                 </div>
                                 <div class="collectBox" :class="{active:item.collectStatus==1}" @click="collect(item.id,item.collectStatus)">
                                     <Icon type="md-heart" />
