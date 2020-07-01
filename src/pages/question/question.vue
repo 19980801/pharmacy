@@ -10,9 +10,9 @@
             <div class="typeLine">
                 <p class="typeTitle">更新时间：</p>
                 <ul>
-                    <li>全部</li>
+                    <li class="active">全部</li>
                     <li>2020</li>
-                    <li>2019</li>
+                    <!-- <li>2019</li> -->
                 </ul>
             </div>
         </div>
@@ -39,11 +39,11 @@
                                     </div>
                                     <div class="infoItem">
                                         <img src="../../assets/imgs/finshed.png" alt="">
-                                        <span>已做数量&nbsp;{{userQuestionBankList && userQuestionBankList[i].haveNum}}</span>
+                                        <span>已做数量&nbsp;{{userQuestionBankList.length>0?userQuestionBankList[i].haveNum:""}}</span>
                                     </div>
                                     <div class="infoItem">
                                         <img src="../../assets/imgs/nofinshed.png" alt="">
-                                        <span>未做数量&nbsp;{{userQuestionBankList && Number(item.subjectNum)-Number(userQuestionBankList[i].haveNum)}}</span>
+                                        <span>未做数量&nbsp;{{userQuestionBankList.length>0?Number(item.subjectNum)-Number(userQuestionBankList[i].haveNum):""}}</span>
                                     </div>
                                 </div>
                                 <div class="button" @click="showAlert(item)">开始练习</div>
@@ -126,12 +126,19 @@ export default {
     created(){
         this.title=this.$route.query.title;
         this.getList(this.$route.query.title);
-        this.getNumber();
+        if(storage.get("isLogin")){
+            this.getNumber();
+        }
     },
     methods: {
         // 显示做题数量
         getNumber(){
-            this.userQuestionBankList=JSON.parse(storage.get("userQuestionBankList")) || "";
+            this.$http.get("/bank/queryByUser").then(res=>{
+                if(res.code==0){
+                    console.log(res);
+                    this.userQuestionBankList=res.data;
+                }
+            })
         },
         // 选择题库范围
         choseScope(index){

@@ -2164,3 +2164,41 @@ URL = sms/forget/password/code
     "totalElement": null,
     "data": null
 }
+
+37. 查询用户题库关联
+URL = bank/queryByUser
+请求方式：GET
+无参数
+返回参数：
+{
+    "code": 0,
+    "message": null,
+    "totalPage": null,
+    "totalElement": null,
+    "data": [
+        {
+            "id": 3,
+            "haveNum": 0,
+            "userId": 1,
+            "bankId": 32
+        },
+        {
+            "id": 28,
+            "haveNum": 0,
+            "userId": 1,
+            "bankId": 34
+        },
+        {
+            "id": 40,
+            "haveNum": 0,
+            "userId": 1,
+            "bankId": 35
+        },
+        {
+            "id": 52,
+            "haveNum": 0,
+            "userId": 1,
+            "bankId": 36
+        }
+    ]
+}

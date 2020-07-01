@@ -279,7 +279,6 @@ export default {
                         storage.set("userInfo", JSON.stringify(res.data.user));
                         storage.set("token", res.data.token);
                         storage.set("isLogin", true);
-                        storage.set("userQuestionBankList", JSON.stringify(res.data.user.userQuestionBankList));
                         this.isLogin = true;
                         this.loginP.showModel = false;
                         let obj = {
