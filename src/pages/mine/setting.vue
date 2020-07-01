@@ -163,7 +163,6 @@ export default {
                 password:this.newPassword
             }
             this.$http.form("user/update/password",data).then(res=>{
-                console.log(res);
                 if(res.code==0){
                     this.$Message.success('修改成功');
                     this.psdAlert=false;
@@ -201,7 +200,6 @@ export default {
         },
         // 获取短信验证码
         getVerCode(){
-            console.log(this.modelType);
             let phone=""
             if(this.modelType=="phone"){
                 if(this.first){
@@ -217,7 +215,6 @@ export default {
                 if (this.wait_timer > 0) {
                     return false;
                 }
-                console.log(1111);
                 this.wait_timer = 59;
                 var that = this;
                 var timer_interval = setInterval(function(){
@@ -228,7 +225,6 @@ export default {
                     }
                 },1000);
                 this.verContent=this.getMobileCodeText();
-                console.log(this.verContent);
                 if(this.modelType=="phone"){
                     this.updateByPhone();
                 }else if(this.modelType=="password"){
@@ -243,7 +239,6 @@ export default {
                 msgCode:this.newPhoneVer
             }
             this.$http.form("user/update/phone",data).then(res=>{
-                console.log(res);
                 if(res.code==0){
                     this.$Message.success('修改成功');
                     localStorage.setItem('userInfo',JSON.parse(res.data))
@@ -269,7 +264,6 @@ export default {
             this.$http.form("sms/update/phone/code",{
                 mobilePhone:this.first?this.userInfo.mobilePhone:this.phone
             }).then(res=>{
-                console.log(res);
                 if(res.code==0){
                     this.$Message.success(res.message);
                 }
@@ -282,7 +276,6 @@ export default {
                 msgCode:this.oldPhoneVer
             }
             this.$http.form("user/verify/code",data).then(res=>{
-                console.log(res);
                 if(res.code==0){
                     this.first=false;
                     this.wait_timer=false;
@@ -294,7 +287,6 @@ export default {
             this.imgUploadLoading = true;
         },
         onImgUploadInforSuccess(res) {
-            console.log(res);
             this.imgUploadLoading = false;
             this.avatar = res.data || "";
         },

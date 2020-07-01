@@ -35,15 +35,15 @@
                                 <div class="msgInfo">
                                     <div class="infoItem">
                                         <img src="../../assets/imgs/number.png" alt="">
-                                        <span>题目数量</span>
+                                        <span>题目数量&nbsp;{{item.subjectNum}}</span>
                                     </div>
                                     <div class="infoItem">
                                         <img src="../../assets/imgs/finshed.png" alt="">
-                                        <span>已做数量</span>
+                                        <span>已做数量&nbsp;{{userQuestionBankList && userQuestionBankList[i].haveNum}}</span>
                                     </div>
                                     <div class="infoItem">
                                         <img src="../../assets/imgs/nofinshed.png" alt="">
-                                        <span>未做数量</span>
+                                        <span>未做数量&nbsp;{{userQuestionBankList && Number(item.subjectNum)-Number(userQuestionBankList[i].haveNum)}}</span>
                                     </div>
                                 </div>
                                 <div class="button" @click="showAlert(item)">开始练习</div>
@@ -101,7 +101,9 @@
 </template>
 
 <script>
+import storage from "../../config/storage";
 export default {
+    inject: ["reload"],
     data() {
         return {
             alert: false,    //弹框
@@ -117,14 +119,20 @@ export default {
             countList:[10,20,50],
             countCount:10,
             scopeCur:0,
-            title:""
+            title:"",
+            userQuestionBankList:[]
         };
     },
     created(){
-        this.title=this.$route.params.title;
-        this.getList(this.$route.params.title);
+        this.title=this.$route.query.title;
+        this.getList(this.$route.query.title);
+        this.getNumber();
     },
     methods: {
+        // 显示做题数量
+        getNumber(){
+            this.userQuestionBankList=JSON.parse(storage.get("userQuestionBankList")) || "";
+        },
         // 选择题库范围
         choseScope(index){
             this.scopeCur=index
@@ -148,7 +156,6 @@ export default {
                 bankId:this.bank.id
             }
             this.$http.post('test/getSubject',data).then(res=>{
-                console.log(res);
                 if(res.code==0){
                     this.questionCount=res.data
                 }
@@ -175,12 +182,10 @@ export default {
             let subjectNotDone=this.questionCount.subjectNotDoneList;//未做
             let subjectError=this.questionCount.subjectErrorList;//错题
             let questList=[];
-            
             if(this.scopeCur==0){//全部
                 if(subjectNum.length!=0){
                     if(subjectNum.length>count){
                         questList=this.randomCount(subjectNum,count)
-                        console.log(this.randomCount(subjectNum,count));
                     }else{
                         questList=subjectNum
                     }
@@ -213,7 +218,6 @@ export default {
                     this.$Message.warning("暂无练习题，请选择其他题库")
                 }
             }
-            // console.log(questList);
             localStorage.setItem("questList",JSON.stringify(questList))
             localStorage.setItem("bank",JSON.stringify(this.bank))
             this.$router.push("/exercise");
@@ -255,7 +259,6 @@ export default {
                 title:key
             }).then(res=>{
                 if(res.code==0){
-                    console.log(res);
                     this.list=res.data.content;
                     this.total = res.data.totalElements;
                     this.totalPages=res.data.totalPages;

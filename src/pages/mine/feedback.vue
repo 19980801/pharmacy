@@ -73,7 +73,6 @@ export default {
                     pageSize: this.limit
                 })
                 .then(res => {
-                    console.log(res);
                     if (res.code == 0) {
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
@@ -92,7 +91,6 @@ export default {
                     feedbackContent:this.feedContent,
                     feedbackType:0      //0-用户 1-题目
                 }).then(res=>{
-                    console.log(res);
                     if(res.code==0){
                         this.feedContent="";
                         this.alert=false;

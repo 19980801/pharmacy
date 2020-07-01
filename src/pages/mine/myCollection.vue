@@ -142,9 +142,7 @@ export default {
     methods: {
         // 
         goStuty(item){
-            console.log(item);
             this.$http.get('course/findCourse/'+item.id).then(res=>{
-                console.log(res);
                 // JSON.stringify
                 localStorage.setItem('videoDetail',JSON.stringify(res.data))
                 this.$router.push('/detail')
@@ -157,7 +155,6 @@ export default {
                 recordId:id,
             }
             this.$http.post('user/cancelCollect',data).then(res=>{
-                console.log(res);
                 if(res.code==0){
                     this.$Message.success('已取消收藏')
                 }
@@ -180,7 +177,6 @@ export default {
         },
         // 显示对应列表
         clickList(i) {
-            console.log(i);
             this.itemId = i;
         },
         getList(type) {
@@ -192,7 +188,6 @@ export default {
                 })
                 .then(res => {
                     if (res.code == 0) {
-                        console.log(res);
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
                         this.totalPages=res.data.totalPages;

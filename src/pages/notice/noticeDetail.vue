@@ -15,9 +15,8 @@ export default {
         }
     },
     created(){
-        console.log(this.$route.query)
-        this.query=this.$route.query
-        this.updateMes(this.query.id)
+        this.query=this.$route.query;
+        this.updateMes(this.query.id);
     },
     methods:{
         // 修改已读消息状态

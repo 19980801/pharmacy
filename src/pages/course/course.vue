@@ -4,15 +4,25 @@
       <div class="typeLine">
         <p class="typeTitle">分类：</p>
         <ul>
-          <li  @click="choseTab(1,0)" :class="{active:classCur==0}">全部</li>
-          <li @click="choseTab(1,index+1)" :class="{active:classCur==index+1}" v-for="(item,index) in classList" :key="index">{{item.categoryName}}</li>
+          <li @click="choseTab(1,0)" :class="{active:classCur==0}">全部</li>
+          <li
+            @click="choseTab(1,index+1)"
+            :class="{active:classCur==index+1}"
+            v-for="(item,index) in classList"
+            :key="index"
+          >{{item.categoryName}}</li>
         </ul>
       </div>
       <div class="typeLine">
         <p class="typeTitle">授课内容：</p>
         <ul>
-          <li  @click="choseTab(2,0)" :class="{active:contentCur==0}">全部</li>
-          <li @click="choseTab(2,index+1)" :class="{active:contentCur==index+1}" v-for="(item,index) in conList" :key="index">{{item.contentName}}</li>
+          <li @click="choseTab(2,0)" :class="{active:contentCur==0}">全部</li>
+          <li
+            @click="choseTab(2,index+1)"
+            :class="{active:contentCur==index+1}"
+            v-for="(item,index) in conList"
+            :key="index"
+          >{{item.contentName}}</li>
         </ul>
       </div>
     </div>
@@ -20,11 +30,26 @@
       <div class="flexBox">
         <div class="line">
           <ul class="type">
-            <li @click="choseTab(3,index)" :class="{active:typeCur==index}" v-for="(item,index) in typeList" :key="index">{{item.name}}</li>
+            <li
+              @click="choseTab(3,index)"
+              :class="{active:typeCur==index}"
+              v-for="(item,index) in typeList"
+              :key="index"
+            >{{item.name}}</li>
           </ul>
           <div class="radioBox">
-            <div class="radioItem" v-for="(item,index) in moneyTypeList" :key="index"  @click="choseTab(4,index)">
-              <img src="../../assets/imgs/radioed.png" alt class="radioImg" v-if="moneyTypeCur==index" />
+            <div
+              class="radioItem"
+              v-for="(item,index) in moneyTypeList"
+              :key="index"
+              @click="choseTab(4,index)"
+            >
+              <img
+                src="../../assets/imgs/radioed.png"
+                alt
+                class="radioImg"
+                v-if="moneyTypeCur==index"
+              />
               <img src="../../assets/imgs/radio.png" alt class="radioImg" v-else />
               <span>{{item.name}}</span>
             </div>
@@ -49,8 +74,15 @@
           <div class="pageBox" v-if="total>0">
             <div class="page">
               <p @click="changePage(1)">首页</p>
-              <Page @on-change="changePage"  :current="page" :page-size="limit" :total="total" prev-text="上一页" next-text="下一页"/>
-              <p @click ="changePage(totalPages)">尾页</p>
+              <Page
+                @on-change="changePage"
+                :current="page"
+                :page-size="limit"
+                :total="total"
+                prev-text="上一页"
+                next-text="下一页"
+              />
+              <p @click="changePage(totalPages)">尾页</p>
             </div>
           </div>
         </div>
@@ -63,115 +95,114 @@
 export default {
   data() {
     return {
-      classCur:0,
-      contentCur:0,
-      typeCur:0,
-      moneyTypeCur:0,
+      classCur: 0,
+      contentCur: 0,
+      typeCur: 0,
+      moneyTypeCur: 0,
       vipType: 1,
-      list:[],
-      classList:[],
-      conList:[],
-      typeList:[
-        {id:1,name:'全部'},
-        {id:2,name:'最新'},
-        {id:3,name:'最热'},
+      list: [],
+      classList: [],
+      conList: [],
+      typeList: [
+        { id: 1, name: "全部" },
+        { id: 2, name: "最新" },
+        { id: 3, name: "最热" }
       ],
-      moneyTypeList:[
-        {id:1,name:'免费'},
-        {id:2,name:'付费'},
-        {id:3,name:'VIP'},
+      moneyTypeList: [
+        { id: 1, name: "免费" },
+        { id: 2, name: "付费" },
+        { id: 3, name: "VIP" }
       ],
-      page:1,
-      totalPages:0,
-      total:0,
-      limit:10,
-      title:""
+      page: 1,
+      totalPages: 0,
+      total: 0,
+      limit: 10,
+      title: ""
     };
   },
-  created(){
-    this.title=this.$route.params.title;
-    this.typeCur=this.$route.query.type || 0;
-    this.moneyTypeCur=this.$route.query.isPay;
-    this.findClass();
+  created() {
+    this.title = this.$route.query.title;
+    this.typeCur = this.$route.query.type || 0;
+    this.moneyTypeCur = this.$route.query.isPay;
+    this.findClass(this.$route.query.title);
   },
-  methods:{
+  methods: {
     // 查询课程分类
-    findClass(){
-      this.$http.get('course/getCourseCategory').then(res=>{
-        console.log(res);
-        this.classList=res.data;
-        let list=res.data;
-        let courList=[];
-        list.forEach((item,index) => {
-          item.courseContentList.forEach((i,v)=>{
-            courList.push(i)
-          })
+    findClass(title) {
+      this.$http.get("course/getCourseCategory").then(res => {
+        this.classList = res.data;
+        let list = res.data;
+        let courList = [];
+        list.forEach((item, index) => {
+          item.courseContentList.forEach((i, v) => {
+            courList.push(i);
+          });
         });
-        this.conList=courList;
-        this.findListByClass(this.title);
-      })
+        this.conList = courList;
+        this.findListByClass(title);
+      });
     },
     // 更改页码
-    changePage(e){
-      console.log(e);
-      this.page=e;
+    changePage(e) {
+      this.page = e;
       this.findListByClass(this.title);
     },
     // 选择tab
-    choseTab(i,index){
-        console.log(index);
-      if(i==1){ //
-        this.classCur=index
-        if(i=0){
-          let courList=[];
-          list.forEach((item,index) => {
-            item.courseContentList.forEach((i,v)=>{
-              courList.push(i)
-            })
+    choseTab(i, index) {
+      if (i == 1) {
+        //
+        this.classCur = index;
+        if ((i = 0)) {
+          let courList = [];
+          list.forEach((item, index) => {
+            item.courseContentList.forEach((i, v) => {
+              courList.push(i);
+            });
           });
-          this.conList=courList;
-        }else{
-          this.conList=this.classList[index-1].courseContentList;
+          this.conList = courList;
+        } else {
+          this.conList = this.classList[index - 1].courseContentList;
         }
       }
-      if(i==2){
-        this.contentCur=index
+      if (i == 2) {
+        this.contentCur = index;
       }
-      if(i==3){
-        this.typeCur=index
+      if (i == 3) {
+        this.typeCur = index;
       }
-      if(i==4){
-        this.moneyTypeCur=index
+      if (i == 4) {
+        this.moneyTypeCur = index;
       }
       this.findListByClass(this.title);
     },
     // 分类查询
-    findListByClass(key){
-      let data={
-        charge:this.moneyTypeCur,
-        courseCategoryId:this.classCur==0?'':this.classList[this.classCur-1].id,
-        courseContentId:this.contentCur==0?'':this.conList[this.contentCur-1].id,
-        sortType:this.typeCur==0?'':this.typeCur-1,
-        pageSize:10,
-        pageNum:this.page,
-        title:key
-      }
-      this.$http.post('course/pageQuery',data).then(res=>{
-        console.log(res);
-        if(res.code==0){
-          this.list=res.data.content;
+    findListByClass(key) {
+      let data = {
+        charge: this.moneyTypeCur,
+        courseCategoryId:
+          this.classCur == 0 ? "" : this.classList[this.classCur - 1].id,
+        courseContentId:
+          this.contentCur == 0 ? "" : this.conList[this.contentCur - 1].id,
+        sortType: this.typeCur == 0 ? "" : this.typeCur - 1,
+        pageSize: 10,
+        pageNum: this.page,
+        title: key
+      };
+      this.$http.post("course/pageQuery", data).then(res => {
+        if (res.code == 0) {
+          this.list = res.data.content;
           this.total = res.data.totalElements;
-          this.totalPages=res.data.totalPages;
+          this.totalPages = res.data.totalPages;
         }
-      })
+      });
     },
     // 跳转详情
-	choice(item){
-      localStorage.setItem('videoDetail',JSON.stringify(item))
-	  this.$router.push("/detail");
+    choice(item) {
+      localStorage.setItem("videoDetail", JSON.stringify(item));
+      this.$router.push("/detail");
     },
-    choiceType(i){
-      this.vipType=i;
+    choiceType(i) {
+      this.vipType = i;
     }
   }
 };
@@ -180,27 +211,29 @@ export default {
 <style scoped lang="less">
 .content {
   // 分页样式
-  /deep/ .ivu-page-item{
-    border-radius:50%;
-    margin:0 20px;
-    border:0;
-    color:#4D555D;
-    font-size:14px;
-    width:35px;
-    height:35px;
-    line-height:35px;
+  /deep/ .ivu-page-item {
+    border-radius: 50%;
+    margin: 0 20px;
+    border: 0;
+    color: #4d555d;
+    font-size: 14px;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
   }
-  /deep/ .ivu-page-item-active{
-    background:rgba(77,85,93,1);
-    color:#fff;
+  /deep/ .ivu-page-item-active {
+    background: rgba(77, 85, 93, 1);
+    color: #fff;
   }
-  /deep/ .ivu-page-item-active a, .ivu-page-item-active:hover a{
-    color:#fff;
+  /deep/ .ivu-page-item-active a,
+  .ivu-page-item-active:hover a {
+    color: #fff;
   }
-  /deep/ .ivu-page-next, .ivu-page-prev{
-    background:rgba(0,0,0,0);
+  /deep/ .ivu-page-next,
+  .ivu-page-prev {
+    background: rgba(0, 0, 0, 0);
   }
-  margin-bottom:80px;
+  margin-bottom: 80px;
   .typeBox {
     margin-bottom: 40px;
     .active {
@@ -310,7 +343,7 @@ export default {
           width: 270px;
           height: 230px;
           margin-top: 40px;
-          margin-right:20px;
+          margin-right: 20px;
           img {
             display: block;
             width: 270px;
@@ -338,9 +371,9 @@ export default {
               -webkit-box-orient: vertical;
             }
             .price {
-              display:flex;
-              align-items:center;
-              justify-content:space-between;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
               margin-top: 10px;
               .leftPrice {
                 font-size: 16px;
@@ -359,20 +392,20 @@ export default {
           }
         }
       }
-      .pageBox{
-        text-align:center;
-        .page{
+      .pageBox {
+        text-align: center;
+        .page {
           cursor: pointer;
-          display:inline-flex;
-          height:35px;
-          line-height:35px;
-          color:#4D555D;
-          font-size:14px;
+          display: inline-flex;
+          height: 35px;
+          line-height: 35px;
+          color: #4d555d;
+          font-size: 14px;
         }
-        p{
-          margin:0 20px;
+        p {
+          margin: 0 20px;
         }
-        margin:50px auto;
+        margin: 50px auto;
       }
     }
   }

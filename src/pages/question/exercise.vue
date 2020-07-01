@@ -211,7 +211,6 @@ export default {
         // 提交答案
         saveAnswer(answerList){
             this.$http.post('test/saveTestRecord',answerList).then(res=>{
-                console.log(res);
                 if(res.code==0){
                     this.$Message.info("提交成功");
                     localStorage.setItem('answerInfo',JSON.stringify(this.questionList));
@@ -233,7 +232,6 @@ export default {
                         } else {
                             this.questionList[index].isRight = 0;
                         }
-                        console.log(this.questionList[index]);
                     } else {
                         item.isChecked = false;
                     }

@@ -214,28 +214,26 @@ export default {
     methods: {
         loginOut(){
             localStorage.clear();
-            // location.reload();
+            location.reload();
             this.$router.push("/");
         },
         // 搜索
         searchList(){
-            console.log(this.searchKey);
+            this.reload();
             // 搜课程
             if(this.itemType==0){
-                this.$router.push({name:"course",params:{title:this.searchKey}})
+                this.$router.push({name:"course",query:{title:this.searchKey}})
             }else{
-                this.$router.push({name:"question",params:{title:this.searchKey}})
+                this.$router.push({name:"question",query:{title:this.searchKey}})
             }
         },
         // 选择搜索类型
         clickType(type){
-            console.log(type);
             this.itemType=type;
             this.selectShow=false;
             this.selectItem=type==0?"课程":"题库";
         },
         isLoginUser(data){
-            console.log(data);
             this.isLogin=data.isLogin;
             this.userInfo=data.userInfo
         },
@@ -243,7 +241,6 @@ export default {
             this.showLogins(i)
         },
         showLogins(data){
-            console.log(data)
             this.type={
                 loginCur:data,
                 showModel:true
@@ -288,7 +285,18 @@ export default {
     // 监听当前路由
     watch: {
         $route(to, from) {
-            console.log(this.$route.name);
+            if(this.$route.name=="course"){
+                this.itemType=0;
+                this.selectItem="课程";
+            }
+            if(this.$route.name=="question"){
+                this.itemType=1;
+                this.selectItem="题库";
+            }
+            if(this.$route.name=="index"){
+                this.itemType=0;
+                this.selectItem="课程";
+            }
             // this.searchKey="";
             this.routeName = this.$route.name;
         }

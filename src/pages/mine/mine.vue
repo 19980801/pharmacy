@@ -27,8 +27,7 @@
 			}
         },
         created(){
-            console.log(this.$route.name)
-            this.routeName=this.$route.name
+            this.routeName=this.$route.name;
         },
 		methods:{
 			// 侧边选项卡

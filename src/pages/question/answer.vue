@@ -163,10 +163,8 @@
 			}
 		},
 		mounted(){
-			this.questionList=JSON.parse(localStorage.getItem('answerInfo'))
-			this.myAnswer=JSON.parse(localStorage.getItem("yourAnswer"))
-			console.log(this.questionList);
-			console.log(this.myAnswer);
+			this.questionList=JSON.parse(localStorage.getItem('answerInfo'));
+			this.myAnswer=JSON.parse(localStorage.getItem("yourAnswer"));
 			this.findSubjectIsCollect();
 		},
 		created(){
@@ -193,7 +191,6 @@
 						feedbackCause:cause,
 						subjectId:this.questionList[this.questionCur].id
 					}).then(res=>{
-						console.log(res);
 						if(res.code==0){
 							this.feedContent="";
 							this.alert=false;
@@ -206,7 +203,6 @@
 			},
 			// 修改收藏
 			collect(item){
-				console.log(item)
 				let data={
 					subjectId:item.id,
 					status:!this.isCollect
@@ -222,15 +218,12 @@
 			addFeedback(){},
 			// 反馈
 			feedback(item){
-				console.log(item);
 				this.alert=true;
 			},
 			// 查询题目是否收藏
 			findSubjectIsCollect(){
 				let id=this.questionList[this.questionCur].id;
-				console.log(id);
 				this.$http.get('test/collect/'+id).then(res=>{
-					console.log(res);
 					if(res.code==0){
 						// if(res.data){
 						// 	this.$Message.success("收藏成功！");
@@ -242,7 +235,6 @@
 				})
 			},
 			choseAnswer(index,answerIndex,type){
-				console.log(index,type);
 				let list=this.questionList[index].list
 				if(type==1){//单选
 					list.map((item,i)=>{

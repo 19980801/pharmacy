@@ -274,12 +274,12 @@ export default {
                 })
                 .then(res => {
                     if (res.code == 0) {
-                        console.log(res.data.user);
                         this.$Message.success("登录成功!");
                         storage.set("User_Id", res.data.user.id);
                         storage.set("userInfo", JSON.stringify(res.data.user));
                         storage.set("token", res.data.token);
                         storage.set("isLogin", true);
+                        storage.set("userQuestionBankList", JSON.stringify(res.data.user.userQuestionBankList));
                         this.isLogin = true;
                         this.loginP.showModel = false;
                         let obj = {

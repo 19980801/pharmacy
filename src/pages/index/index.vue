@@ -170,7 +170,6 @@ export default {
         // 查询轮播图
         findBanner(){
             this.$http.get('banner/query').then(res=>{
-                console.log(res);
                 if(res.code==0){
                     this.bannerList=res.data
                 }
@@ -185,7 +184,6 @@ export default {
                     collectType:0
                 })
                 .then(res => {
-                    console.log(res);
                     if (res.code == 0) {
                         this.myCollectTotal = res.data.totalElements;
                     }
@@ -200,7 +198,6 @@ export default {
                     collectType:1
                 })
                 .then(res => {
-                    console.log(res);
                     if (res.code == 0) {
                         this.mySubjectTotal = res.data.totalElements;
                     }
@@ -213,11 +210,9 @@ export default {
             });
         },
         isLoginUser(data) {
-            console.log(data);
             this.isLogin = data;
         },
         showLogins(data) {
-            console.log(data);
             this.type = {
                 loginCur: data,
                 showModel: true
@@ -226,7 +221,6 @@ export default {
         // 查询首页列表
         findList() {
             this.$http.get("course/homePage").then(res => {
-                console.log("返回数据", res);
                 if (res.code == 0) {
                     this.list = res.data;
                 }

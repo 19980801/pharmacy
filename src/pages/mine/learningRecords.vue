@@ -180,15 +180,13 @@ export default {
     },
     methods: {
         close(){
-            this.alert1=false
-            this.feedContent=""
+            this.alert1=false;
+            this.feedContent="";
         },
-        
         // 反馈
-			feedback(item){
-				console.log(item);
-				this.alert1=true;
-			},
+		feedback(item){
+			this.alert1=true;
+		},
         // 添加反馈
 			addCallInfo(){
 				let list=this.cityList;
@@ -205,7 +203,6 @@ export default {
 						feedbackCause:cause,
 						subjectId:this.id
 					}).then(res=>{
-						console.log(res);
 						if(res.code==0){
 							this.feedContent="";
 							this.alert1=false;
@@ -233,9 +230,7 @@ export default {
 			findSubjectIsCollect(id){
                 this.id=id
 				// let id=this.questionList[this.questionCur].id;
-				console.log(id);
 				this.$http.get('test/collect/'+id).then(res=>{
-					console.log(res);
 					if(res.code==0){
 						this.isCollect=res.data
 					}
@@ -249,7 +244,6 @@ export default {
                     pageSize: this.limit,
                     type: type
                 }).then(res => {
-                    console.log(res);
                     if (res.code == 0) {
                         this.list = res.data.content;
                         this.total = res.data.totalElements;
@@ -259,15 +253,13 @@ export default {
         },
         // 收藏
         collect(id,status){
-            console.log(id);
             // 0未收藏；1已收藏
             let type=status==0?true:false;
-            console.log(status);
             this.$http.form("/user/updateCollect/class",{
                 recordId:id,
                 status:type
             }).then(res=>{
-                console.log(res);
+                // console.log(res);
             })
         },
         onPageChange(page) {

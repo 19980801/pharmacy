@@ -84,7 +84,6 @@ export default {
       };
       this.$http.post("inform/pageQuery", data).then(res => {
         if (res.code == 0) {
-          console.log(res);
           this.mesList = res.data;
           this.total = res.data.totalElements;
           this.totalPages = res.data.totalPages;
@@ -101,7 +100,6 @@ export default {
     },
     // 更改页码
     changePage(e) {
-      console.log(e);
       this.page = e;
       this.findListByClass();
     }

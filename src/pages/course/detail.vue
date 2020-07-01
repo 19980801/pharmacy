@@ -136,14 +136,12 @@
 		methods: {
 			// 查询视频上次播放时间节点
 			findLastTime(){
-				let info=""
-				let id=JSON.parse(localStorage.getItem("videoDetail")).id
-				console.log(id)
+				let info="";
+				let id=JSON.parse(localStorage.getItem("videoDetail")).id;
 				if(localStorage.getItem("isLogin")&&this.reqCount==0){
 					this.$http.get("course/findRecord/"+id).then(res=>{
-						console.log(res);
-						this.reqCount++
-						this.timeInfo=res.data
+						this.reqCount++;
+						this.timeInfo=res.data;
 						this.detail();
 					})
 				}
@@ -160,7 +158,7 @@
 					if(this.isInStudy){
 						// 保存请求
 						this.$http.post('course/record',data).then(res => {
-							console.log(res);
+							
 						})
 					}
                 }
@@ -173,7 +171,6 @@
 				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"));
 				this.$http.get(`/course/queryCollect/${videoDetail.id}`).then(res=>{
 					if(res.code==0){
-						console.log(res);
 						this.isCollect=res.data;
 					}
 				})
@@ -186,7 +183,6 @@
 					status:false
 				}
 				this.$http.form('course/collect',data).then(res=>{
-					console.log(res);
 					if(res.code==0){
 						this.isCollect=false;
 						this.$Message.success('已取消收藏')
@@ -214,7 +210,6 @@
 					status:true
 				}
 				this.$http.form('course/collect',data).then(res=>{
-					console.log(res);
 					if(res.code==0){
 						this.isCollect=true;
 						this.$Message.success("已添加收藏！");
@@ -239,7 +234,6 @@
 						this.$Message.warning("您已加入学习列表，无需再次加入")
 					}else{
 						this.$http.get('course/addStudyRecord/'+id).then(res=>{
-							console.log(res);
 							if(res.code==0){
 								this.$Message.success('加入成功！');
 								this.isInStudy=true
@@ -267,13 +261,10 @@
 			},
 			// 详情渲染
 			detail(){
-				console.log(this.nowId);
-				console.log(JSON.parse(localStorage.getItem("videoDetail")));
 				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"))
 				this.videoDetail=videoDetail;
 				let videoList=videoDetail.classHours
 				videoList.forEach((item,index)=>{
-					// console.log(index);
 					item.second = parseInt(item.videoDuration);// 秒
 					item.minute = 0;// 分
 					item.hour = 0;// 小时
@@ -281,7 +272,6 @@
 					item.minute=Math.floor(item.videoDuration/60%60);
 					item.second=Math.floor(item.videoDuration%60);
 					if(item.id==this.timeInfo && this.timeInfo.lastWatch){
-						console.log(item,"id");
 						this.videoUrl=item.classUrl;
 						this.components=item.classTitle
 						this.videoCur=index
