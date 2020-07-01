@@ -27,7 +27,7 @@
                                 </div>
 								<div class="answer">
                                 <div class='flex Atitle'>
-                                    <p>正确答案：<b>A</b></p>
+                                    <p>正确答案：<b v-for="(optionsItems,optionIndex) in item.questionOptionList" :key="optionIndex"><b v-if="optionsItems.isTrue">{{optionsItems.option}}</b></b></p>
                                     <p>你的答案：<b>{{myAnswer[index].answer}}</b></p>
                                 </div>
                                 <div class="flex analysis">
