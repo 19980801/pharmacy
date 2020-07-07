@@ -3845,3 +3845,18 @@ URL = bank/delete/{id}
     "totalElement": null,
     "data": null
 }
+
+30. 导入题目(上传excel)
+URL = subject/import
+请求方式：POST
+参数类型：form-data
+请求参数：
+	file：文件类型
+返回参数：
+{
+    "code": 0,
+    "message": "导入成功",
+    "totalPage": null,
+    "totalElement": null,
+    "data": null
+}

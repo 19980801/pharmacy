@@ -28,7 +28,20 @@
       </div>
       <div class="tableHead">
         <div style="font-weight:700;">数据列表</div>
-        <Button type="primary" @click="addModal=true">新增题目</Button>
+        <div style="display:flex">
+          <Button type="primary" @click="addModal=true" style="margin-right:10px;">新增题目</Button>
+          <Upload
+            :action="uploadUrl"
+            :format="['xls']"
+            :data="uploadData"
+            :show-upload-list="false"
+            :before-upload="onBeforeImgUploading"
+            :on-success="onImgUploadInforSuccess"
+            :on-format-error="handleImgFormatError"
+          >
+            <Button icon="ios-cloud-upload-outline" :loading="imgUploadLoading">导入题目</Button>
+          </Upload>
+        </div>
       </div>
       <Table :columns="tableColumns" :data="tableData" border></Table>
       <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
@@ -97,6 +110,9 @@ import { getStore, removeStore, setStore } from "@/config/storage";
 export default {
   data() {
     return {
+      uploadUrl: `${this.host}/admin/subject/import`,
+      imgUploadLoading: false,
+      uploadData: {},
       modalTitle: "新增题目",
       topicList: [],
       userType: [],
@@ -277,6 +293,21 @@ export default {
     this.getTopic();
   },
   methods: {
+    onBeforeImgUploading() {
+      this.imgUploadLoading = true;
+    },
+    onImgUploadInforSuccess(res) {
+      console.log(res);
+      this.imgUploadLoading = false;
+      this.$Message.success(res.message);
+      this.getTableData();
+    },
+    handleImgFormatError(file) {
+      this.$Notice.error({
+        title: "文件格式错误",
+        desc: "上传的文件格式是错误的，请选择xls的文件"
+      });
+    },
     addOption() {
       this.options.push({
         optionContent: "",
@@ -442,9 +473,9 @@ export default {
 }
 .optionsLine {
   display: flex;
-  justify-content:space-between;
-  /deep/ .ivu-input-wrapper{
-    width:80%;
+  justify-content: space-between;
+  /deep/ .ivu-input-wrapper {
+    width: 80%;
   }
 }
 </style>
