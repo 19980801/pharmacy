@@ -17,3 +17,15 @@ export const addSubject = data => postConfig('admin/subject/add', data);
 
 // 查询题库
 export const getList = data => postConfig('admin/bank/pageQuery', data);
+
+// 删除题库
+export const delBank = (id) => fetch(`admin/bank/delete/${id}`);
+
+// 修改题库
+export const updateBank = data => postConfig('admin/bank/update', data);
+
+// 删除题目
+export const delSubject = (id) => fetch(`admin/subject/delete/${id}`);
+
+// 修改题目
+export const updateSubject = data => postConfig('admin/subject/update', data);

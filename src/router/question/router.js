@@ -17,12 +17,13 @@ export const questionRouter = [{
         require(['@/views/question/question-list.vue'], resolve)
     }
 },
-// {
-//     id:218,
-//     path:"/add_subject",
-//     icon:'ios-plus',
-//     component: resolve => {
-//         require(['@/views/question/add-subject.vue'], resolve)
-//     }
-// }
+// 修改题目
+{
+    id:241,
+    path:"/update_subject",
+    icon:'ios-plus',
+    component: resolve => {
+        require(['@/views/question/update-subject.vue'], resolve)
+    }
+}
 ]

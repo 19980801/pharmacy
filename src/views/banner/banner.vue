@@ -20,7 +20,6 @@
                     show-elevator></Page>
             </Row>
         </Card>
-        <!-- -->
         <Modal v-model="addModal" title="轮播图片" :closable="false">
             <Form ref="bannerValidate" :model="bannerValidate" :label-width="120" :rules="rulesBanner">
                 <FormItem label="标题：" prop="title">
@@ -77,7 +76,6 @@ export default {
                 sort: null
             },
             addModal: false,
-
             pageNo: 1,
             pageSize: 10,
             time: [],
