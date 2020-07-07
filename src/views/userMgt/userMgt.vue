@@ -201,7 +201,7 @@ export default {
                     width: 80
                 },
                 {
-                    title: "用户名",
+                    title: "昵称",
                     key: "userName"
                 },
                 {
@@ -225,19 +225,19 @@ export default {
                         return h("span", {}, txt);
                     }
                 },
-                {
-                    title: "认证状态",
-                    key: "certificationStatus",
-                    render: (h, params) => {
-                        return h(
-                            "span",
-                            {},
-                            certificationStatusMap.get(
-                                params.row.certificationStatus
-                            )
-                        );
-                    }
-                },
+                // {
+                //     title: "认证状态",
+                //     key: "certificationStatus",
+                //     render: (h, params) => {
+                //         return h(
+                //             "span",
+                //             {},
+                //             certificationStatusMap.get(
+                //                 params.row.certificationStatus
+                //             )
+                //         );
+                //     }
+                // },
                 {
                     title: "用户状态",
                     key: "memberStatus",
@@ -385,10 +385,10 @@ export default {
                     setTimeout(() => {
                         this.$Modal.remove();
                     }, 1000);
-                    this.$Message.success(res.message);
+                    this.$Message.success("操作成功！");
                     this.getTableData();
                 } else {
-                    this.$Message.error(res.message);
+                    this.$Message.error("操作失败！");
                 }
             });
         },
