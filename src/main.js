@@ -36,7 +36,7 @@ Vue.filter('toFloor', (number, scale) => {
     return toFloor(number, scale);
 });
 Vue.prototype.toFloor = toFloor;
-Vue.prototype.host = "http://121.41.69.65:6004";       //测试服务器
+Vue.prototype.host = "http://47.115.32.248:6004";       //测试服务器
 axios.interceptors.response.use((response) => {
         const data = response.data
         let baseURL = response.config.baseURL;
