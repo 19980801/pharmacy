@@ -9,7 +9,7 @@
                 </div>
                 <div class="classList" v-if="learningCur==0">
                     <div class="classItem flex" v-for="(item,index) in list" :key="index">
-                        <img class="leftImg" src="../../assets/imgs/index/loginPic.png" alt="">
+                        <img class="leftImg" :src="item.courseImg" alt="">
                         <div class="rightClassTitle">
                             <div class="studyBtn" @click="goStuty(item)">继续学习</div>
                             <div class="topTitle">{{item.courseTitle}}</div>
@@ -18,7 +18,7 @@
                                     <p>学习有效期（倒计时）</p>
                                     <p>有效期至：{{item.courseTime}}</p>
                                 </div>
-                                <div class="collectBox" @click="cancelCollect(0,item.courseId)" :class="{active:index==0}">
+                                <div class="collectBox active" @click="cancelCollect(0,item.id)">
                                     <Icon type="md-heart" />
                                     <span>收藏</span>
                                 </div>
@@ -137,12 +137,13 @@ export default {
         };
     },
     created() {
-        this.getList(0);
+        this.learningCur=this.$route.query.index || 0;
+        this.getList(this.learningCur);
     },
     methods: {
         // 
         goStuty(item){
-            this.$http.get('course/findCourse/'+item.id).then(res=>{
+            this.$http.get('course/findCourse/'+item.courseId).then(res=>{
                 // JSON.stringify
                 localStorage.setItem('videoDetail',JSON.stringify(res.data))
                 this.$router.push('/detail')
@@ -157,6 +158,7 @@ export default {
             this.$http.post('user/cancelCollect',data).then(res=>{
                 if(res.code==0){
                     this.$Message.success('已取消收藏')
+                    this.getList(0);
                 }
             })
         },
@@ -281,7 +283,7 @@ export default {
                             position: absolute;
                             right: 0;
                             bottom: 20px;
-                            cursor: default;
+                            cursor: pointer;
                         }
                         .topTitle {
                             width: 100%;
@@ -304,6 +306,7 @@ export default {
                                 margin-left: 30px;
                                 font-size: 14px;
                                 color: #07111b;
+                                cursor: pointer;
                                 span {
                                     margin-left: 10px;
                                 }

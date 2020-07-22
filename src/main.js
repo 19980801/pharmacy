@@ -21,7 +21,7 @@ require('vue-video-player/src/custom-theme.css');
 require('./assets/css/video.css');
 Vue.prototype.$http = http;
 Vue.config.productionTip = false;
-Vue.prototype.host = "http://192.168.2.146:8080";            
+Vue.prototype.host = "http://47.115.32.248:6002";            
 
 Vue.use(iView);
 Vue.use(VueRouter);

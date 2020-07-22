@@ -8,7 +8,7 @@
 						<BreadcrumbItem>{{components}}</BreadcrumbItem>
 					</Breadcrumb>
 				</div>
-				<div class="videoBox flex">
+				<div class="videoBox flex" @contextmenu.prevent="menuPlayer()">
 					<!-- <div class="shade" v-if="isInStudy&&isShow">
 						<Button style="width:200px;height:60px;font-size:16px;background:#29b28b;" type="success" @click=''>继续学习</Button>
 					</div> -->

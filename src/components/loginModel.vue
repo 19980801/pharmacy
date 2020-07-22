@@ -48,14 +48,15 @@
                             </span>
                         </div>
                         <div class="flex-btween" v-if="loginP.loginCur==0">
-                            <div class="flex">
+                            <!-- <div class="flex">
                                 <img :src="checked?checkAUrl:checkUrl" alt @click="choseType" />
                                 <span>10天内自动登录</span>
-                            </div>
+                            </div> -->
                             <div @click="backPassword" style="cursor: default;">忘记密码</div>
                         </div>
                     </div>
-                    <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==0" @click="userLogin">登录</div>
+                     <!-- :class="{active:checked}" -->
+                    <div class="btn" v-if="loginP.loginCur==0" @click="userLogin">登录</div>
                     <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==1" @click="register">注册</div>
                 </div>
             </div>

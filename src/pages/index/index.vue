@@ -18,8 +18,8 @@
                             <!-- <img class="vipImg" src="../../assets/imgs/index/vip1.png" alt=""> -->
                         </div>
                         <div class="collectBox flex-btween">
-                            <div>收藏课程<span>{{myCollectTotal}}</span></div>
-                            <div>收藏题目<span>{{mySubjectTotal}}</span></div>
+                            <div @click="goMyCollect(0)">收藏课程<span>{{myCollectTotal}}</span></div>
+                            <div @click="goMyCollect(1)">收藏题目<span>{{mySubjectTotal}}</span></div>
                         </div>
                         <!-- <div class="recommendBox">
 							<div class="recommendTitle">特别推荐</div>
@@ -167,6 +167,10 @@ export default {
         
     },
     methods: {
+        // 跳转我的收藏
+        goMyCollect(index){
+            this.$router.push({path:'/myCollection',query:{index:index}})
+        },
         // 查询轮播图
         findBanner(){
             this.$http.get('banner/query').then(res=>{

@@ -212,6 +212,13 @@ export default {
         }
     },
     methods: {
+        mouseLeave(){
+            this.showLoginList=false
+
+        },
+        mouseOver(){
+            this.showLoginList=true
+        },
         loginOut(){
             localStorage.clear();
             location.reload();
