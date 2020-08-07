@@ -13,7 +13,7 @@
                             <Upload class="head_img" :action="uploadImgUrl" :format="['jpg','jpeg','png']" :data="uploadData"
                                 :show-upload-list="false" :headers="headers" :before-upload="onBeforeImgUploading"
                                 :on-success="onImgUploadInforSuccess" :on-format-error="handleImgFormatError">
-                                <img :src="avatar" />
+                                <img :src="userInfoFrom.avatar" />
                                 <div class="update">修改</div>
                             </Upload>
                             <!-- <div  @click.stop="uploadHeadImg">
@@ -23,10 +23,203 @@
                         </div>
                     </div>
                 </div>
-                <div class="line">
-                    <span class="titleMsg">昵称</span>
-                    <input style="padding:0 10px;box-sizing:border-box" type="text" v-model="userName">
-                </div>
+                <Form ref="formItem" style="width:100%;margin-top:20px;" :model="userInfoFrom" :rules="ruleInline" inline>
+                    <FormItem>
+                        <div class="flex" style="width:260px;font-size:14px;">
+                            <span class="titleMsg">昵称</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.userName" placeholder="请输入昵称"></Input>
+                        </div>
+                    </FormItem>
+                    <!-- <FormItem>
+                        <div class="flex" style="width:260px;font-size:14px;">
+                            <span class="titleMsg">性别</span>
+                            <Select style="width:80%;font-size:14px;" v-model="formItem.selectSex">
+                                <Option value="0">男</Option>
+                                <Option value="1">女</Option>
+                            </Select>
+                        </div>
+                    </FormItem>
+                    <FormItem>
+                        <div class="flex" style="width:260px;font-size:14px;">
+                            <span class="titleMsg">年龄</span>
+                            <Input type="number" style="width:80%;font-size:14px;" v-model="formItem.age" placeholder="请输入年龄"></Input>
+                        </div>
+                    </FormItem> -->
+                </Form>
+            </div>
+            <div class="title">
+                <Dropdown trigger="click" style="margin-left: 20px">
+                    <a href="javascript:void(0)" style="color:#000">
+                        <p style="display:inline-block">{{selectedClass==""?'选择用户类别':selectedClass.categoryName}}</p>
+                        <Icon type="md-arrow-dropdown" style="font-size:28px" />
+                    </a>
+                    <DropdownMenu slot="list">
+                        <DropdownItem  @click.native="getName(item)" v-for="(item,index) in userClass" :key="index">{{item.categoryName}}</DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+            <div class="conBox">
+                <Form ref="userInfoFrom" style="width:100%;margin-top:20px;" :model="userInfoFrom" :rules="ruleInline" inline>
+                    <FormItem style="width:100%;">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">姓名</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.realName" placeholder="请输入真实姓名"></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">性别</span>
+                            <Select style="width:80%;font-size:14px;" v-model="userInfoFrom.gender">
+                                <Option :value="item.value" v-for="(item,index) in sex" :key="index">{{item.name}}</Option>
+                            </Select>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">年龄</span>
+                            <Input type="number" style="width:80%;font-size:14px;" v-model="userInfoFrom.userAge" placeholder="请输入年龄"></Input>
+                        </div>
+                    </FormItem>
+                    <!-- <FormItem style="width:100%;">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">手机号</span>
+                            <Input type="tel" style="width:80%;font-size:14px;" v-model="userInfoFrom.tel" placeholder="请输入手机号"></Input>
+                        </div>
+                    </FormItem> -->
+                    <FormItem style="width:100%;" v-if="selectedClass.id==2||selectedClass.id==4||selectedClass.id==7">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">职称</span>
+                            <Select style="width:80%;font-size:14px;" v-model="userInfoFrom.jobTitle">
+                                <Option :value="item.value" v-for="(item,index) in rankList" :key="index">{{item.name}}</Option>
+                            </Select>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==2||selectedClass.id==7||selectedClass.id==8">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">专业</span>
+                            <Input type="tel" style="width:80%;font-size:14px;" v-model="userInfoFrom.profession" placeholder="请输入专业"></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==2||selectedClass.id==4">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">工号</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.jobNumber" placeholder="请输入工号"></Input>
+                        </div>
+                    </FormItem>
+                    
+                    <!-- <FormItem style="width:100%;">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">工作单位</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.workUnit" placeholder="请输入工作单位"></Input>
+                        </div>
+                    </FormItem> -->
+                    <FormItem style="width:100%;" v-if="selectedClass.id==4">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">选送单位</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.electionUnit" placeholder="请输入选送单位"></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==4||selectedClass.id==6">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">毕业院校</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.graduatedSchool" placeholder="请输入毕业院校"></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==4">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">进修时间段</span>
+                           <Row  style="width:80%;font-size:14px;">
+                                <Col span="11">
+                                    <DatePicker type="date" placeholder="开始时间" v-model="formItem.urtherStudyStartTime"></DatePicker>
+                                </Col>
+                                <Col span="2" style="text-align: center">-</Col>
+                                <Col span="11">
+                                    <DatePicker type="date" placeholder="结束时间" v-model="formItem.furtherStudyEndTime"></DatePicker>
+                                </Col>
+                            </Row>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==3||selectedClass.id==5">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">学号</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.studentNum" placeholder="请输入学号"></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==3||selectedClass.id==5">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">班级</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.studentClass" placeholder="请输入班级"></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==3||selectedClass.id==5">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">学校</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.school" placeholder="请输入学校"></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==3||selectedClass.id==5">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">实习时间段</span>
+                           <Row  style="width:80%;font-size:14px;">
+                                <Col span="11">
+                                    <DatePicker type="date" placeholder="开始时间" v-model="formItem.practiceStartTime"></DatePicker>
+                                </Col>
+                                <Col span="2" style="text-align: center">-</Col>
+                                <Col span="11">
+                                    <DatePicker type="date" placeholder="结束时间" v-model="formItem.practiceEndTime"></DatePicker>
+                                </Col>
+                            </Row>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==6">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">专业方向</span>
+                            <Input type="text" style="width:80%;font-size:14px;" v-model="userInfoFrom.professionalDirection" placeholder="请输入专业方向"></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==6">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">毕业年份</span>
+                           <Row  style="width:80%;font-size:14px;">
+                                <Col span="11">
+                                    <DatePicker type="year" placeholder="请选择毕业年份" v-model="formItem.graduationYear"></DatePicker>
+                                </Col>
+                            </Row>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==2">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">部门</span>
+                            <Select style="width:80%;font-size:14px;" v-model="userInfoFrom.department">
+                                <Option :value="item.value" v-for="(item,index) in departmentList" :key="index">{{item.name}}</Option>
+                            </Select>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==4">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">进修专业</span>
+                            <Select style="width:80%;font-size:14px;" v-model="userInfoFrom.furtherStudies">
+                                <Option :value="item.value" v-for="(item,index) in educationProfessionalList" :key="index">{{item.name}}</Option>
+                            </Select>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==6||selectedClass.id==7||selectedClass.id==8">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">学位</span>
+                            <Select style="width:80%;font-size:14px;" v-model="userInfoFrom.academicDegree">
+                                <Option :value="item.value" v-for="(item,index) in degreeList" :key="index">{{item.name}}</Option>
+                            </Select>
+                        </div>
+                    </FormItem>
+                    <FormItem style="width:100%;" v-if="selectedClass.id==8">
+                        <div class="flex" style="width:400px;font-size:14px;">
+                            <span class="titleMsg">职称</span>
+                            <Select style="width:80%;font-size:14px;" v-model="userInfoFrom.jobTitle">
+                                <Option :value="item.value" v-for="(item,index) in medicRankList" :key="index">{{item.name}}</Option>
+                            </Select>
+                        </div>
+                    </FormItem>
+                </Form>
             </div>
             <div class="title">
                 <p>账号安全</p>
@@ -111,7 +304,6 @@
 export default {
     data() {
         return {
-            avatar:require('../../assets/imgs/index/userImg.png'),
             first: true,
             phoneAlert: false,
             psdAlert: false,
@@ -129,14 +321,94 @@ export default {
             newPhoneVer:'',
             passwordPhone:'',
             passwordVer:'',
-            newPassword:''
+            newPassword:'',
+            // formItem: {
+            //     userName: '',
+            //     selectSex: '',
+            //     age: '',
+            // },
+            userInfoFrom:{
+                avatar:require('../../assets/imgs/index/userImg.png'),//用户头像
+                userName: '',//用户名
+                realName: '',//真实姓名
+                gender: '',//性别
+                // tel:'',//手机号
+                userAge: '',//年龄
+                jobTitle:'',//职称
+                profession:'',//专业
+                department:"",//部门
+                furtherStudies:'',//进修专业
+                academicDegree:'',//学位
+                // medicRank:'',//医护职称
+                jobNumber:'',//工号
+                // workUnit:'',//工作单位
+                electionUnit:'',//选送单位
+                graduatedSchool:'',//毕业院校
+                urtherStudyStartTime:'',//进修开始时间
+                furtherStudyEndTime:'',//进修结束时间
+                studentNum:'',//学号
+                studentClass:'',//班级
+                school:'',//学校
+                practiceStartTime:'',//实习开始时间
+                practiceEndTime:'',//实习结束时间段
+                professionalDirection:'',//专业方向
+                graduationYear:'',//毕业年份
+                userCategoryId:'',//用户分类表id
+            },
+            sex:[
+                {value:0,name:"男"},
+                {value:1,name:"女"},
+            ],
+            rankList:[//职称
+                {value:0,name:"药师"},
+                {value:1,name:"主管药师"},
+                {value:2,name:"副主任药师"},
+                {value:3,name:"主任药师"},
+            ],
+            departmentList:[//部门
+                {value:0,name:'办公室'},
+                {value:1,name:'临床药学'},
+                {value:2,name:'制剂室'},
+                {value:3,name:'南院西药房'},
+                {value:4,name:'北院西药房'},
+                {value:5,name:'南院PIVAS'},
+                {value:6,name:'北院PIVAS'},
+                {value:7,name:'南院中心药房'},
+                {value:8,name:'北院中心药房'},
+                {value:9,name:'南院中药房'},
+                {value:10,name:'北院中药房'},
+            ],
+            professionList:[//专业
+                { value:0,name:"中药"},
+                { value:1,name:"西药"},
+            ],
+            educationProfessionalList:[//进修专业
+                {value:0,name:"临床药学抗感染专业"},
+                {value:1,name:"临床药学心血管专业"},
+                {value:2,name:"临床药学肾病专业"},
+                {value:3,name:"临床药学肿瘤专业"},
+                {value:4,name:"临床药学通科专业"},
+            ],
+            degreeList:[//学位
+                {value:0,name:"学士"},
+                {value:1,name:"硕士"},
+                {value:2,name:"博士"},
+            ],
+            medicRankList:[//医护职称
+                {value:0,name:"初级"},
+                {value:1,name:"中级"},
+                {value:2,name:"高级"},
+            ],
+            userClass:[],//用户分类
+            selectedClass:''
         };
     },
     mounted(){
         this.userInfo=JSON.parse(localStorage.getItem("userInfo"))
-        this.userName=this.userInfo.userName
+        this.userInfoFrom.userName=this.userInfo.userName
+        this.findUserClass();
         if(this.userInfo.headUrl!=null){
-            this.avatar=this.userInfo.headUrl
+            this.userInfoFrom.avatar=this.userInfo.headUrl
         }
         this.headers={
             ['ACCESS-TOKEN']:localStorage.getItem("token"),
@@ -144,6 +416,20 @@ export default {
         }
     },
     methods: {
+        getName(item){
+            this.selectedClass=item;
+            this.userInfoFrom.userCategoryId=item.id
+        },
+        // 查询用户分类
+        findUserClass(){
+            this.$http.get("user/findAllCategory").then(res=>{
+                console.log(res);
+                if(res.code==0){
+                    res.data.splice(0,1);
+                    this.userClass=res.data
+                }
+            })
+        },
         boundPassword(){
             if(this.passwordPhone){
                 this.$Message.warning("请输入手机号")
@@ -288,7 +574,7 @@ export default {
         },
         onImgUploadInforSuccess(res) {
             this.imgUploadLoading = false;
-            this.avatar = res.data || "";
+            this.userInfoFrom.avatar = res.data || "";
         },
         handleImgFormatError(file) {
             this.$Notice.error({
@@ -298,10 +584,8 @@ export default {
         },
         // 保存个人资料
         save(){
-            let data={
-                imgUrl:this.avatar==require('../../assets/imgs/index/userImg.png')?'':this.avatar,
-                nickName:this.userName
-            }
+            console.log("用户信息",this.userInfoFrom);
+            let data=this.userInfoFrom;
             this.$http.post("user/update/resource",data).then(res=>{
                 if(res.code==0){
                     this.$Message.success("修改成功")
@@ -346,6 +630,12 @@ export default {
 </script>
 
 <style scoped lang="less">
+.flex{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+}
 .content {
     .rightContent {
         width: 960px;

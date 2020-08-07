@@ -11,6 +11,7 @@
                         <router-link to="/" :class="routeName=='index'?'active':''">首页</router-link>
                         <router-link to="/course" :class="routeName=='course'?'active':''">课程</router-link>
                         <router-link to="/question" :class="routeName=='question'?'active':''">题库</router-link>
+                        <router-link to="/testPaper" :class="routeName=='testPaper'?'active':''">试卷</router-link>
                     </nav>
                 </div>
                 <div>
@@ -62,11 +63,22 @@
                             </router-link>
                         </div>
                         <div class="userBox">
-                            <div @click="showLogin">
-                                <img src="./assets/imgs/index/userImg.png" alt class="userImg" />
+                            <Dropdown>
+                                <a href="javascript:void(0)" style="color:#000">
+                                    <div @click="showLogin">
+                                        <img :src="userInfo.headUrl==null?'./assets/imgs/index/userImg.png':userInfo.headUrl" alt class="userImg" />
+                                        <span>{{userInfo.userName==null?useInfo.mobilePhone:userInfo.userName}}</span>
+                                    </div>
+                                </a>
+                                <DropdownMenu slot="list">
+                                    <DropdownItem  @click.native="goOther(item)" v-for="(item,index) in mainList" :key="index">{{item.name}}</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                            <!-- <div @click="showLogin">
+                                <img :src="userInfo.headUrl==null?'./assets/imgs/index/userImg.png':userInfo.headUrl" alt class="userImg" />
                                 <span>{{userInfo.userName==null?useInfo.mobilePhone:userInfo.userName}}</span>
-                            </div>
-                            <div class="loginList" v-show="showLoginList">
+                            </div> -->
+                            <!-- <div class="loginList" v-show="showLoginList">
                                 <ul>
                                     <li :class="{active:routeName=='learningRecords'}" @click="closeLoginList">
                                         <router-link to="/learningRecords">学习记录</router-link>
@@ -74,19 +86,19 @@
                                     <li :class="{active:routeName=='myCollection'}" @click="closeLoginList">
                                         <router-link to="/myCollection">我的收藏</router-link>
                                     </li>
-                                    <!-- <li class="line" :class="{active:routeName=='tasks'}" @click="closeLoginList">
+                                    <li class="line" :class="{active:routeName=='tasks'}" @click="closeLoginList">
                                         <router-link to="/tasks">学习任务</router-link>
-                                    </li> -->
-                                    <!-- <li :class="{active:routeName=='myOrder'}" @click="closeLoginList">
+                                    </li>
+                                    <li :class="{active:routeName=='myOrder'}" @click="closeLoginList">
                                         <router-link to="/myOrder">我的订单</router-link>
-                                    </li> -->
-                                    <!-- <li :class="{active:routeName=='memberMgt'}" @click="closeLoginList">
+                                    </li>
+                                    <li :class="{active:routeName=='memberMgt'}" @click="closeLoginList">
                                         <router-link to="/memberMgt">会员管理</router-link>
-                                    </li> -->
-                                    <!-- <li class="line" :class="{active:routeName=='certification'}"
+                                    </li>
+                                    <li class="line" :class="{active:routeName=='certification'}"
                                         @click="closeLoginList">
                                         <router-link to="/certification">职业认证</router-link>
-                                    </li> -->
+                                    </li>
                                     <li :class="{active:routeName=='setting'}" @click="closeLoginList">
                                         <router-link to="/setting">个人设置</router-link>
                                     </li>
@@ -97,7 +109,7 @@
                                         <router-link to="/">退出登录</router-link>
                                     </li>
                                 </ul>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -203,15 +215,36 @@ export default {
             type:{},
             isLogin:false,
             userInfo:'',
+            mainList:[
+                {value:0,url:'/learningRecords',name:'学习记录'},
+                {value:1,url:'/myCollection',name:'我的收藏'},
+                // {value:2,url:'/tasks',name:'学习任务'},
+                // {value:3,url:'/myOrder',name:'我的订单'},
+                // {value:4,url:'/memberMgt',name:'会员管理'},
+                // {value:5,url:'/certification',name:'职业认证'},
+                {value:6,url:'/setting',name:'个人设置'},
+                {value:7,url:'/feedback',name:'我的反馈'},
+                {value:8,url:'/',name:'退出登录'},
+            ],
         };
     },
     created() {
         if(localStorage.getItem("isLogin")){
+            
             this.isLogin=localStorage.getItem("isLogin");
             this.userInfo=JSON.parse(localStorage.getItem("userInfo"))
+            console.log(this.userInfo);
         }
     },
     methods: {
+        goOther(item){
+            if(item.name=="退出登录"){
+                this.loginOut();
+            }else{
+                this.$router.push(item.url)
+            }
+            
+        },
         mouseLeave(){
             this.showLoginList=false
 

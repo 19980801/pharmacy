@@ -39,11 +39,11 @@
                                     </div>
                                     <div class="infoItem">
                                         <img src="../../assets/imgs/finshed.png" alt="">
-                                        <span>已做数量&nbsp;{{userQuestionBankList.length>0?userQuestionBankList[i].haveNum:""}}</span>
+                                        <span>已做数量&nbsp;{{item.countObj.haveNum}}</span>
                                     </div>
                                     <div class="infoItem">
                                         <img src="../../assets/imgs/nofinshed.png" alt="">
-                                        <span>未做数量&nbsp;{{userQuestionBankList.length>0?Number(item.subjectNum)-Number(userQuestionBankList[i].haveNum):""}}</span>
+                                        <span>未做数量&nbsp;{{Number(item.subjectNum)-Number(item.countObj.haveNum)}}</span>
                                     </div>
                                 </div>
                                 <div class="button" @click="showAlert(item)">开始练习</div>
@@ -126,9 +126,6 @@ export default {
     created(){
         this.title=this.$route.query.title;
         this.getList(this.$route.query.title);
-        if(storage.get("isLogin")){
-            this.getNumber();
-        }
     },
     methods: {
         // 显示做题数量
@@ -136,7 +133,18 @@ export default {
             this.$http.get("/bank/queryByUser").then(res=>{
                 if(res.code==0){
                     console.log(res);
-                    this.userQuestionBankList=res.data;
+                    // this.userQuestionBankList=res.data;
+                    let list=this.list;
+                    list.forEach(item=>{
+                        res.data.forEach(i=>{
+                            if(item.id==i.bankId){
+                                item.countObj=i
+                            }
+                        })
+                    })
+                    console.log(list);
+                    this.list=list
+                    this.list.splice(0,0)
                 }
             })
         },
@@ -269,6 +277,9 @@ export default {
                     this.list=res.data.content;
                     this.total = res.data.totalElements;
                     this.totalPages=res.data.totalPages;
+                    if(storage.get("isLogin")){
+                        this.getNumber();
+                    }
                 }
             })
         },

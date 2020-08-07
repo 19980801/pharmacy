@@ -9,6 +9,10 @@ export default [
     { path: '/detail', name: 'course', component: resolve => require(['../pages/course/detail.vue'], resolve) },
     // 题库
     { path: '/question', name: 'question', component: resolve => require(['../pages/question/question.vue'], resolve) },
+    // 试卷
+    { path: '/testPaper', name: 'testPaper', component: resolve => require(['../pages/testPaper/testPaper.vue'], resolve) },
+    // 试题
+    { path: '/testQuestion', name: 'testQuestion', component: resolve => require(['../pages/testPaper/testQuestion.vue'], resolve) },
 	// 练习
 	{ path: '/exercise', name: 'exercise', component: resolve => require(['../pages/question/exercise.vue'], resolve) },
     // 答案

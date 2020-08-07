@@ -18,7 +18,7 @@
                                     <p>学习有效期（倒计时）</p>
                                     <p>有效期至：{{item.courseTime}}</p>
                                 </div>
-                                <div class="collectBox active" @click="cancelCollect(0,item.id)">
+                                <div class="collectBox active" @click="cancelCollect(learningCur,item.id)">
                                     <Icon type="md-heart" />
                                     <span>收藏</span>
                                 </div>
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="errorsList" v-if="learningCur==1">
+                <div class="errorsList" v-if="learningCur==1||learningCur==2">
                     <!-- <ul class="tab">
                         <li class="tabItem" :class="{acitve:itemId==i}" v-for="{item,i} in 4" :key="i"
                             @click="clickList(i)">选择题</li>
@@ -50,6 +50,25 @@
                 </div>
             </div>
         </div>
+        <!-- 反馈弹框 -->
+        <div class="model" v-show="alert1">
+			<div class="alert">
+                <div class="alertTitle">
+                    <p>添加反馈</p>
+                    <Icon type="md-close" @click="close()" />
+                </div>
+                <div class="alertCon">
+					<Select v-model="model1" style="width:400px;margin-bottom:10px;">
+						<Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+					</Select>
+                    <Input v-model="feedContent" type="textarea" :rows="8" placeholder="输入反馈内容" />
+                </div>
+                <div class="butBox">
+                    <div class="button sure" @click="addCallInfo">确定</div>
+                    <div class="button cancel" @click="close()">取消</div>
+                </div>
+            </div>
+		</div>
         <!-- 错题详情弹框 -->
         <div class="alertMask" v-if="alert">
             <div class="alert">
@@ -91,23 +110,17 @@
                                 </p>
                             </div>
                             <div class="collectionBox">
-                                <div @click="cancelCollect(1,item.id)">
+                                <div @click="cancelCollect(learningCur,detail.id)">
                                     <img src="../../assets/imgs/collection.png" alt="" v-if="detail.collectStatus==0">
                                     <Icon type="md-heart" v-else class="hearted"/>
                                     <span>收藏</span>
                                 </div>
-                                <div>
+                                <div @click="feedback">
                                     <img src="../../assets/imgs/feedback.png" alt="">
                                     <span>反馈</span>
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="line middle">
-                            <p>
-                                <span class="answerTit">相关课程：</span>
-                                <p>暂无相关课程</p>
-                            </p>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -123,7 +136,8 @@ export default {
             vertical: "",
             learningList: [
                 { name: "课程", id: 1 },
-                { name: "题库", id: 2 }
+                { name: "题库", id: 2 },
+                { name: "试题", id: 3 }
             ],
             learningCur: 0, //学习记录选项卡
             alert: false,
@@ -133,7 +147,36 @@ export default {
             total:0,
             list:[],
             detail:{},
-            totalPages:0
+            totalPages:0,
+            cityList: [
+                    {
+                        value: '0',
+                        label: '错别字'
+                    },
+                    {
+                        value: '1',
+                        label: '答案错误'
+                    },
+                    {
+                        value: '2',
+                        label: '题目不完整2'
+                    },
+                    {
+                        value: '3',
+                        label: '图片不存在'
+                    },
+                    {
+                        value: '4',
+                        label: '解析错误'
+                    },
+                    {
+                        value: '5',
+                        label: '其他'
+                    }
+                ],
+				model1: '',
+                alert1: false,
+                feedContent:'',
         };
     },
     created() {
@@ -141,7 +184,41 @@ export default {
         this.getList(this.learningCur);
     },
     methods: {
-        // 
+        // 反馈
+		feedback(item){
+			this.alert1=true;
+		},
+        // 添加反馈
+			addCallInfo(){
+				let list=this.cityList;
+				let cause=0;
+				list.forEach(item=>{
+					if(item.label==this.model1){
+						cause=item.value
+					}
+				})
+				if(this.feedContent){
+					this.$http.post("feedback/add",{
+						feedbackContent:this.feedContent,
+						feedbackType:1,      //0-用户 1-题目
+						feedbackCause:cause,
+						subjectId:this.id
+					}).then(res=>{
+						if(res.code==0){
+							this.feedContent="";
+							this.alert1=false;
+							this.$Message.success("添加成功！");
+						}
+					})
+				}else{
+					this.$Message.error("请填写反馈内容！");
+				}
+			},
+        close(){
+            this.alert1=false;
+            this.feedContent="";
+        },
+        // 继续学习
         goStuty(item){
             this.$http.get('course/findCourse/'+item.courseId).then(res=>{
                 // JSON.stringify
@@ -151,6 +228,7 @@ export default {
         },
         // 取消收藏
         cancelCollect(type,id){
+            console.log(type,id);
             let data={
                 collectType:type,
                 recordId:id,
@@ -158,7 +236,8 @@ export default {
             this.$http.post('user/cancelCollect',data).then(res=>{
                 if(res.code==0){
                     this.$Message.success('已取消收藏')
-                    this.getList(0);
+                    this.alert=false;
+                    this.getList(this.learningCur);
                 }
             })
         },
@@ -182,6 +261,10 @@ export default {
             this.itemId = i;
         },
         getList(type) {
+            // if(type==2){
+            //     type+=1
+            // }
+            console.log(type);
             this.$http
                 .post("/user/findCollect", {
                     pageNum: this.pageNum,
@@ -189,10 +272,14 @@ export default {
                     collectType: type
                 })
                 .then(res => {
+                    console.log(res);
                     if (res.code == 0) {
-                        this.list = res.data.content;
-                        this.total = res.data.totalElements;
-                        this.totalPages=res.data.totalPages;
+                        if(res.data!=null){
+                            this.list = res.data.content;
+                            this.total = res.data.totalElements;
+                            this.totalPages=res.data.totalPages;
+                        }
+                        
                     }
                 });
         },
@@ -204,12 +291,15 @@ export default {
         showDetail(index) {
             this.alert = true;
             this.detail=this.list[index];
+            let test=[];
             // 判断是否是正确答案
             for(let i=0;i<this.detail.questionSubject.questionOptionList.length;i++){
                 if(this.detail.questionSubject.questionOptionList[i].isTrue==1){
-                    this.rightOption.push(Number(i+1));
+                    console.log(i);
+                    test.push(Number(i+1));
                 }
             }
+            this.rightOption=test;
             // 下标转为选项
             this.rightOption=this.rightOption.map(ele=>{
                 return String.fromCharCode(64 + parseInt(ele));
@@ -404,6 +494,60 @@ export default {
             }
         }
     }
+    .model{
+        .alert {
+            width: 500px;
+            padding: 20px;
+            background: #fff;
+            border-top: 3px solid #29b28b;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            min-height: 392px;
+            margin-top: -181px;
+            margin-left: -250px;
+            .alertTitle {
+                font-size: 16px;
+                font-family: MicrosoftYaHei;
+                color: rgba(0, 0, 0, 1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #f5f5f5;
+                padding-bottom: 10px;
+            }
+            .alertCon {
+				margin: 20px 0;
+				display: flex;
+				flex-direction: column;
+            }
+            .butBox {
+                width: 80%;
+                margin: 40px auto 0;
+                display: flex;
+                justify-content: space-around;
+                cursor: default;
+                .button {
+                    width: 140px;
+                    height: 40px;
+                    line-height: 40px;
+                    text-align: center;
+                    font-size: 15px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    border-radius: 2px;
+                }
+                .sure {
+                    background: rgba(41, 178, 139, 1);
+                    color: #fff;
+                }
+                .cancel {
+                    border: 1px solid rgba(41, 178, 139, 1);
+                    color: #29b28b;
+                }
+            }
+        }
+    }
     .alertMask {
         width: 100%;
         height: 100%;
@@ -471,6 +615,25 @@ export default {
                     font-family: PingFangSC-Regular, PingFang SC;
                     font-weight: 400;
                     color: rgba(150, 150, 150, 1);
+                    .optionItem {
+                        display: flex;
+                        align-items: center;
+                        font-size: 14px;
+                        margin:10px 0;
+                        .option {
+                            display: block;
+                            width: 20px;
+                            height: 20px;
+                            border-radius: 50%;
+                            border: 1px solid #ddd;
+                            margin-right: 4px;
+                        }
+                        .clicked {
+                            width: 20px;
+                            height: 20px;
+                            margin-right: 4px;
+                        }
+                    }
                 }
                 .answerBox {
                     background: rgba(246, 248, 250, 1);
@@ -536,6 +699,7 @@ export default {
                         font-weight: 400;
                         color: rgba(28, 31, 33, 1);
                         margin: 20px;
+                        cursor: pointer;
                         img {
                             width: 15px;
                             height: 15px;

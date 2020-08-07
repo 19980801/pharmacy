@@ -50,6 +50,13 @@
 								<Icon type="md-heart" />
 								<span>收藏</span>
 							</div>
+							<div class="collect" style="margin-left:20px" 
+								v-clipboard:copy="locationHref" 
+								v-clipboard:success="copy" 
+								v-clipboard:error="onError">
+								<Icon type="md-share" />
+								<span>分享</span>
+							</div>
 						</div>
 					</div>
 					<div class="studyBtn" @click="addStudy(videoDetail.id)">+加入学习</div>
@@ -118,26 +125,38 @@
 				isShow:true,
 				nowId:'',
 				reqCount:0,
-				timeInfo:''
+				timeInfo:'',
+				locationHref:'',
+				getVideoDetail:''
 			}
 		},
 		mounted() {
+			this.locationHref=location.href+'?item='+encodeURI(localStorage.getItem("videoDetail"))
+			if(this.$route.query.item){
+				this.getVideoDetail=JSON.parse(this.$route.query.item)
+			}else{
+				this.getVideoDetail=JSON.parse(localStorage.getItem("videoDetail"))
+			}
 			if(localStorage.getItem('isLogin')){
 				this.findLastTime();
 			}else{
 				this.detail();
 			}
-			
 			window.addEventListener("beforeunload", e => {
                 this.beforeunloadHandler(e);
 			});
-			
 		},
 		methods: {
+			copy(e) {
+				this.$Message.success('已成功复制剪贴板')
+			},
+			onError(e) {
+				this.$Message.success('复制失败')
+			},
 			// 查询视频上次播放时间节点
 			findLastTime(){
 				let info="";
-				let id=JSON.parse(localStorage.getItem("videoDetail")).id;
+				let id=this.getVideoDetail.id;
 				if(localStorage.getItem("isLogin")&&this.reqCount==0){
 					this.$http.get("course/findRecord/"+id).then(res=>{
 						this.reqCount++;
@@ -168,7 +187,7 @@
             },
 			// 查询课程是否收藏
 			getIsCollect(){
-				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"));
+				let videoDetail=this.getVideoDetail;
 				this.$http.get(`/course/queryCollect/${videoDetail.id}`).then(res=>{
 					if(res.code==0){
 						this.isCollect=res.data;
@@ -261,7 +280,7 @@
 			},
 			// 详情渲染
 			detail(){
-				let videoDetail=JSON.parse(localStorage.getItem("videoDetail"))
+				let videoDetail=this.getVideoDetail
 				this.videoDetail=videoDetail;
 				let videoList=videoDetail.classHours
 				videoList.forEach((item,index)=>{

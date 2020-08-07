@@ -11,7 +11,7 @@
                     <div class="classItem flex" v-for="(item,index) in list" :key="index">
                         <img class="leftImg" :src="item.courseImg" alt="">
                         <div class="rightClassTitle">
-                            <div class="studyBtn">继续学习</div>
+                            <div class="studyBtn" @click="goStuty(item)">继续学习</div>
                             <div class="topTitle">{{item.courseTitle}}</div>
                             <div class="validityTime flex">
                                 <div class="validityTimeBox">
@@ -46,6 +46,7 @@
                 </div>
             </div>
         </div>
+        <!-- 反馈弹框 -->
         <div class="model" v-show="alert1">
 			<div class="alert">
                 <div class="alertTitle">
@@ -179,6 +180,17 @@ export default {
         this.getList(0);
     },
     methods: {
+        // 继续学习
+        goStuty(item){
+            this.$http.get('course/findCourse/'+item.courseId).then(res=>{
+                // JSON.stringify
+                localStorage.setItem('videoDetail',JSON.stringify(res.data))
+                this.$router.push('/detail')
+            })
+        },
+        study(item){
+            console.log(item);
+        },
         close(){
             this.alert1=false;
             this.feedContent="";
@@ -221,7 +233,11 @@ export default {
 				}
 				this.$http.form("test/collect",data).then(res=>{
 					if(res.code==0){
-                        this.$Message.success("修改成功");
+                        if(this.isCollect){
+                            this.$Message.success("取消收藏");
+                        }else{
+                            this.$Message.success("收藏成功");
+                        }
 						this.findSubjectIsCollect(this.id);
 					}
 				})
@@ -259,7 +275,13 @@ export default {
                 recordId:id,
                 status:type
             }).then(res=>{
-                // console.log(res);
+                console.log("收藏",res);
+                if(type){
+                    this.$Message.success("收藏成功");
+                }else{
+                    this.$Message.success("取消收藏");
+                }
+                this.getList(this.learningCur);
             })
         },
         onPageChange(page) {

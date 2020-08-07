@@ -56,7 +56,7 @@
                         </div>
                     </div>
                      <!-- :class="{active:checked}" -->
-                    <div class="btn" v-if="loginP.loginCur==0" @click="userLogin">登录</div>
+                    <div class="btn active" v-if="loginP.loginCur==0" @click="userLogin">登录</div>
                     <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==1" @click="register">注册</div>
                 </div>
             </div>

@@ -4,7 +4,7 @@
 			<div class="exerciseTitle">
 				<div class="title flex-btween">
 					<div class="leftTitle">答案结果</div>
-					<!-- <div class="rightTime">00:10:10</div> -->
+					<div class="rightTime" v-if="type==1">总分：{{score}}分</div>
 				</div>
 				<div class="content flex-btween">
 					<div class="leftQuestion">
@@ -160,12 +160,23 @@
                 ],
 				model1: '',
 				alert: false,
+				score:0,
+				type:0
 			}
 		},
 		mounted(){
 			this.questionList=JSON.parse(localStorage.getItem('answerInfo'));
-			this.myAnswer=JSON.parse(localStorage.getItem("yourAnswer"));
-			this.findSubjectIsCollect();
+			this.type=this.$route.query.type
+			if(this.type==1){
+				this.myAnswer=JSON.parse(localStorage.getItem("yourAnswer")).testRecordList;
+				this.score=JSON.parse(localStorage.getItem("yourAnswer")).score
+				this.findTestCollect();
+			}else{
+				this.myAnswer=JSON.parse(localStorage.getItem("yourAnswer"));
+				this.findSubjectIsCollect();
+			}
+			
+			
 		},
 		created(){
 			
@@ -203,14 +214,16 @@
 			},
 			// 修改收藏
 			collect(item){
+				let url=this.type==1?'test/question/collect':'test/collect'
+				console.log(item);
 				let data={
 					subjectId:item.id,
 					status:!this.isCollect
 				}
-				this.$http.form("test/collect",data).then(res=>{
+				this.$http.form(url,data).then(res=>{
 					if(res.code==0){
-						this.$Message.success("修改成功！");
-						this.findSubjectIsCollect();
+						this.isCollect?this.$Message.success("取消收藏"):this.$Message.success("收藏成功")
+						this.type==1?this.findTestCollect():this.findSubjectIsCollect();
 					}
 				})
 			},
@@ -225,11 +238,15 @@
 				let id=this.questionList[this.questionCur].id;
 				this.$http.get('test/collect/'+id).then(res=>{
 					if(res.code==0){
-						// if(res.data){
-						// 	this.$Message.success("收藏成功！");
-						// }else{
-						// 	this.$Message.success("取消收藏");
-						// }
+						this.isCollect=res.data
+					}
+				})
+			},
+			// 查询试卷题目是否收藏
+			findTestCollect(){
+				let id=this.questionList[this.questionCur].id;
+				this.$http.get('test/question/collect/'+id).then(res=>{
+					if(res.code==0){
 						this.isCollect=res.data
 					}
 				})
@@ -252,12 +269,13 @@
 			previous(item,index){
 				this.questionCur!=0?this.questionCur=index-1:this.questionCur
 				this.value=""
-				this.findSubjectIsCollect();
+				this.type==1?this.findTestCollect():this.findSubjectIsCollect();
 			},
 			next(item,index){
 				this.questionCur+1<this.questionList.length?this.questionCur=index+1:this.questionCur
 				this.value=""
-				this.findSubjectIsCollect();
+				this.type==1?this.findTestCollect():this.findSubjectIsCollect();
+				
 			},
 		}
 	}

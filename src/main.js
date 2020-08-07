@@ -10,6 +10,9 @@ import VideoPlayer from 'vue-video-player';
 // import 'videojs-flash'
 // 自己封装的axios
 import http from "./config/http";
+import VueClipboard from 'vue-clipboard2'
+VueClipboard.config.autoSetContainer = true
+
 
 const router = new VueRouter({
     mode: 'hash',
@@ -25,7 +28,8 @@ Vue.prototype.host = "http://47.115.32.248:6002";
 
 Vue.use(iView);
 Vue.use(VueRouter);
-Vue.use(VideoPlayer);
+Vue.use(VideoPlayer);//视频播放器
+Vue.use(VueClipboard)//复制粘贴
 new Vue({
     router,
     render: h => h(App)
