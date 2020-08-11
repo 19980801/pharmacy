@@ -16,14 +16,14 @@
                             <Option v-for="role in roleArr" :key="role.id" :value="String(role.id)">{{ role.role }}
                             </Option>
                         </Select>
-                        <router-link to="/system/rolemanage">添加角色</router-link>
+                        <router-link to="/rolemanage">添加角色</router-link>
                     </FormItem>
                     <FormItem label="所属部门：" prop="departmentId">
                         <Select v-model="formWrapperObj.departmentId">
                             <Option v-for="depart in departArr" :key="depart.id" :value="String(depart.id)">
                                 {{ depart.name }}</Option>
                         </Select>
-                        <router-link to="/system/departmanage">添加部门</router-link>
+                        <router-link to="/departmental_management">添加部门</router-link>
                     </FormItem>
                     <FormItem label="手机号：" prop="mobilePhone">
                         <Input v-model="formWrapperObj.mobilePhone" :maxlength="11"></Input>

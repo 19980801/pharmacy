@@ -38,3 +38,5 @@ export const getFeedback = data => postConfig("/admin/feedback/pageQuery",data);
 
 // 反馈回复
 export const feedBackAnswer = data => postConfig("/admin/feedback/answer",data); 
+// 删除反馈
+export const delFeedBack = (id) => fetch(`/admin/feedback/delete/${id}`); 

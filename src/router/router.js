@@ -12,6 +12,7 @@ import { questionRouter } from "./question/router";
 import { userRouter } from "./user/router";
 import { systemRouter } from "./system/router";
 import { bannerRouter } from "./banner/router";
+import { testPaperRouter } from "./testPaper/router";
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
 let findSlideArr = [
   //用户管理
@@ -31,6 +32,14 @@ let findSlideArr = [
   },
   ...questionRouter,
 
+  // 试卷管理
+  {
+    id:242,
+    path:'/testPaper',
+    icon:'document-text',
+    component:Main
+  },
+  ...testPaperRouter,
   //课程管理
   {
     id:228,

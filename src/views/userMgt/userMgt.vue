@@ -26,6 +26,7 @@
             <div class="tableHead">
                 <div style="font-weight:700;">数据列表</div>
                 <div>
+                    <Button type="error" @click="delUser()">删除用户</Button>
                     <Button type="primary" @click="addModal=true">
                         <Icon type="plus-round"></Icon>添加用户
                     </Button>
@@ -97,7 +98,8 @@ import {
     getUserClass,
     changeStatu,
     addUser,
-    sendMsg
+    sendMsg,
+    delUser
 } from "@/service/userMgtApi/api";
 import { getStore, removeStore, setStore } from "@/config/storage";
 // 认证状态
@@ -308,6 +310,26 @@ export default {
         this.getUserList();
     },
     methods: {
+        // 删除用户
+        delUser(){
+            this.$Modal.confirm({
+                title: "提示",
+                content: "是否删除用户",
+                onOk: () => {
+                    delUser(this.selectedArr).then(res => {
+                        if (res.code == 0) {
+                            this.$Message.success("删除成功");
+                            this.getTableData();
+                        } else {
+                            this.$Message.error("操作失败！");
+                        }
+                    });
+                },
+                onCancel: () => {
+                    this.$Message.info("取消删除");
+                }
+            });
+        },
         sendShow(){
             console.log(this.selectedArr)
             // 选中用户
@@ -385,7 +407,13 @@ export default {
                     setTimeout(() => {
                         this.$Modal.remove();
                     }, 1000);
-                    this.$Message.success("操作成功！");
+                    console.log(status);
+                    if(status==0){
+                        this.$Message.success("启用该用户！");
+                    }else{
+                        this.$Message.success("禁止该用户！");
+                    }
+                    
                     this.getTableData();
                 } else {
                     this.$Message.error("操作失败！");

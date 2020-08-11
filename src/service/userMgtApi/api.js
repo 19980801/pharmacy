@@ -14,3 +14,6 @@ export const addUser = data => postConfig('/admin/user/add', data);
 
 // 发送消息
 export const sendMsg = data => postConfig('/admin/inform/send', data);
+
+// 删除用户
+export const delUser = data => postConfig('/admin/user/delete',data)

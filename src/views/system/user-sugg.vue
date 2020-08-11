@@ -8,9 +8,19 @@
                         <Input v-model="filterSearch.userId" placeholder="请输入用户ID"></Input>
                     </FormItem>
                     <FormItem label="反馈类型：">
-                        <Select v-model="filterSearch.feedbackType">
+                        <Select style="width:100px;" v-model="filterSearch.feedbackType">
                             <Option value="0">用户</Option>
                             <Option value="1">题目</Option>
+                        </Select>
+                    </FormItem>
+                    <FormItem label="反馈原因：">
+                        <Select style="width:100px;" v-model="filterSearch.feedbackCause">
+                            <Option value="0">错别字</Option>
+                            <Option value="1">答案错误</Option>
+                            <Option value="2">题目不完整</Option>
+                            <Option value="3">图片不存在</Option>
+                            <Option value="4">解析错误</Option>
+                            <Option value="5">其他</Option>
                         </Select>
                     </FormItem>
                 </Form>
@@ -30,6 +40,13 @@
             </Row>
             <Row>
                 <Table :columns="columns_first" :data="content" :loading="ifLoading" border>
+                    <template slot-scope="{ row }" slot="name">
+                        <strong>{{ row.name }}</strong>
+                    </template>
+                    <template slot-scope="{ row, index }" slot="action">
+                        <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">View</Button>
+                        <Button type="error" size="small" @click="remove(index)">Delete</Button>
+                    </template>
                 </Table>
             </Row>
 
@@ -56,7 +73,7 @@
 
 <script>
 // import dtime from "time-formater";
-import { getFeedback,feedBackAnswer} from "@/service/systemApi/api";
+import { getFeedback,feedBackAnswer,delFeedBack} from "@/service/systemApi/api";
 import { setStore, getStore, removeStore } from "@/config/storage";
 const feedbackCauseMap = new Map([
     [0, "错别字"],
@@ -77,7 +94,8 @@ export default {
             filterSearch: {
                 //查询参数
                 feedbackType: "",
-                userId: ""
+                userId: "",
+                feedbackCause:''
             },
             pageNo: 1,
             pageSize: 10,
@@ -158,28 +176,62 @@ export default {
                     title: "操作",
                     width: 180,
                     render: (h, params) => {
-                        if (!params.row.feedbackAnswer) {
+                        let txt =params.row.feedbackAnswer =='' ? "回复" : "修改";
+                        // if (!params.row.feedbackAnswer) {
                             return (
                                 "div",
                                 [
                                     h(
-                                        "Button",
+                                        "span",
                                         {
                                             props: {
                                                 type: "primary"
                                             },
+                                            style: {
+                                                marginRight: '5px',
+                                                color:'#2d8cf0',
+                                                cursor:"default"
+                                            },
                                             on: {
                                                 click: () => {
-                                                    this.sendValidate.id=params.row.id;
-                                                    this.sendModal=true;
+                                                    this.showModel(params);
                                                 }
                                             }
                                         },
-                                        "回复"
-                                    )
+                                        txt
+                                    ),
+                                    h('span', {
+                                        props: {
+                                            type: 'primary',
+                                        },
+                                        style: {
+                                            marginRight: '5px',
+                                            color:'#2d8cf0',
+                                            cursor:"default"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.show(params)
+                                            }
+                                        }
+                                    }, '查看'),
+                                    h('span', {
+                                        props: {
+                                            type: 'error',
+                                        },
+                                        style:{
+                                            color:'#2d8cf0',
+                                            cursor:"default"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.del(params)
+                                            }
+                                        }
+                                    }, '删除')
                                 ]
                             );
-                        }
+                        // }
                     }
                 }
             ],
@@ -199,7 +251,40 @@ export default {
         this.getList();
     },
     methods: {
+        del(item){
+            this.$Modal.confirm({
+                title: '提示',
+                content: '确认删除此项反馈？',
+                onOk: () => {
+                    delFeedBack(item.row.id).then(res=>{
+                        if(res.code==0){
+                            this.$Message.success("删除成功");
+                            this.getList();
+                        }
+                    })
+                    
+                },
+                onCancel: () => {
+                    this.$Message.info('Clicked cancel');
+                }
+            });
+            // console.log(item.row.id);
+            
+        },
+        showModel(item){
+            this.sendValidate.id=item.row.id;
+            this.sendValidate.answer=item.row.feedbackAnswer
+            this.sendModal=true;
+        },
+        show (item) {
+            console.log(item.row.feedbackContent);
+            this.$Modal.info({
+                title: '反馈内容',
+                content:item.row.feedbackContent
+            })
+        },
         send(){
+            this.sendValidate.answerUserName=localStorage.getItem("username")
             feedBackAnswer({
                 ...this.sendValidate
             }).then(res=>{
@@ -219,6 +304,7 @@ export default {
             this.getList();
         },
         getList() {
+            console.log(this.filterSearch);
             getFeedback({
                 pageNum: this.pageNo,
                 pageSize: this.pageSize,

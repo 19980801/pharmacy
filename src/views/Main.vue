@@ -172,6 +172,7 @@ export default {
     },
     init() {
       let pathArr = util.setCurrentPath(this, this.$route.name);
+      console.log(pathArr);
       this.$store.commit("updateMenulist");
       if (pathArr.length >= 2) {
         this.$store.commit("addOpenSubmenu", pathArr[1].name);
@@ -245,6 +246,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.menuList);
     this.init();
   },
   created() {
