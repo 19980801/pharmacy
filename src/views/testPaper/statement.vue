@@ -25,6 +25,7 @@
       </div>
       <div class="tableHead">
         <div style="font-weight:700;">数据列表</div>
+        <Button type="success" @click="exportSure">导出</Button>
       </div>
       <Table :columns="tableColumns" :data="tableData" border></Table>
       <Page :total="total" :current="page" :page-size="limit" show-total @on-change="onPageChange" />
@@ -39,7 +40,7 @@
 
 <script>
 import {getUserClass} from "@/service/questionApi/api";
-import {testList,statement} from "@/service/testPaperApi/api";
+import {testList,statement,importTable} from "@/service/testPaperApi/api";
 export default {
   data() {
     return {
@@ -116,6 +117,30 @@ export default {
     this.getTableData();
   },
   methods: {
+    // 导出
+    exportSure(){
+      this.$Modal.confirm({
+        title: "提示",
+        content: "确定导出报表？",
+        onOk: () => {
+          importTable({
+            testId: this.$route.query.id,
+            userName:this.formItem.bankTitle,
+            testStatus:this.formItem.userCategory,
+          }).then(res => {
+            if (res.code == 0) {
+              this.$Message.success("导出成功");
+              this.getTableData();
+            } else {
+              this.$Message.error(res.message);
+            }
+          });
+        },
+        onCancel: () => {
+          this.$Message.info("取消删除");
+        }
+      });
+    },
     goOther(){
         this.$router.push({path:"/statement",query:{id:1}})
     },
@@ -181,24 +206,25 @@ export default {
     clear() {
       for (let key in this.formItem) {
         this.formItem[key] = "";
-      }
+      }          
       this.getTableData();
     },
     getTableData() {
       statement({
         pageNum: this.page,
         pageSize: this.limit,
-        testId: this.$route.query.id
+        testId: this.$route.query.id,
+        userName:this.formItem.bankTitle,
+        testStatus:this.formItem.userCategory,
       }).then(res => {
         console.log(res);
         if(res.data!=null){
-            res.data.content.forEach(item=>{
-                item.testStatus==1?item.testStatus='已参考':item.testStatus='未参考'
-            })
-            this.tableData = res.data.content;
-            this.total = res.data.totalElements;
+          res.data.content.forEach(item=>{
+              item.testStatus==1?item.testStatus='已参考':item.testStatus='未参考'
+          })
+          this.tableData = res.data.content;
+          this.total = res.data.totalElements;
         }
-        
       });
     }
   }
