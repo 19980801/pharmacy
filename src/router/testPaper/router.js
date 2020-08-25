@@ -17,14 +17,5 @@ export const testPaperRouter = [
     component: resolve => {
         require(['@/views/testPaper/testPaper_list.vue'], resolve)
     }
-},
-// 报表
-{
-    id:245,
-    path:"/statement",
-    icon:'search',
-    component: resolve => {
-        require(['@/views/testPaper/statement.vue'], resolve)
-    }
 }
 ]

@@ -6,13 +6,27 @@ import {
   removeStore
 } from "@/config/storage.js"
 
-import { newsRouter } from "./news/router";
-import { courseRouter } from "./course/router";
-import { questionRouter } from "./question/router";
-import { userRouter } from "./user/router";
-import { systemRouter } from "./system/router";
-import { bannerRouter } from "./banner/router";
-import { testPaperRouter } from "./testPaper/router";
+import {
+  newsRouter
+} from "./news/router";
+import {
+  courseRouter
+} from "./course/router";
+import {
+  questionRouter
+} from "./question/router";
+import {
+  userRouter
+} from "./user/router";
+import {
+  systemRouter
+} from "./system/router";
+import {
+  bannerRouter
+} from "./banner/router";
+import {
+  testPaperRouter
+} from "./testPaper/router";
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
 let findSlideArr = [
   //用户管理
@@ -23,7 +37,7 @@ let findSlideArr = [
     component: Main
   },
   ...userRouter,
-    //题库管理
+  //题库管理
   {
     id: 215,
     path: '/question',
@@ -34,15 +48,15 @@ let findSlideArr = [
 
   // 试卷管理
   {
-    id:242,
-    path:'/testPaper',
-    icon:'document-text',
-    component:Main
+    id: 242,
+    path: '/testPaper',
+    icon: 'document-text',
+    component: Main
   },
   ...testPaperRouter,
   //课程管理
   {
-    id:228,
+    id: 228,
     path: '/course',
     icon: 'ios-book',
     component: Main
@@ -50,13 +64,13 @@ let findSlideArr = [
   ...courseRouter,
   // 通知管理
   {
-    id:231,
-    path:"/news",
-    icon:"chatboxes",
-    component:Main
+    id: 231,
+    path: "/news",
+    icon: "chatboxes",
+    component: Main
   },
   ...newsRouter,
-    //系统管理
+  //系统管理
   {
     id: 8,
     path: '/system',
@@ -64,11 +78,11 @@ let findSlideArr = [
     component: Main
   },
   ...systemRouter,
-    //轮播
+  //轮播
   {
-    id:239,
-    path:"/banner",
-    icon:"images",
+    id: 239,
+    path: "/banner",
+    icon: "images",
     component: Main
   },
   ...bannerRouter
@@ -184,39 +198,49 @@ export const otherRouter = {
   redirect: '/home',
   component: Main,
   children: [{
-    path: 'home',
-    title: '首页',
-    name: 'home_index',
-    // redirect: appRouter[0] ? appRouter[0].path : "/login",
-    component: resolve => {
-      require(['@/views/home/home.vue'], resolve);
-    }
-  },
+      path: 'home',
+      title: '首页',
+      name: 'home_index',
+      // redirect: appRouter[0] ? appRouter[0].path : "/login",
+      component: resolve => {
+        require(['@/views/home/home.vue'], resolve);
+      }
+    },
 
-  {
-    path: 'system/employee/auditEmployee',
-    title: '编辑用户',
-    name: 'system:employee:auditEmployee',
-    component: resolve => {
-      require(['@/views/system/AddAuditEmployee.vue'], resolve)
-    }
-  },
-  {
-    path: '/user/personalcenter',
-    title: '个人中心',
-    name: 'user:personalcenter',
-    component: resolve => {
-      require(['@/views/user/PersonalCenter.vue'], resolve)
-    }
-  },
-  {
-    path:"/course/edit/:id",
-    title:"编辑课程",
-    name:"course:edit",
-    component: resolve => {
+    {
+      path: 'system/employee/auditEmployee',
+      title: '编辑用户',
+      name: 'system:employee:auditEmployee',
+      component: resolve => {
+        require(['@/views/system/AddAuditEmployee.vue'], resolve)
+      }
+    },
+    {
+      path: '/user/personalcenter',
+      title: '个人中心',
+      name: 'user:personalcenter',
+      component: resolve => {
+        require(['@/views/user/PersonalCenter.vue'], resolve)
+      }
+    },
+    {
+      path: "/course/edit/:id",
+      title: "编辑课程",
+      name: "course:edit",
+      component: resolve => {
         require(['@/views/course/edit-course.vue'], resolve)
+      }
+    },
+    // 报表
+    {
+      path: "/statement",
+      title:"报表",
+      icon: 'search',
+      name: "statement",
+      component: resolve => {
+        require(['@/views/testPaper/statement.vue'], resolve)
+      }
     }
-  },
   ]
 };
 
