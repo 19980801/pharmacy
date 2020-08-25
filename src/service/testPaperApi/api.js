@@ -1,4 +1,4 @@
-import { fetch, postConfig } from '../http.js'
+import { fetch, postConfig,post } from '../http.js'
 // 上传试卷
 export const uploadTest = data => postConfig('admin/test/question/uploadTest', data);
 // 查询试卷列表

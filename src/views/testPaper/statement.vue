@@ -9,8 +9,8 @@
           </FormItem>
           <FormItem label="参考状态：" class="searchInput">
             <Select style="width:200px;" v-model="formItem.userCategory">
-                <Option :value="0">未参考</Option>
-                <Option :value="1">参考</Option>
+              <Option :value="0">未参考</Option>
+              <Option :value="1">参考</Option>
             </Select>
           </FormItem>
         </Form>
@@ -39,8 +39,9 @@
 </template>
 
 <script>
-import {getUserClass} from "@/service/questionApi/api";
-import {testList,statement,importTable} from "@/service/testPaperApi/api";
+import { getUserClass } from "@/service/questionApi/api";
+import { testList, statement, importTable } from "@/service/testPaperApi/api";
+import { exportMethod } from '@/libs/out.js';
 export default {
   data() {
     return {
@@ -59,7 +60,7 @@ export default {
       error: false,
       formItem: {
         bankTitle: "",
-        userCategory:""
+        userCategory: ""
       },
       typeList: [],
       tableData: [],
@@ -119,21 +120,38 @@ export default {
   },
   methods: {
     // 导出
-    exportSure(){
-      console.log(this.$route.query.id);
-      console.log(this.formItem.bankTitle);
-      console.log(this.formItem.userCategory);
+    exportSure() {
       this.$Modal.confirm({
         title: "提示",
         content: "确定导出报表？",
         onOk: () => {
           // 导出接口
-          window.location.href = `${this.host}/admin/test/question/statement/export?testId=${this.$route.query.id}&userName=${this.formItem.bankTitle}&testStatus=${this.formItem.userCategory}`;
+          // importTable({
+          //   testId:this.$route.query.id,
+          //   userName:this.formItem.bankTitle,
+          //   testStatus:this.formItem.userCategory,
+          // }).then(res=>{
+          //   console.log(res);
+          // })
+          // window.location.href = `${this.host}/admin/test/question/statement/export?testId=${this.$route.query.id}&userName=${this.formItem.bankTitle}&testStatus=${this.formItem.userCategory}`;
+          let myObj = {
+            method: 'post',
+            url: `${this.host}/admin/test/question/statement/export`,
+            fileName: '报表',
+            data: {
+              testId: this.$route.query.id,
+              userName: this.formItem.bankTitle,
+              testStatus: this.formItem.userCategory
+            }
+            // params: `testId=${this.$route.query.id}&userName=${this.formItem.bankTitle}&testStatus=${this.formItem.userCategory}`
+          }
+          exportMethod(myObj);
         },
       });
     },
-    goOther(){
-        this.$router.push({path:"/statement",query:{id:1}})
+
+    goOther() {
+      this.$router.push({ path: "/statement", query: { id: 1 } })
     },
     onBeforeImgUploading() {
       this.imgUploadLoading = true;
@@ -150,18 +168,18 @@ export default {
       });
     },
     sure() {
-        updateBank({
-            ...this.updateValidate
-        }).then(res=>{
-            if(res.code==0){
-                this.updateModal = false;
-                for (let key in this.updateValidate) {
-                    this.updateValidate[key] = "";
-                }
-                this.getTableData();
-                this.$Message.success(res.message);
-            }
-        })
+      updateBank({
+        ...this.updateValidate
+      }).then(res => {
+        if (res.code == 0) {
+          this.updateModal = false;
+          for (let key in this.updateValidate) {
+            this.updateValidate[key] = "";
+          }
+          this.getTableData();
+          this.$Message.success(res.message);
+        }
+      })
     },
     cancel() {
       for (let key in this.updateValidate) {
@@ -197,7 +215,7 @@ export default {
     clear() {
       for (let key in this.formItem) {
         this.formItem[key] = "";
-      }          
+      }
       this.getTableData();
     },
     getTableData() {
@@ -205,13 +223,13 @@ export default {
         pageNum: this.page,
         pageSize: this.limit,
         testId: this.$route.query.id,
-        userName:this.formItem.bankTitle,
-        testStatus:this.formItem.userCategory,
+        userName: this.formItem.bankTitle,
+        testStatus: this.formItem.userCategory,
       }).then(res => {
         console.log(res);
-        if(res.data!=null){
-          res.data.content.forEach(item=>{
-              item.testStatus==1?item.testStatus='已参考':item.testStatus='未参考'
+        if (res.data != null) {
+          res.data.content.forEach(item => {
+            item.testStatus == 1 ? item.testStatus = '已参考' : item.testStatus = '未参考'
           })
           this.tableData = res.data.content;
           this.total = res.data.totalElements;
