@@ -58,7 +58,8 @@ export default {
       limit: 10,
       error: false,
       formItem: {
-        bankTitle: ""
+        bankTitle: "",
+        userCategory:""
       },
       typeList: [],
       tableData: [],
@@ -119,26 +120,16 @@ export default {
   methods: {
     // 导出
     exportSure(){
+      console.log(this.$route.query.id);
+      console.log(this.formItem.bankTitle);
+      console.log(this.formItem.userCategory);
       this.$Modal.confirm({
         title: "提示",
         content: "确定导出报表？",
         onOk: () => {
-          importTable({
-            testId: this.$route.query.id,
-            userName:this.formItem.bankTitle,
-            testStatus:this.formItem.userCategory,
-          }).then(res => {
-            if (res.code == 0) {
-              this.$Message.success("导出成功");
-              this.getTableData();
-            } else {
-              this.$Message.error(res.message);
-            }
-          });
+          // 导出接口
+          window.location.href = `${this.host}/admin/test/question/statement/export?testId=${this.$route.query.id}&userName=${this.formItem.bankTitle}&testStatus=${this.formItem.userCategory}`;
         },
-        onCancel: () => {
-          this.$Message.info("取消删除");
-        }
       });
     },
     goOther(){

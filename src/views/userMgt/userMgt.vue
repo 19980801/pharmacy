@@ -30,7 +30,7 @@
           <Button type="primary" @click="addModal=true">添加用户</Button>
           <Button type="warning" @click="sendShow">发送通知</Button>
           <div>
-            <Upload :action="uploadUrl" :format="['xls']" :data="uploadData" :show-upload-list="false"
+            <Upload :action="uploadUrl" :format="['xls','xlsx']" :data="uploadData" :show-upload-list="false"
               :before-upload="onBeforeImgUploading" :on-success="onImgUploadInforSuccess"
               :on-format-error="handleImgFormatError">
               <Button type="success" icon="ios-cloud-upload-outline" :loading="uploadLoading">导入</Button>

@@ -32,7 +32,7 @@
           <Button type="primary" @click="addModal=true" style="margin-right:10px;">新增题目</Button>
           <Upload
             :action="uploadUrl"
-            :format="['xls']"
+            :format="['xls','xlsx']"
             :data="uploadData"
             :show-upload-list="false"
             :before-upload="onBeforeImgUploading"
